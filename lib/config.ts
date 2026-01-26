@@ -8,7 +8,7 @@ export const config = {
   // Anthropic API Configuration
   anthropic: {
     apiKey: process.env.ANTHROPIC_API_KEY || '',
-    baseURL: process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com',
+    baseURL: process.env.ANTHROPIC_BASE_URL || 'https://api.z.ai/api/anthropic',
     defaultModel: process.env.ANTHROPIC_DEFAULT_SONNET_MODEL || 'glm-4.7',
   },
 
