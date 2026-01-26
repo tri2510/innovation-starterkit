@@ -179,7 +179,9 @@ export default function ChallengePage() {
 
   // Check if user has seen the tour
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_DISABLE_TOUR === 'true') {
+    // Note: NEXT_PUBLIC_DISABLE_TOUR is handled at build time by Next.js
+    // We check the environment variable directly since this is client-side
+    if ((process.env.NEXT_PUBLIC_DISABLE_TOUR as string | undefined) === 'true') {
       setTourCompleted(true);
       return;
     }

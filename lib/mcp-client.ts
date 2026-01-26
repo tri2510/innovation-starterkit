@@ -8,6 +8,8 @@
  * without needing initialize/notifications/initialized sequence.
  */
 
+import { config } from './config';
+
 interface WebSearchResult {
   refer: string;
   title: string;
@@ -33,7 +35,7 @@ async function sendMCPRequest(
   apiKey?: string
 ): Promise<unknown> {
   const requestId = ++mcpRequestId;
-  const effectiveApiKey = apiKey || process.env.ANTHROPIC_API_KEY;
+  const effectiveApiKey = apiKey || config.anthropic.apiKey;
 
   const message: Record<string, unknown> = {
     jsonrpc: "2.0" as const,

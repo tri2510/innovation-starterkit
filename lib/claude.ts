@@ -1,8 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { config } from './config';
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || "",
-  baseURL: process.env.ANTHROPIC_BASE_URL || undefined,
+  apiKey: config.anthropic.apiKey,
+  baseURL: config.anthropic.baseURL,
 });
 
 export interface ClaudeMessage {
@@ -25,7 +26,7 @@ export async function sendClaudeMessage<T = unknown>(
   maxTokens: number = 4096
 ): Promise<ClaudeResponse<T>> {
   try {
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!config.anthropic.apiKey) {
       return {
         success: false,
         error: "ANTHROPIC_API_KEY is not configured",
@@ -33,7 +34,7 @@ export async function sendClaudeMessage<T = unknown>(
     }
 
     const response = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_DEFAULT_SONNET_MODEL || "glm-4.7",
+      model: config.anthropic.defaultModel,
       max_tokens: maxTokens,
       system: systemPrompt,
       messages: messages,
@@ -93,12 +94,12 @@ export async function* streamClaudeMessage(
   messages: ClaudeMessage[],
   systemPrompt: string
 ): AsyncGenerator<string, void, unknown> {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!config.anthropic.apiKey) {
     throw new Error("ANTHROPIC_API_KEY is not configured");
   }
 
   const stream = await anthropic.messages.create({
-    model: process.env.ANTHROPIC_DEFAULT_SONNET_MODEL || "glm-4.7",
+    model: config.anthropic.defaultModel,
     max_tokens: 4096,
     system: systemPrompt,
     messages: messages,
@@ -174,7 +175,7 @@ export async function* streamClaudeWithThinking(
   void,
   unknown
 > {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!config.anthropic.apiKey) {
     throw new Error("ANTHROPIC_API_KEY is not configured");
   }
 
@@ -182,7 +183,7 @@ export async function* streamClaudeWithThinking(
 
   // Build base request parameters
   const requestParams: Record<string, unknown> = {
-    model: process.env.ANTHROPIC_DEFAULT_SONNET_MODEL || "glm-4.7",
+    model: config.anthropic.defaultModel,
     max_tokens: 4096,
     system: systemPrompt,
     messages: messages,

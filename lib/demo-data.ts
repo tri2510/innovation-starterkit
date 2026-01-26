@@ -6,6 +6,7 @@
  */
 
 import type { Challenge, MarketAnalysis, BusinessIdea } from "@/types/innovation";
+import { config } from './config';
 
 export const DEMO_CHALLENGE: Challenge = {
   problem: "Small businesses struggle to manage inventory efficiently, leading to stockouts and overstocking that costs them 30% of revenue annually.",
@@ -180,12 +181,7 @@ export const DEMO_APPRAISAL = {
   completedSections: ["targetMarket", "businessModel", "competitiveAdvantage", "investmentCosts", "revenueForecasts", "financialMetrics", "riskAssessment"],
 };
 
-// Helper to get demo mode status from environment
+// Helper to get demo mode status from config
 export const isDemoMode = (): boolean => {
-  if (typeof window === "undefined") {
-    // Server-side: check env variable
-    return process.env.NEXT_PUBLIC_DEMO_MODE === "true";
-  }
-  // Client-side: check env variable (injected by Next.js)
-  return (process.env.NEXT_PUBLIC_DEMO_MODE as string | undefined) === "true";
+  return config.features.demoMode;
 };
