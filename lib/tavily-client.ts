@@ -1,14 +1,16 @@
 /**
  * Tavily API Client for AI Web Search
- * 
+ *
  * Tavily is specifically designed for AI applications with:
  * - Real-time web search optimized for LLMs
  * - Clean, structured JSON responses
  * - Generous free tier (1,000 requests/month)
  * - Simple REST API (no complex protocols)
- * 
+ *
  * Documentation: https://docs.tavily.com/docs/tavily-api/rest-api
  */
+
+import { config } from './config';
 
 interface TavilySearchResult {
   title: string;
@@ -56,8 +58,8 @@ export async function tavilySearch(
   icon: string;
   publish_date: string;
 }>> {
-  const apiKey = options?.api_key || process.env.TAVILY_API_KEY;
-  
+  const apiKey = options?.api_key || config.tavily.apiKey;
+
   if (!apiKey) {
     console.error("[Tavily] No API key found. Set TAVILY_API_KEY in .env.local");
     return [];
@@ -112,7 +114,7 @@ export async function tavilySearch(
  * Simple health check for Tavily API
  */
 export async function checkTavilyHealth(): Promise<boolean> {
-  const apiKey = process.env.TAVILY_API_KEY;
+  const apiKey = config.tavily.apiKey;
   if (!apiKey) {
     console.log("[Tavily] No API key configured");
     return false;

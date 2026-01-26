@@ -29,27 +29,39 @@ Create a `.env.local` file in the root directory:
 cp .env.example .env.local
 ```
 
-Edit `.env.local` and add your API keys:
+**Only 1 required API key to get started:**
 
 ```env
 # Required: Anthropic API Key
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
-
-# Optional: Custom base URL (default: https://api.anthropic.com)
-ANTHROPIC_BASE_URL=https://api.anthropic.com
-
-# Required: AI Provider
-AI_PROVIDER=anthropic
 ```
+
+**Optional: Add web search capability**
+
+```env
+# Optional: For web search features (get free key at https://tavily.com)
+TAVILY_API_KEY=your_tavily_api_key_here
+```
+
+**All other settings have built-in defaults!** You only need to add them if you want to customize the behavior. See `.env.example` for optional overrides.
 
 ### 4. Get an Anthropic API Key
 
-You can get your API key from these provider:
-1. Go to [console.anthropic.com](https://console.anthropic.com/) or [z.ai](https://z.ai)
+You can get your API key from either provider:
+
+**Option A: Anthropic (Official)**
+1. Go to [console.anthropic.com](https://console.anthropic.com/)
 2. Sign up or log in
 3. Navigate to API Keys
 4. Create a new API key
 5. Copy it to your `.env.local` file
+
+**Option B: z.ai (Alternative)**
+1. Go to [z.ai](https://z.ai)
+2. Sign up or log in
+3. Get your API key
+4. Copy it to your `.env.local` file
+5. Add this to your `.env.local`: `ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic`
 
 ### 5. Run the development server
 
@@ -74,21 +86,29 @@ PORT=3001 npm start
 
 ## Environment Variables
 
-| Variable | Required | Description | Default |
-|----------|----------|-------------|---------|
-| `ANTHROPIC_API_KEY` | Yes | Your Anthropic API key | - |
-| `ANTHROPIC_BASE_URL` | No | Anthropic API base URL | `https://api.anthropic.com` |
-| `AI_PROVIDER` | Yes | AI provider to use | `anthropic` |
-| `ANTHROPIC_DEFAULT_SONNET_MODEL` | No | Default AI model | `claude-sonnet-4-20250514` |
-| `TAVILY_API_KEY` | Yes | For web search features | - |
-| `NEXT_PUBLIC_DEMO_MODE` | No | Enable demo mode | `false` |
-| `NEXT_PUBLIC_DISABLE_TOUR` | No | Hide onboarding tour | `false` |
-| `API_TIMEOUT` | No | API request timeout (ms) | `60000` |
-| `API_MAX_RETRIES` | No | API retry attempts | `3` |
+### Required
 
-## Web Search Feature
+| Variable | Description |
+|----------|-------------|
+| `ANTHROPIC_API_KEY` | Your Anthropic or z.ai API key |
 
-To enable web search functionality, you can add Tavily API:
+### Optional
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `TAVILY_API_KEY` | For web search features | - (disabled if not set) |
+| `ANTHROPIC_BASE_URL` | Anthropic API base URL | `https://api.anthropic.com` |
+| `ANTHROPIC_DEFAULT_SONNET_MODEL` | Default AI model | `glm-4.7` |
+| `API_TIMEOUT` | API request timeout (ms) | `60000` |
+| `API_MAX_RETRIES` | API retry attempts | `3` |
+| `NEXT_PUBLIC_DEMO_MODE` | Enable demo mode | `false` |
+| `NEXT_PUBLIC_DISABLE_TOUR` | Hide onboarding tour | `false` |
+
+**Note:** All optional variables have built-in defaults. Only add them to `.env.local` if you want to override the defaults.
+
+### Web Search Feature
+
+To enable web search functionality, add Tavily API:
 
 1. Get a free API key at [tavily.com](https://tavily.com)
 2. Free tier: 1,000 requests/month
@@ -104,8 +124,12 @@ TAVILY_API_KEY=your_tavily_api_key_here
 
 1. Push your code to GitHub
 2. Import project in [Vercel](https://vercel.com)
-3. Add environment variables in Vercel dashboard
+3. Add these environment variables in Vercel dashboard:
+   - `ANTHROPIC_API_KEY` (required)
+   - `TAVILY_API_KEY` (optional, for web search)
 4. Deploy
+
+**That's it!** All other settings use built-in defaults.
 
 ### Self-Hosted
 

@@ -6,6 +6,7 @@
 import { withQueue, getGlobalQueue } from './request-queue';
 import { retryWithBackoff, getRetryStrategy } from './retry';
 import { analyzeError, wrapError, logStructuredError, ErrorCategory } from './error-handler';
+import { config } from './config';
 
 export interface APIRequestOptions {
   priority?: number;
@@ -22,8 +23,8 @@ export class APIClient {
   private defaultMaxRetries: number;
 
   constructor(
-    defaultTimeout: number = 60000,
-    defaultMaxRetries: number = 3
+    defaultTimeout: number = config.api.timeout,
+    defaultMaxRetries: number = config.api.maxRetries
   ) {
     this.defaultTimeout = defaultTimeout;
     this.defaultMaxRetries = defaultMaxRetries;
@@ -112,8 +113,8 @@ let globalAPIClient: APIClient | null = null;
 export function getAPIClient(): APIClient {
   if (!globalAPIClient) {
     globalAPIClient = new APIClient(
-      parseInt(process.env.API_TIMEOUT || '60000'),
-      parseInt(process.env.API_MAX_RETRIES || '3')
+      config.api.timeout,
+      config.api.maxRetries
     );
   }
   return globalAPIClient;
