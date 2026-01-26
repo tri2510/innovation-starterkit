@@ -133,6 +133,7 @@ export interface CrackItMessage {
   content: string;
   thinking?: string;
   searchQuery?: string;
+  searchKeywords?: string; // Search keywords/terms used
   sources?: Array<{
     refer: string;
     title: string;

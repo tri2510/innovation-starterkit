@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2 } from "lucide-react"
+import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2, Tag } from "lucide-react"
 import { CrackItIcon } from "./crack-it-icon"
 import { cn } from "@/lib/utils"
 import {
@@ -41,6 +41,24 @@ interface EnhancedAnalysisPanelProps {
 const STORAGE_KEY = "text-analysis-history"
 const MAX_HISTORY = 10
 const STREAM_UPDATE_INTERVAL = 10
+
+// Helper to transform content with clickable citations (like ChatGPT)
+function transformContentWithCitations(content: string, sources: Array<{ refer: string; link: string; title: string }>): string {
+  if (!sources || sources.length === 0) return content
+
+  // Replace [Source: ref_X] patterns with clickable citations [X]
+  let transformed = content.replace(/\[Source:\s*ref_(\d+)\]/g, (match, refNum) => {
+    return `[${refNum}]`
+  })
+
+  // Also handle other citation formats if present
+  transformed = transformed.replace(/\[Source:\s*([^\]]+)\]/g, (match, sourceInfo) => {
+    const index = sources.findIndex(s => sourceInfo.includes(s.refer) || sourceInfo.includes(s.title))
+    return index >= 0 ? `[${index + 1}]` : match
+  })
+
+  return transformed
+}
 
 export function EnhancedAnalysisPanel({
   isOpen,
@@ -543,6 +561,17 @@ export function EnhancedAnalysisPanel({
                       </div>
                     )}
 
+                    {/* Search Keywords Section */}
+                    {msg.searchQuery && (
+                      <div className="flex items-start gap-2 p-2 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
+                        <Tag className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-semibold text-blue-700 dark:text-blue-300 mb-0.5">Keywords</p>
+                          <p className="text-xs text-blue-600 dark:text-blue-400 line-clamp-2">{msg.searchQuery}</p>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Thinking Section */}
                     {msg.thinking && (
                       <ThinkingSection
@@ -552,47 +581,98 @@ export function EnhancedAnalysisPanel({
                       />
                     )}
 
-                    {/* Content */}
+                    {/* Content with clickable citations */}
                     {msg.content && (
                       <div className="prose prose-sm dark:prose-invert max-w-none prose-p:text-xs prose-headings:text-xs prose-li:text-xs">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {msg.content}
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            // Make citations like [1], [2] clickable and styled
+                            text: ({ children }) => {
+                              const text = String(children);
+                              // Transform citation numbers to clickable links
+                              if (msg.sources && msg.sources.length > 0) {
+                                const parts = text.split(/(\[\d+\])/g);
+                                return (
+                                  <>
+                                    {parts.map((part, i) => {
+                                      const citationMatch = part.match(/\[(\d+)\]/);
+                                      if (citationMatch) {
+                                        const sourceIndex = parseInt(citationMatch[1]) - 1;
+                                        if (sourceIndex >= 0 && sourceIndex < msg.sources!.length) {
+                                          return (
+                                            <a
+                                              key={i}
+                                              href={msg.sources![sourceIndex].link}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-blue-600 dark:text-blue-400 hover:underline font-medium text-xs"
+                                              title={msg.sources![sourceIndex].title}
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                window.open(msg.sources![sourceIndex].link, '_blank');
+                                              }}
+                                            >
+                                              [{citationMatch[1]}]
+                                            </a>
+                                          );
+                                        }
+                                      }
+                                      return <span key={i}>{part}</span>;
+                                    })}
+                                  </>
+                                );
+                              }
+                              return <>{children}</>;
+                            }
+                          }}
+                        >
+                          {transformContentWithCitations(msg.content, msg.sources || [])}
                         </ReactMarkdown>
                       </div>
                     )}
 
-                    {/* Sources - compact */}
+                    {/* Sources - Show ALL sources (ChatGPT style) */}
                     {msg.sources && msg.sources.length > 0 && (
                       <div className="pt-3 border-t border-border/50">
-                        <details className="group">
-                          <summary className="flex items-center justify-between cursor-pointer text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors list-none">
+                        <details
+                          className="group"
+                          open={true} // Default open to show all sources
+                        >
+                          <summary className="flex items-center justify-between cursor-pointer text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors list-none mb-2">
                             <span className="flex items-center gap-1.5">
                               <Globe className="h-3 w-3" />
                               Sources ({msg.sources.length})
                             </span>
-                            <span className="opacity-50 group-hover:opacity-100">▼</span>
+                            <span className="opacity-50 group-hover:opacity-100 text-[10px]">(Click to collapse)</span>
                           </summary>
-                          <div className="mt-2 space-y-1.5">
-                            {msg.sources.slice(0, 5).map((source, i) => (
+                          <div className="space-y-2">
+                            {msg.sources.map((source, i) => (
                               <a
                                 key={i}
                                 href={source.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-start gap-2 p-2 rounded-lg bg-background/50 hover:bg-accent/50 border border-border/30 transition-colors text-xs"
+                                className="block p-2.5 rounded-lg bg-background/50 hover:bg-accent/50 border border-border/30 transition-all text-xs group-hover:border-primary/30"
                               >
-                                <Globe className="h-3 w-3 text-muted-foreground flex-shrink-0 mt-0.5" />
-                                <div className="min-w-0 flex-1">
-                                  <p className="font-medium text-foreground line-clamp-1">{source.title}</p>
-                                  <p className="text-[10px] text-muted-foreground">{source.media || new URL(source.link).hostname}</p>
+                                <div className="flex items-start gap-2">
+                                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-semibold">
+                                    {i + 1}
+                                  </span>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="font-medium text-foreground line-clamp-2 text-xs">{source.title}</p>
+                                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                                      {source.media || new URL(source.link).hostname}
+                                    </p>
+                                    {source.content && source.content.length > 0 && (
+                                      <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1">
+                                        {source.content.slice(0, 150)}...
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
                               </a>
                             ))}
-                            {msg.sources.length > 5 && (
-                              <p className="text-[10px] text-muted-foreground text-center pt-1">
-                                +{msg.sources.length - 5} more sources
-                              </p>
-                            )}
                           </div>
                         </details>
                       </div>
