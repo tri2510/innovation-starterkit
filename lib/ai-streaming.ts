@@ -20,16 +20,17 @@ import type {
 } from './schemas';
 import type { MarketProgressUpdateChunk } from '@/hooks/use-chat-streaming';
 import { executeAPIRequest } from './api-client';
+import { config } from './config';
 
 // Initialize Anthropic client (compatible with existing setup)
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || "",
-  baseURL: process.env.ANTHROPIC_BASE_URL || undefined,
+  apiKey: config.anthropic.apiKey,
+  baseURL: config.anthropic.baseURL,
 });
 
-// Get model from environment or use default
+// Get model from config
 const getModel = () => {
-  return process.env.ANTHROPIC_DEFAULT_SONNET_MODEL || 'glm-4.7';
+  return config.anthropic.defaultModel;
 };
 
 /**

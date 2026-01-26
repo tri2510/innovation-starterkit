@@ -3,6 +3,7 @@ import { anthropic, streamClaudeWithThinking, ClaudeMessageWithThinking } from "
 import { TEXT_ANALYSIS_PROMPT } from "@/lib/prompts-clean";
 import { getSession } from "@/lib/session";
 import { tavilySearch } from "@/lib/tavily-client";
+import { config } from "@/lib/config";
 
 interface Message {
   role: "user" | "assistant";
@@ -187,7 +188,7 @@ CRITICAL RULES:
 Respond ONLY with the optimized search query (no explanation).`;
 
             const queryResponse = await anthropic.messages.create({
-              model: process.env.ANTHROPIC_DEFAULT_SONNET_MODEL || "claude-sonnet-4-20250514",
+              model: config.anthropic.defaultModel,
               max_tokens: 100,
               messages: [{
                 role: "user",
