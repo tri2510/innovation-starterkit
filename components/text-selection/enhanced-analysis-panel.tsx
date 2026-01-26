@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2 } from "lucide-react"
+import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2, Tag } from "lucide-react"
 import { CrackItIcon } from "./crack-it-icon"
 import { cn } from "@/lib/utils"
 import {
@@ -41,6 +41,44 @@ interface EnhancedAnalysisPanelProps {
 const STORAGE_KEY = "text-analysis-history"
 const MAX_HISTORY = 10
 const STREAM_UPDATE_INTERVAL = 10
+
+// Helper to transform content with clickable citations (like ChatGPT)
+function transformContentWithCitations(content: string, sources: Array<{ refer: string; link: string; title: string }>): string {
+  if (!sources || sources.length === 0) {
+    console.log('[transformContentWithCitations] No sources, returning original content')
+    return content
+  }
+
+  console.log('[transformContentWithCitations] Sources:', sources.map((s, i) => `${i}: ${s.refer}`))
+  console.log('[transformContentWithCitations] Content preview (first 200 chars):', content.substring(0, 200))
+
+  // Check what citation patterns are in the content
+  const citationPatterns = content.match(/\[Source:[^\]]+\]/gi)
+  console.log('[transformContentWithCitations] Found citation patterns:', citationPatterns)
+
+  let transformed = content
+  let replacedCount = 0
+
+  // Replace [Source: ref_X] patterns with markdown links [X](url)
+  // Case insensitive, handles various spacing
+  transformed = transformed.replace(/\[Source:\s*ref[_\s]*(\d+)\]/gi, (match, refNum) => {
+    const index = parseInt(refNum) - 1
+    console.log(`[transformContentWithCitations] Trying to replace ref_${refNum} with index ${index}`)
+    if (index >= 0 && index < sources.length) {
+      replacedCount++
+      const result = `[${index + 1}](${sources[index].link})`
+      console.log(`[transformContentWithCitations] ✓ Replaced with:`, result)
+      return result
+    }
+    console.warn(`[transformContentWithCitations] ✗ Invalid ref number: ${refNum} (sources length: ${sources.length})`)
+    return match // Keep original if invalid
+  })
+
+  console.log(`[transformContentWithCitations] Replaced ${replacedCount} citations total`)
+  console.log('[transformContentWithCitations] Output preview (first 200 chars):', transformed.substring(0, 200))
+
+  return transformed
+}
 
 export function EnhancedAnalysisPanel({
   isOpen,
@@ -543,6 +581,19 @@ export function EnhancedAnalysisPanel({
                       </div>
                     )}
 
+                    {/* Search Keywords Section */}
+                    {msg.searchQuery && (
+                      <div className="flex items-start gap-2 p-2 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
+                        <Tag className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-semibold text-blue-700 dark:text-blue-300 mb-0.5">Keywords</p>
+                          <p className="text-xs text-blue-600 dark:text-blue-400 break-words" title={msg.searchQuery}>
+                            {msg.searchQuery}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Thinking Section */}
                     {msg.thinking && (
                       <ThinkingSection
@@ -552,47 +603,108 @@ export function EnhancedAnalysisPanel({
                       />
                     )}
 
-                    {/* Content */}
+                    {/* Content with clickable citations */}
                     {msg.content && (
                       <div className="prose prose-sm dark:prose-invert max-w-none prose-p:text-xs prose-headings:text-xs prose-li:text-xs">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {msg.content}
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            // Make citations like [1], [2] clickable and styled with URL
+                            a: ({ href, children, ...props }) => {
+                              const text = String(children).trim()
+
+                              // Check if this is a citation link (number-only like [1], [2])
+                              const citationMatch = text.match(/^\[(\d+)\]$/)
+
+                              if (citationMatch && msg.sources && msg.sources.length > 0) {
+                                const sourceIndex = parseInt(citationMatch[1]) - 1
+                                if (sourceIndex >= 0 && sourceIndex < msg.sources.length) {
+                                  const source = msg.sources[sourceIndex]
+                                  // Extract hostname for display
+                                  const hostname = source.link.replace(/^https?:\/\//, '').replace(/\/.*$/, '')
+                                  return (
+                                    <a
+                                      href={source.link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 font-medium text-xs transition-colors no-underline align-middle"
+                                      title={source.title}
+                                      onClick={(e) => {
+                                        e.preventDefault()
+                                        window.open(source.link, '_blank')
+                                      }}
+                                      {...props}
+                                    >
+                                      [{citationMatch[1]}]
+                                      <span className="text-[10px] opacity-75 max-w-[100px] truncate">
+                                        {hostname}
+                                      </span>
+                                    </a>
+                                  )
+                                }
+                              }
+
+                              // Regular link - open in new tab
+                              return (
+                                <a
+                                  href={href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                                  {...props}
+                                >
+                                  {children}
+                                </a>
+                              )
+                            }
+                          }}
+                        >
+                          {transformContentWithCitations(msg.content, msg.sources || [])}
                         </ReactMarkdown>
                       </div>
                     )}
 
-                    {/* Sources - compact */}
+                    {/* Sources - Show ALL sources (ChatGPT style) */}
                     {msg.sources && msg.sources.length > 0 && (
                       <div className="pt-3 border-t border-border/50">
-                        <details className="group">
-                          <summary className="flex items-center justify-between cursor-pointer text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors list-none">
+                        <details
+                          className="group"
+                          open={true} // Default open to show all sources
+                        >
+                          <summary className="flex items-center justify-between cursor-pointer text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors list-none mb-2">
                             <span className="flex items-center gap-1.5">
                               <Globe className="h-3 w-3" />
                               Sources ({msg.sources.length})
                             </span>
-                            <span className="opacity-50 group-hover:opacity-100">▼</span>
+                            <span className="opacity-50 group-hover:opacity-100 text-[10px]">(Click to collapse)</span>
                           </summary>
-                          <div className="mt-2 space-y-1.5">
-                            {msg.sources.slice(0, 5).map((source, i) => (
+                          <div className="space-y-2">
+                            {msg.sources.map((source, i) => (
                               <a
                                 key={i}
                                 href={source.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-start gap-2 p-2 rounded-lg bg-background/50 hover:bg-accent/50 border border-border/30 transition-colors text-xs"
+                                className="block p-2.5 rounded-lg bg-background/50 hover:bg-accent/50 border border-border/30 transition-all text-xs group-hover:border-primary/30"
                               >
-                                <Globe className="h-3 w-3 text-muted-foreground flex-shrink-0 mt-0.5" />
-                                <div className="min-w-0 flex-1">
-                                  <p className="font-medium text-foreground line-clamp-1">{source.title}</p>
-                                  <p className="text-[10px] text-muted-foreground">{source.media || new URL(source.link).hostname}</p>
+                                <div className="flex items-start gap-2">
+                                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-semibold">
+                                    {i + 1}
+                                  </span>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="font-medium text-foreground line-clamp-2 text-xs">{source.title}</p>
+                                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                                      {source.media || new URL(source.link).hostname}
+                                    </p>
+                                    {source.content && source.content.length > 0 && (
+                                      <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1">
+                                        {source.content.slice(0, 150)}...
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
                               </a>
                             ))}
-                            {msg.sources.length > 5 && (
-                              <p className="text-[10px] text-muted-foreground text-center pt-1">
-                                +{msg.sources.length - 5} more sources
-                              </p>
-                            )}
                           </div>
                         </details>
                       </div>
