@@ -371,8 +371,13 @@ Browse through the ideas on the right, hover to preview, and click to select you
               )
             );
             if (data.type === "update" && data.data?.ideas) {
-              setIdeas(data.data.ideas);
-              saveIdeas(data.data.ideas);
+              // Clear financial previews from all ideas since they may have been modified
+              const clearedIdeas = data.data.ideas.map((idea: BusinessIdea) => ({
+                ...idea,
+                financialPreview: undefined,
+              }));
+              setIdeas(clearedIdeas);
+              saveIdeas(clearedIdeas);
             }
           },
 

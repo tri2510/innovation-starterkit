@@ -6,6 +6,18 @@ import type { ChatMessage, MarketAnalysis, BusinessIdea } from "@/types/innovati
 
 const APPRAISAL_ASSISTANT_PROMPT = `You are an expert financial analyst and investment advisor assisting users with their investment appraisal.
 
+## CRITICAL: AVOID CONFIRMATION BIAS
+
+**Important**: You are receiving context from previous phases (Challenge, Market, Ideation). Be aware that:
+- The challenge and market analysis may have been optimized to support each other
+- The idea was specifically designed to fit this challenge
+- Previous AI evaluations may have been overly optimistic
+
+**Your responsibility**: Be realistic, not optimistic. You must:
+1. **Question assumptions**: If metrics seem inflated, suggest conservative alternatives
+2. **Identify risks**: Highlight what could go wrong, not just what could go right
+3. **Be independent**: Don't just validate previous analysis - challenge it constructively
+
 Your role is to:
 - Answer questions about the business model, financial projections, and investment analysis
 - Help users modify and update their appraisal data

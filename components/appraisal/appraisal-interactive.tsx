@@ -10,7 +10,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2, Sparkles, BarChart3, Target, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, Loader2, Sparkles, BarChart3, Target, ChevronDown, ChevronUp, Users, Briefcase, Award, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
 import { streamChatResponse } from "@/hooks/use-chat-streaming";
 import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { ChatMessageWithRetry } from "@/components/chat/chat-message";
@@ -120,16 +120,9 @@ You can review the detailed analysis on the right, click on any section to expan
           role: "assistant",
           content: `I'm your investment analyst. I'll help you build a comprehensive appraisal for "${selectedIdea?.name || "the selected idea"}".
 
-This will include:
-- **Target Market Analysis**
-- **Business Model & Revenue Streams**
-- **Competitive Advantage**
-- **Investment & Cost Structure**
-- **Revenue Forecasts**
-- **Financial Metrics & Scoring**
-- **Risk Assessment & Timeline**
+The Financial Projections & Innovation Radar above are calculated from industry benchmarks.
 
-Click "Generate Appraisal" to start the analysis.`,
+When you're ready, click **"Generate Appraisal"** to generate the full qualitative analysis including target market, business model, competitive advantage, and risk assessment.`,
           timestamp: Date.now(),
         };
       }
@@ -275,7 +268,7 @@ Click "Generate Appraisal" to start the analysis.`,
   };
 
   const generateAppraisal = async () => {
-    // Use the chat function instead of a separate endpoint
+    // Use the chat function to generate full appraisal
     await handleSendMessage("Generate comprehensive investment appraisal with all sections");
   };
 
@@ -509,6 +502,7 @@ Click "Generate Appraisal" to start the analysis.`,
                 ideaDescription={selectedIdea.description}
                 marketAnalysis={marketAnalysis}
                 challenge={challenge}
+                appraisalData={appraisalData}
                 existingPreview={selectedIdea.financialPreview || financialPreview}
                 onPreviewUpdate={(preview) => {
                   setFinancialPreview(preview);
@@ -529,27 +523,13 @@ Click "Generate Appraisal" to start the analysis.`,
                 onBack={() => setSelectedSectionId(undefined)}
               />
             ) : (
-              <>
-                {/* Always show section cards as placeholders */}
-                <AppraisalSectionCards
-                  sections={appraisalProgress}
-                  selectedSectionId={selectedSectionId}
-                  onSelectSection={setSelectedSectionId}
-                  isLoading={isLoading}
-                />
-
-                {/* Show empty state message below cards if no appraisal data */}
-                {!appraisalData && (
-                  <Card className="border-dashed mt-4">
-                    <div className="flex flex-col items-center justify-center py-8">
-                      <Sparkles className="h-8 w-8 text-purple-400 mb-2" />
-                      <p className="text-sm text-muted-foreground text-center px-8">
-                        Click "Generate Appraisal" to fill all sections
-                      </p>
-                    </div>
-                  </Card>
-                )}
-              </>
+              /* Always show section cards (waiting or complete) */
+              <AppraisalSectionCards
+                sections={appraisalProgress}
+                selectedSectionId={selectedSectionId}
+                onSelectSection={setSelectedSectionId}
+                isLoading={isLoading}
+              />
             )}
           </div>
         </div>

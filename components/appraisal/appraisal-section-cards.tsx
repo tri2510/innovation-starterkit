@@ -79,9 +79,14 @@ export function AppraisalSectionCards({
             </div>
             <CardContent className="p-4">
               {section.status === "waiting" ? (
-                <div className="flex items-center gap-2 text-sm text-neutral-400">
-                  <Icon className="h-4 w-4" />
-                  <span>Waiting for data...</span>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-neutral-400">
+                    <Icon className="h-4 w-4" />
+                    <span>Click to generate</span>
+                  </div>
+                  <p className="text-[10px] text-neutral-400">
+                    AI analysis required for this section
+                  </p>
                 </div>
               ) : section.status === "gathering" ? (
                 <div className="flex items-center gap-2 text-sm text-blue-600">

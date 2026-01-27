@@ -9,7 +9,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Briefcase, Award, DollarSign, TrendingUp, BarChart3, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Users, Briefcase, Award, DollarSign, TrendingUp, BarChart3, AlertTriangle, Database, Sparkles } from "lucide-react";
 import type { AppraisalProgressItem } from "@/lib/appraisal-utils";
 import type { BusinessIdea } from "@/types/innovation";
 
@@ -26,6 +26,12 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "target_market":
         return (
           <div className="space-y-4">
+            {/* Data Source Badge */}
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-200 dark:border-purple-800">
+              <Sparkles className="h-3 w-3" />
+              <span>AI-generated analysis based on challenge and market data</span>
+            </div>
+
             <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
               <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                 {appraisalData?.targetMarket || selectedIdea?.targetMarket || "Gathering target market data..."}
@@ -37,6 +43,12 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "business_model":
         return (
           <div className="space-y-4">
+            {/* Data Source Badge */}
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-200 dark:border-purple-800">
+              <Sparkles className="h-3 w-3" />
+              <span>AI-generated analysis based on business idea description</span>
+            </div>
+
             <div>
               <h4 className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase">Business Model</h4>
               <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
@@ -64,6 +76,12 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "competitive_advantage":
         return (
           <div className="space-y-4">
+            {/* Data Source Badge */}
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-200 dark:border-purple-800">
+              <Sparkles className="h-3 w-3" />
+              <span>AI-generated analysis based on market competitors</span>
+            </div>
+
             <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800">
               <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                 {appraisalData?.competitiveAdvantage || selectedIdea?.competitiveAdvantage || "Gathering competitive advantage data..."}
@@ -75,6 +93,12 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "investment_costs":
         return (
           <div className="space-y-4">
+            {/* Data Source Badge */}
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-blue-50 dark:bg-blue-950/20 rounded-md border border-blue-200 dark:border-blue-800">
+              <Sparkles className="h-3 w-3" />
+              <span>AI-generated with transparent calculations & sources</span>
+            </div>
+
             {/* Investment Summary */}
             {appraisalData?.estimatedInvestment && (
               <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800">
@@ -164,6 +188,12 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "revenue_forecasts":
         return (
           <div className="space-y-4">
+            {/* Data Source Badge */}
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-blue-50 dark:bg-blue-950/20 rounded-md border border-blue-200 dark:border-blue-800">
+              <Sparkles className="h-3 w-3" />
+              <span>AI-generated with pricing model, customer counts, and growth assumptions</span>
+            </div>
+
             {appraisalData?.revenueForecasts ? (
               <div className="space-y-3">
                 {["year1", "year2", "year3", "year4", "year5"].map((year) => {
@@ -200,6 +230,12 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "financial_metrics":
         return (
           <div className="space-y-4">
+            {/* Data Source Badge */}
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-blue-50 dark:bg-blue-950/20 rounded-md border border-blue-200 dark:border-blue-800">
+              <Sparkles className="h-3 w-3" />
+              <span>AI-calculated from revenue forecasts and cost structure (verifiable)</span>
+            </div>
+
             {/* Key Metrics Grid */}
             {appraisalData?.financialAnalysis ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -297,6 +333,12 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "risk_assessment":
         return (
           <div className="space-y-4">
+            {/* Data Source Badge */}
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-200 dark:border-purple-800">
+              <Sparkles className="h-3 w-3" />
+              <span>AI-generated assessment based on financial projections and market factors</span>
+            </div>
+
             {/* Risk Level Banner */}
             {appraisalData?.riskAssessment && (
               <div className={`p-4 rounded-lg border-2 ${
@@ -319,6 +361,23 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
                   }>
                     {appraisalData.riskAssessment.riskLevel?.toUpperCase()}
                   </Badge>
+                </div>
+              </div>
+            )}
+
+            {/* Investment Recommendation (moved up for prominence) */}
+            {appraisalData?.riskAssessment?.recommendation && (
+              <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border-2 border-blue-200 dark:border-blue-800">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center flex-shrink-0">
+                    <Award className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-blue-900 dark:text-blue-100 mb-1">Investment Recommendation</h4>
+                    <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                      {appraisalData.riskAssessment.recommendation}
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -359,7 +418,7 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
               <div>
                 <h4 className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2 uppercase flex items-center gap-1.5">
                   <Award className="h-3.5 w-3.5" />
-                  Mitigations
+                  Mitigation Strategies
                 </h4>
                 <div className="space-y-2">
                   {appraisalData.riskAssessment.mitigations.map((mitigation: string, i: number) => (
@@ -369,16 +428,6 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* Recommendation */}
-            {appraisalData?.riskAssessment?.recommendation && (
-              <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800">
-                <h4 className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-2 uppercase">Investment Recommendation</h4>
-                <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed">
-                  {appraisalData.riskAssessment.recommendation}
-                </p>
               </div>
             )}
           </div>

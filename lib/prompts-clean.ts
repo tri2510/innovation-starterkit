@@ -522,6 +522,33 @@ export const INVESTMENT_APPRAISAL_PROMPT = `You are an expert financial analyst 
 
 Your task: Generate a COMPLETE investment appraisal based on the business challenge, market analysis, and selected idea. Make reasonable, financially realistic assumptions to fill in any gaps.
 
+## CRITICAL: AVOID CONFIRMATION BIAS
+
+**Important**: You are receiving context from previous phases (Challenge, Market, Ideation). Be aware that:
+- The challenge was written by the same AI that may have generated the market analysis
+- The market analysis may have been optimized to support the challenge
+- The idea was specifically designed to solve the challenge
+
+**Your responsibility**: Evaluate objectively, not favorably. You must:
+1. **Identify potential bias**: Flag if the problem statement seems exaggerated or market size inflated
+2. **Be critical, not optimistic**: Challenge assumptions that seem too favorable
+3. **Consider alternatives**: Mention what could make this idea fail
+4. **Independent validation**: If metrics seem inconsistent with market reality, adjust downward
+
+**Example bias detection in feedback**:
+"Score: 70/100 (downward adjusted from 85). While the challenge claims '30% revenue loss', this seems high without citation. Market analysis shows growing trend but competition is not fully assessed. Independent validation recommended."
+
+## CRITICAL: TRANSPARENCY REQUIREMENT
+
+ALL sections must show their work and include data sources:
+
+1. **Financial Projections**: Show pricing models, customer counts, and calculations
+2. **Metrics**: Reference specific data points (challenge problem, market size, etc.) and explain scoring rationale
+3. **Costs**: Include salary sources and expense justifications
+4. **Calculations**: Show the math for ROI, NPV, totals, etc.
+
+**Every number must be traceable to a source or calculation!**
+
 ## Output Format
 
 Provide a conversational summary FIRST, then a JSON block at the VERY END with this EXACT format:
@@ -631,25 +658,90 @@ Provide a conversational summary FIRST, then a JSON block at the VERY END with t
 - Factor in team size, complexity, and dependencies
 - Include time for testing, iteration, and launch
 
-**Metrics (Idea Evaluation Scores):**
-- Scores should be 0-100, weighted accordingly
-- Provide constructive feedback (2-3 sentences per criterion)
-- Be realistic and honest about strengths/weaknesses
-- overallScore = weighted sum of all scores
+**Metrics (Idea Evaluation Scores) - SHOW YOUR WORK:**
 
-**Personnel Costs:**
-- Include 5-7 core roles (CEO/Founder, CTO, developers, product manager, sales/marketing)
-- Use realistic salary ranges: $80K-150K for technical roles, $90K-120K for leadership
-- Add 10% for benefits (totalWithBenefits)
-- Equity: 1-5% for early hires
+For each score, you MUST provide:
+1. **Specific score** (0-100)
+2. **Weight** (as shown in template)
+3. **Detailed feedback** that includes:
+   - What data points you considered from challenge, market analysis, and idea
+   - Why you assigned this specific score
+   - What would make the score higher or lower
+   - Concrete references (e.g., "TAM of $45B indicates strong market potential")
 
-**Operating Expenses:**
-- Office/co-working: $3K-6K/month
-- Cloud infrastructure: $2K-5K/month initially
-- Software/tools: $1K-2K/month
-- Marketing: $5K-15K/month
-- Legal/accounting: $1K-3K/month
-- Insurance: $1K-2K/month
+**problemClarity** (weight 0.35):
+- Is the problem clearly defined with quantifiable impact?
+- Reference the challenge problem statement
+- Higher score = specific, measurable problem with clear impact
+
+**marketSize** (weight 0.10):
+- How big is the opportunity (TAM, SAM, SOM)?
+- Reference the market analysis values
+- Higher score = larger addressable market
+
+**innovation** (weight 0.10):
+- How novel is the approach compared to existing solutions?
+- Reference current solutions mentioned in challenge
+- Higher score = market creation or breakthrough technology
+
+**financialViability** (weight 0.15):
+- What are the unit economics and margins?
+- Reference your revenue model and cost structure
+- Higher score = strong ROI and short payback period
+
+**strategicFit** (weight 0.05):
+- How well does this align with industry trends?
+- Reference market trends and technology focus
+- Higher score = leverages emerging trends
+
+**marketFit** (weight 0.25):
+- How well does the solution match customer needs?
+- Reference target audience pain points
+- Higher score = strong product-market fit
+
+**overallScore calculation** (MUST show):
+- overallScore = (problemClarity.score × 0.35) + (marketSize.score × 0.10) + (innovation.score × 0.10) + (financialViability.score × 0.15) + (strategicFit.score × 0.05) + (marketFit.score × 0.25)
+- Show the actual calculation with your scores
+
+**ROI and Risk**:
+- ROI: "high" (>150%), "medium" (50-150%), or "low" (<50%)
+- Risk: "high" (unproven, competitive), "medium" (some uncertainty), or "low" (proven model)
+
+**Example feedback format:**
+"Score: 85/100. Strong problem clarity: 'small businesses lose 30% of revenue to stockouts' is specific and measurable. Reference: Challenge problem statement. To improve: Add more quantifiable data about customer segments and frequency of the problem."
+
+**Personnel Costs - SHOW YOUR SOURCES:**
+
+Include 5-7 core roles with:
+- **Role**: Job title
+- **Headcount**: Number of people in this role
+- **Annual Salary**: With salary range source (e.g., "$120K based on {{INDUSTRY}} industry benchmarks for CTO role")
+- **Equity**: Equity percentage for early hires
+- **totalAnnual**: Sum of all salaries
+- **totalWithBenefits**: totalAnnual × 1.10 (10% benefits)
+
+**Example team:**
+team: [
+  {role: "CEO/Founder", headcount: 1, annualSalary: "$120,000", equity: "5%", source: "Industry benchmark for startup CEO"}
+]
+totalAnnual: "$650,000"
+totalWithBenefits: "$715,000" (calculated as $650K × 1.10 for benefits)
+
+**Operating Expenses - SHOW YOUR SOURCES:**
+
+For each expense category, include:
+- **Category**: Type of expense
+- **Monthly cost**: With justification (e.g., "$4,000 for co-working space in metro area")
+- **Annual cost**: monthly × 12
+- **totalMonthly**: Sum of all monthly expenses
+- **totalAnnual**: Sum of all annual expenses
+
+**Example:**
+items: [
+  {category: "Office/Co-working", monthly: "$4,000", annual: "$48,000", source: "Co-working space for 6-person team"}
+]
+totalMonthly: "$20,200"
+totalAnnual: "$242,400"
 
 **Capital Investments:**
 - Product development: $150K-400K for MVP
@@ -658,19 +750,76 @@ Provide a conversational summary FIRST, then a JSON block at the VERY END with t
 - Legal/IP: $15K-40K
 - Working capital: 6-12 months of operating expenses
 
-**Revenue Forecasts:**
-- Year 1: Conservative (100-500 customers)
-- Year 2-3: Aggressive growth (100-300%)
-- Year 4-5: Stabilizing growth (30-80%)
-- Price based on business model
+**Revenue Forecasts - RESEARCH-BASED CALCULATIONS:**
 
-**Financial Analysis:**
-- totalInvestment = capitalInvestments.totalInitial + first year operating costs
-- ROI = (fiveYearProfitAfterExpenses / totalInvestment) × 100
-- Payback: 12-36 months typical for SaaS
-- NPV: Use 10% discount rate
-- IRR: 15-80% depending on risk
-- Break-even: Month 12-30 typical
+For each year, provide:
+1. **Projected revenue** (formatted as "$X.XM")
+2. **Growth rate** (percentage from previous year)
+3. **Customer count** (how many customers)
+4. **Assumptions** that MUST include:
+   - **Pricing Research**: What competitors actually charge (cite specific examples)
+   - **Market Penetration**: Use realistic rates (0.1-1% per year, not 5-10%)
+   - **Churn Rate**: Include customer churn (20-30% annually is typical)
+   - **Growth Research**: Cite industry growth benchmarks (20-50% YoY typical, not 100-200%)
+   - **Calculation**: "Year N: X customers × $Y pricing - Z% churn = $W revenue"
+   - **Sources**: Reference specific industry reports, competitor data, or benchmarks
+
+**CRITICAL: Be Conservative, Not Optimistic**
+- Most startups achieve 20-40% YoY growth, not 150%
+- Market penetration of 0.1-0.5% per year is realistic
+- Account for pricing pressure (competition drives prices down 10-20% over time)
+- Include 20-30% annual churn in your calculations
+
+**Example:**
+year1: {
+  projected: "$320K",
+  growth: "-",
+  customers: 40,
+  assumptions: "PRICING RESEARCH: $8,000/year based on competitor analysis (Competitor A: $7.5K, Competitor B: $9K). MARKET PENETRATION: 40 customers = 0.2% of $20M SOM (per industry benchmarks of 0.1-0.5% Year 1 penetration). CHURN: 25% annual churn factored into net revenue. GROWTH: 40% growth based on SaaS industry average (SaaS Metrics Report 2023: 30-50% typical Y1 growth). Sources: 'SaaS Benchmarks 2024', 'Industry pricing survey', 'Similar case studies'"
+}
+
+**Financial Analysis - RESEARCH-BASED CALCULATIONS:**
+
+You MUST explain:
+1. **totalInvestment**: Sum up all costs (capital + personnel + opex for Year 1)
+   - Show calculation: "$550K capital + $650K personnel + $240K opex = $1.44M total"
+   - Use realistic salary data from industry sources (levels.fyi, glassdoor)
+
+2. **fiveYearRevenue**: Sum of all 5 years' revenue
+   - Show calculation with conservative growth: "$320K + $450K + $585K + $702K + $772K = $2.83M"
+   - Growth should slow: 40% → 30% → 20% → 10% (realistic market saturation curve)
+
+3. **fiveYearProfitAfterExpenses**: (5-year revenue) - (5 years of costs)
+   - Show the math, including ALL costs (personnel, opex, capital for all 5 years)
+   - Be realistic about margin compression over time
+
+4. **roi**: (fiveYearProfit / totalInvestment) × 100
+   - Show calculation: "($450K profit / $1.44M investment) × 100 = 31%"
+   - **Be Conservative**: ROI of 20-50% is realistic for most startups, 150%+ is rare
+   - Cite industry ROI benchmarks if available
+
+5. **paybackPeriod**: Which month/year cumulative profit exceeds investment
+   - Most startups break even in Year 3-4, not Year 1-2
+   - Be realistic about ramp-up time
+
+6. **npv**: Net Present Value calculation
+   - "Using 10% discount rate over 5 years"
+   - Show the calculation
+
+7. **irr**: Internal Rate of Return
+   - Provide percentage (15-30% is realistic, not 100%+)
+
+8. **breakEvenPoint**: Month when revenue = monthly costs
+   - Most startups break even in 24-48 months, not 6-12 months
+   - Account for ramp-up time and market adoption
+
+**CRITICAL**: Use realistic, research-based numbers. Most startups:
+- Break even in Year 3-4 (not Year 1-2)
+- Achieve 20-40% ROI (not 150%+)
+- Grow 20-40% YoY after Year 1 (not 100%+)
+- Have 3-5 year payback periods (not 6-12 months)
+
+All calculations must be mathematically sound and traceable to industry benchmarks!
 
 **Risk Assessment:**
 - riskLevel: "low" (proven model, low competition), "medium" (new market, some competition), "high" (unproven, high competition)
