@@ -95,9 +95,20 @@ function hasLegacyMetrics(idea: BusinessIdea): boolean {
 function migrateIdeas(ideas: BusinessIdea[]): BusinessIdea[] {
   return ideas.map((idea) => {
     if (hasLegacyMetrics(idea)) {
+      const detailedMetrics = migrateLegacyMetrics(idea.metrics as IdeaMetrics);
+      // Extract simple scores from detailed metrics for the metrics field
+      const simpleMetrics: IdeaMetrics = {
+        marketFit: detailedMetrics.marketFit.score,
+        feasibility: (idea.metrics as IdeaMetrics).feasibility || 0,
+        innovation: detailedMetrics.innovation.score,
+        uniqueness: (idea.metrics as IdeaMetrics).uniqueness || 0,
+        roi: detailedMetrics.roi,
+        risk: detailedMetrics.risk,
+      };
       return {
         ...idea,
-        metrics: migrateLegacyMetrics(idea.metrics as IdeaMetrics),
+        metrics: simpleMetrics,
+        detailedMetrics: detailedMetrics,
       };
     }
     return idea;

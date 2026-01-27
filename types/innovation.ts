@@ -67,8 +67,8 @@ export interface Competitor {
 }
 
 // Business Idea
-// Fields generated in ideate phase: id, name, tagline, description, problemSolved, searchFields
-// Fields generated in appraisal phase: targetMarket, businessModel, revenueStreams, competitiveAdvantage, estimatedInvestment, timeframe, metrics
+// Fields generated in ideate phase: id, name, tagline, description, problemSolved, searchFields, metrics
+// Fields generated in appraisal phase: targetMarket, businessModel, revenueStreams, competitiveAdvantage, estimatedInvestment, timeframe, financialPreview
 export interface BusinessIdea {
   id: string;
   name: string  ;
@@ -76,6 +76,7 @@ export interface BusinessIdea {
   description: string;
   problemSolved: string;
   searchFields?: SearchFieldAssignment; // AI-assigned search fields (generated in ideate phase)
+  metrics?: IdeaMetrics; // Quick metrics (uniqueness, feasibility, etc.) - generated in ideate phase
   // Fields generated in appraisal phase (optional until appraisal is complete)
   targetMarket?: string;
   businessModel?: string;
@@ -83,13 +84,15 @@ export interface BusinessIdea {
   competitiveAdvantage?: string;
   estimatedInvestment?: string;
   timeframe?: string;
-  metrics?: IdeaMetrics | DetailedIdeaMetrics;
+  financialPreview?: QuickFinancialPreview; // Cached financial projections - generated in appraisal phase
+  detailedMetrics?: DetailedIdeaMetrics; // Detailed metrics with ScoreCriterion - used in detailed view only
 }
 
 export interface IdeaMetrics {
   marketFit: number; // 0-100
   feasibility: number; // 0-100
   innovation: number; // 0-100
+  uniqueness: number; // 0-100 - How unique/different this idea is from others
   roi: "high" | "medium" | "low";
   risk: "high" | "medium" | "low";
 }
@@ -116,6 +119,10 @@ export interface DetailedIdeaMetrics {
   // Legacy compatibility (computed from new criteria)
   roi: "high" | "medium" | "low";
   risk: "high" | "medium" | "low";
+
+  // Additional metrics from ideation phase
+  feasibility?: number; // 0-100
+  uniqueness?: number; // 0-100
 }
 
 // Chat Messages for Ideation
@@ -235,4 +242,56 @@ export interface RefineRequest {
   fieldPath: string;
   newValue: string;
   context?: string;
+}
+
+// Quick Financial Preview - Simplified projections shown in ideation phase
+export interface QuickFinancialPreview {
+  fiveYearCumulativeROI: number; // Percentage (e.g., 151)
+  breakEvenYear: number; // Year when EBIT turns positive (1-5)
+  totalInvestment: string; // Formatted string (e.g., "$2.5M")
+  year5Revenue: string; // Formatted string (e.g., "$10M")
+  gate1Status: "met" | "not-met"; // Break-even ≤ 3 years
+  gate2Status: "met" | "not-met"; // ROI ≥ 150%
+  assumptions?: string; // Brief explanation of projections
+
+  // Radar chart scores (0-100)
+  radarScores: RadarScores;
+
+  // Comparison with innovation database
+  databaseComparison: DatabaseComparison;
+}
+
+// Radar chart scores for innovation comparison
+export interface RadarScores {
+  marketFit: number; // Market fit and potential
+  innovation: number; // Innovation level and uniqueness
+  financialViability: number; // Financial strength and ROI potential
+  strategicFit: number; // Alignment with strategic focus
+  riskLevel: number; // Risk-adjusted viability (higher = better)
+  marketSize: number; // Market size and growth potential
+}
+
+// Comparison data from innovation database
+export interface DatabaseComparison {
+  marketFit: ComparisonMetric;
+  innovation: ComparisonMetric;
+  financialViability: ComparisonMetric;
+  strategicFit: ComparisonMetric;
+  riskLevel: ComparisonMetric;
+  marketSize: ComparisonMetric;
+}
+
+export interface ComparisonMetric {
+  yourScore: number; // 0-100
+  databaseAverage: number; // 0-100
+  percentile: string; // e.g., "Top 15%"
+  rating: "above-average" | "average" | "below-average";
+}
+
+// Innovation database benchmark data by industry
+export interface IndustryBenchmark {
+  industry: Industry;
+  averageScores: RadarScores;
+  sampleSize: number;
+  lastUpdated: string;
 }

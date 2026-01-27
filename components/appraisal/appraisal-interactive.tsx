@@ -29,6 +29,7 @@ import {
 import { AppraisalSectionCards } from "./appraisal-section-cards";
 import { AppraisalDetailView } from "./appraisal-detail-view";
 import { extractMarketValue } from "@/lib/market-utils";
+import { FinancialPreviewSection } from "./financial-preview-section";
 
 interface InteractiveAppraisalProps {
   challenge: { problem: string; targetAudience: string; currentSolutions: string };
@@ -67,6 +68,7 @@ export function InteractiveAppraisal({
   const [selectedSectionId, setSelectedSectionId] = useState<string | undefined>(undefined);
   const [isMarketExpanded, setIsMarketExpanded] = useState(false);
   const [isIdeaExpanded, setIsIdeaExpanded] = useState(true); // Default expanded for reference
+  const [financialPreview, setFinancialPreview] = useState<any>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -497,6 +499,25 @@ Click "Generate Appraisal" to start the analysis.`,
                   </div>
                 )}
               </Card>
+            )}
+
+            {/* Financial Preview Section */}
+            {selectedIdea && (
+              <FinancialPreviewSection
+                ideaId={selectedIdea.id}
+                ideaName={selectedIdea.name}
+                ideaDescription={selectedIdea.description}
+                marketAnalysis={marketAnalysis}
+                challenge={challenge}
+                existingPreview={selectedIdea.financialPreview || financialPreview}
+                onPreviewUpdate={(preview) => {
+                  setFinancialPreview(preview);
+                  // Update the selected idea with the financial preview
+                  if (selectedIdea) {
+                    selectedIdea.financialPreview = preview;
+                  }
+                }}
+              />
             )}
 
             {/* Section Cards or Detail View */}

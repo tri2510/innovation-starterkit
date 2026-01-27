@@ -10,7 +10,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2, Sparkles, Lightbulb, BarChart3, ChevronDown, ChevronUp, TrendingUp, Users, Target, Zap, CheckCircle2, Circle } from "lucide-react";
+import { Send, Loader2, Sparkles, Lightbulb, BarChart3, ChevronDown, ChevronUp, TrendingUp, Users, Target, Zap, CheckCircle2, Circle, Check } from "lucide-react";
 import { streamChatResponse } from "@/hooks/use-chat-streaming";
 import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { ChatMessageWithRetry } from "@/components/chat/chat-message";
@@ -26,6 +26,7 @@ import {
   getIdeateProgressTip,
   type IdeateProgressItem
 } from "@/lib/ideate-utils";
+import { IdeaDetailPanel } from "./idea-detail-panel";
 
 interface InteractiveIdeationProps {
   challenge: Challenge;
@@ -63,6 +64,8 @@ export function InteractiveIdeation({
   const [lastUserMessage, setLastUserMessage] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isMarketExpanded, setIsMarketExpanded] = useState(false);
+  const [showDetailPanel, setShowDetailPanel] = useState(false);
+  const [selectedIdeaForDetail, setSelectedIdeaForDetail] = useState<BusinessIdea | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -149,11 +152,32 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
   };
 
   const handleSelectIdea = (ideaId: string) => {
-    // If clicking the same idea that's already selected, just update selection without adding message
-    if (selectedIdeaId === ideaId) {
-      return;
+    // Show detail panel when clicking an idea
+    const selectedIdea = ideas.find((i) => i.id === ideaId);
+    if (selectedIdea) {
+      setSelectedIdeaForDetail(selectedIdea);
+      setShowDetailPanel(true);
     }
+  };
 
+  const handleCloseDetailPanel = () => {
+    setShowDetailPanel(false);
+    setSelectedIdeaForDetail(null);
+  };
+
+  // Update the panel when ideas array changes (e.g., after AI modification)
+  useEffect(() => {
+    if (showDetailPanel && selectedIdeaForDetail) {
+      // Find the updated version of the currently viewed idea
+      const updatedIdea = ideas.find((i) => i.id === selectedIdeaForDetail.id);
+      if (updatedIdea) {
+        setSelectedIdeaForDetail(updatedIdea);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ideas, showDetailPanel, selectedIdeaForDetail]);
+
+  const handleConfirmIdeaSelection = (ideaId: string) => {
     setSelectedIdeaId(ideaId);
     saveConversationHistory("ideation", messages);
 
@@ -162,11 +186,19 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
       const msg: ChatMessage = {
         id: Date.now().toString(),
         role: "assistant",
-        content: `Selected "${selectedIdea.name}". Ready for investment appraisal? Click "Investment Appraisal" to continue, or ask me anything about this idea.`,
+        content: `Selected "${selectedIdea.name}". This idea has ${selectedIdea.metrics?.uniqueness ? Math.round(selectedIdea.metrics.uniqueness) : 'N/A'}% uniqueness and ${selectedIdea.metrics?.feasibility ? Math.round(selectedIdea.metrics.feasibility) : 'N/A'}% feasibility.
+
+You can:
+- Continue exploring other ideas
+- Click "Investment Appraisal" to see detailed financial projections
+- Ask me to compare ideas or explain specific metrics`,
         timestamp: Date.now(),
       };
       setMessages((prev) => [...prev, msg]);
     }
+
+    // Close detail panel but keep selection
+    setShowDetailPanel(false);
   };
 
   const generateInitialIdeas = async () => {
@@ -303,6 +335,7 @@ Browse through the ideas on the right, hover to preview, and click to select you
           marketAnalysis: marketAnalysis,
           ideas: ideas,
           selectedIdea: selectedIdeaId ? ideas.find((i) => i.id === selectedIdeaId) : null,
+          viewingIdea: selectedIdeaForDetail || null,
         },
         {
           filterDisplayContent: (content) => {
@@ -566,21 +599,37 @@ Browse through the ideas on the right, hover to preview, and click to select you
                     <Card
                       key={idea.id}
                       className={cn(
-                        "cursor-pointer transition-all overflow-hidden border-2",
+                        "cursor-pointer transition-all overflow-hidden border-2 relative group",
                         isSelected ? "ring-2 ring-purple-500 ring-offset-2 border-purple-300" : "border-neutral-200 hover:border-purple-300 hover:shadow-md"
                       )}
                       onClick={() => handleSelectIdea(idea.id)}
                     >
+                      {/* Select Button - positioned absolute top-right */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleConfirmIdeaSelection(idea.id);
+                        }}
+                        className={cn(
+                          "absolute top-3 right-3 z-10 transition-all",
+                          "hover:scale-110"
+                        )}
+                        title={isSelected ? "Selected" : "Select this idea"}
+                      >
+                        {isSelected ? (
+                          <div className="h-6 w-6 rounded-full bg-purple-600 flex items-center justify-center shadow-lg">
+                            <Check className="h-3.5 w-3.5 text-white" />
+                          </div>
+                        ) : (
+                          <div className="h-6 w-6 rounded-full border-2 border-neutral-300 bg-white hover:border-purple-500 transition-colors shadow-sm" />
+                        )}
+                      </button>
+
                       <div className={cn(
-                        "px-4 py-3 border-b",
+                        "px-4 py-3 border-b pr-12",
                         isSelected ? "bg-purple-50 dark:bg-purple-950/30" : "bg-neutral-50 dark:bg-neutral-900/30"
                       )}>
                         <div className="flex items-start gap-2">
-                          {isSelected ? (
-                            <CheckCircle2 className="h-4 w-4 text-purple-600 flex-shrink-0 mt-0.5" />
-                          ) : (
-                            <Circle className="h-4 w-4 text-neutral-300 flex-shrink-0 mt-0.5" />
-                          )}
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">{idea.name}</h3>
                             <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">{idea.tagline}</p>
@@ -615,6 +664,69 @@ Browse through the ideas on the right, hover to preview, and click to select you
                             </div>
                           </div>
                         )}
+                        {/* Uniqueness & Feasibility Metrics */}
+                        {idea.metrics && (
+                          <div className="pt-3 border-t border-neutral-200 dark:border-neutral-700">
+                            <div className="grid grid-cols-2 gap-3">
+                              {/* Uniqueness */}
+                              <div>
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 flex items-center gap-1">
+                                    <Sparkles className="h-3 w-3" />
+                                    Uniqueness
+                                  </span>
+                                  <span className={cn(
+                                    "text-xs font-bold",
+                                    idea.metrics.uniqueness && idea.metrics.uniqueness >= 80 ? "text-green-600 dark:text-green-400" :
+                                    idea.metrics.uniqueness && idea.metrics.uniqueness >= 60 ? "text-yellow-600 dark:text-yellow-400" :
+                                    idea.metrics.uniqueness ? "text-red-600 dark:text-red-400" : "text-neutral-400"
+                                  )}>
+                                    {idea.metrics.uniqueness ? Math.round(idea.metrics.uniqueness) : 'N/A'}
+                                  </span>
+                                </div>
+                                <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                                  <div
+                                    className={cn(
+                                      "h-full rounded-full transition-all",
+                                      idea.metrics.uniqueness && idea.metrics.uniqueness >= 80 ? "bg-green-500" :
+                                      idea.metrics.uniqueness && idea.metrics.uniqueness >= 60 ? "bg-yellow-500" :
+                                      idea.metrics.uniqueness ? "bg-red-500" : "bg-neutral-400"
+                                    )}
+                                    style={{ width: `${idea.metrics.uniqueness ? Math.round(idea.metrics.uniqueness) : 0}%` }}
+                                  />
+                                </div>
+                              </div>
+                              {/* Feasibility */}
+                              <div>
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 flex items-center gap-1">
+                                    <Zap className="h-3 w-3" />
+                                    Feasibility
+                                  </span>
+                                  <span className={cn(
+                                    "text-xs font-bold",
+                                    idea.metrics.feasibility && idea.metrics.feasibility >= 80 ? "text-green-600 dark:text-green-400" :
+                                    idea.metrics.feasibility && idea.metrics.feasibility >= 60 ? "text-yellow-600 dark:text-yellow-400" :
+                                    idea.metrics.feasibility ? "text-red-600 dark:text-red-400" : "text-neutral-400"
+                                  )}>
+                                    {idea.metrics.feasibility ? Math.round(idea.metrics.feasibility) : 'N/A'}
+                                  </span>
+                                </div>
+                                <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                                  <div
+                                    className={cn(
+                                      "h-full rounded-full transition-all",
+                                      idea.metrics.feasibility && idea.metrics.feasibility >= 80 ? "bg-green-500" :
+                                      idea.metrics.feasibility && idea.metrics.feasibility >= 60 ? "bg-yellow-500" :
+                                      idea.metrics.feasibility ? "bg-red-500" : "bg-neutral-400"
+                                    )}
+                                    style={{ width: `${idea.metrics.feasibility ? Math.round(idea.metrics.feasibility) : 0}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   );
@@ -637,6 +749,17 @@ Browse through the ideas on the right, hover to preview, and click to select you
           </div>
         )}
       </div>
+
+      {/* Idea Detail Panel */}
+      {showDetailPanel && selectedIdeaForDetail && (
+        <IdeaDetailPanel
+          idea={selectedIdeaForDetail}
+          marketAnalysis={marketAnalysis}
+          allIdeas={ideas}
+          onClose={handleCloseDetailPanel}
+          onSelect={handleConfirmIdeaSelection}
+        />
+      )}
     </div>
   );
 }

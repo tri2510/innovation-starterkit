@@ -27,13 +27,13 @@ Your role varies by the current sub-step:
 
 ## Scoring System Context
 
-Ideas are evaluated across 6 weighted criteria:
-1. **Problem Clarity & Value (35%)** - How well-defined is the problem? What's its impact?
-2. **Market Size (10%)** - Based on TAM/SAM/SOM analysis
-3. **Innovation Level (10%)** - Market creation vs. incremental improvement
-4. **Financial Viability (15%)** - Business model strength, ROI potential, investment required
-5. **Strategic Search Field Fit (5%)** - Alignment with strategic focus areas
-6. **Market Fit (25%)** - How well solution matches market needs
+Ideas are evaluated across key metrics:
+- **Market Fit (0-100)**: How well the solution matches market needs
+- **Feasibility (0-100)**: How feasible with current technology and resources
+- **Innovation (0-100)**: Level of innovation and novelty
+- **Uniqueness (0-100)**: How different from existing solutions
+- **ROI**: high, medium, or low
+- **Risk**: high, medium, or low
 
 ## Search Fields
 
@@ -55,27 +55,18 @@ IMPORTANT - Response Format:
         "tagline": "...",
         "description": "...",
         "problemSolved": "...",
-        "targetMarket": "...",
-        "businessModel": "...",
-        "revenueStreams": ["stream1", "stream2"],
-        "competitiveAdvantage": "...",
-        "estimatedInvestment": "...",
-        "timeframe": "...",
-        "metrics": {
-          "problemClarity": {"score": 85, "weight": 0.35, "feedback": "explanation"},
-          "marketSize": {"score": 80, "weight": 0.10, "feedback": "explanation"},
-          "innovation": {"score": 75, "weight": 0.10, "feedback": "explanation"},
-          "financialViability": {"score": 82, "weight": 0.15, "feedback": "explanation"},
-          "strategicFit": {"score": 70, "weight": 0.05, "feedback": "explanation"},
-          "marketFit": {"score": 88, "weight": 0.25, "feedback": "explanation"},
-          "overallScore": 82,
-          "roi": "high|medium|low",
-          "risk": "high|medium|low"
-        },
         "searchFields": {
           "industries": ["manufacturing"],
           "technologies": ["ai-edge", "cloud"],
-          "reasoning": "Explanation of why these fields apply"
+          "reasoning": "Explanation"
+        },
+        "metrics": {
+          "marketFit": 85,
+          "feasibility": 75,
+          "innovation": 80,
+          "uniqueness": 70,
+          "roi": "high|medium|low",
+          "risk": "high|medium|low"
         }
       }
     ]
@@ -83,13 +74,20 @@ IMPORTANT - Response Format:
 }
 \`\`\`
 
+CRITICAL: When updating ideas, you MUST include ALL required fields:
+- id, name, tagline, description, problemSolved (required)
+- searchFields with industries, technologies, reasoning (required)
+- metrics with marketFit, feasibility, innovation, uniqueness, roi, risk (required)
+- ALL metrics fields must be included (marketFit, feasibility, innovation, uniqueness, roi, risk)
+
 CRITICAL RULES:
 - ONLY include the JSON block when user explicitly asks to UPDATE, MODIFY, or CHANGE an idea
-- Always return the COMPLETE updated ideas array (not just the changed idea)
+- When updating ONE idea: return ALL ideas in the session (the updated one + all other unchanged ideas)
+- Other ideas' scores MUST remain unchanged - only modify the specific idea requested
 - The JSON block must be the LAST thing in your response - after all conversational text
 - Do NOT include the JSON block for general questions or explanations
-- When updating metrics, ensure overallScore is calculated correctly as a weighted average
-- Provide constructive feedback (2-3 sentences) for each criterion score
+- When updating ideas to improve metrics (feasibility, uniqueness, etc.), provide specific improvements in the idea's content that justify the better score
+- ALL ideas in the array must include complete metrics (marketFit, feasibility, innovation, uniqueness, roi, risk)
 - Adjust your response style based on the current sub-step
 
 Be:
@@ -102,7 +100,7 @@ Be:
 Keep responses concise but informative.`;
 
 export async function POST(request: NextRequest) {
-  const { userInput, conversationHistory, ideas, challenge, marketAnalysis, selectedIdea, subStep = "generate" } = await request.json();
+  const { userInput, conversationHistory, ideas, challenge, marketAnalysis, selectedIdea, viewingIdea, subStep = "generate" } = await request.json();
 
   // Get session for context
   const session = getSession();
@@ -148,6 +146,15 @@ Selected Idea: ${currentSelectedIdea.name}
 ${currentSelectedIdea.metrics ? `- Metrics: Market Fit ${currentSelectedIdea.metrics.marketFit}%, Feasibility ${currentSelectedIdea.metrics.feasibility}%, Innovation ${currentSelectedIdea.metrics.innovation}%, ROI ${currentSelectedIdea.metrics.roi}` : "- Metrics: To be generated in appraisal phase"}
 ` : "";
 
+  const viewingIdeaSection = viewingIdea ? `
+Currently Viewing in Detail Panel: ${viewingIdea.name}
+- Tagline: ${viewingIdea.tagline}
+- Description: ${viewingIdea.description || "N/A"}
+- Problem Solved: ${viewingIdea.problemSolved || "N/A"}
+- Strategic Focus: ${viewingIdea.searchFields?.technologies?.join(", ") || "N/A"}
+${viewingIdea.metrics ? `- Metrics: Uniqueness ${viewingIdea.metrics.uniqueness}%, Feasibility ${viewingIdea.metrics.feasibility}%, Innovation ${viewingIdea.metrics.innovation}%, ROI ${viewingIdea.metrics.roi}` : "- Metrics: To be generated"}
+` : "";
+
   const ideasSummary = currentIdeas ? JSON.stringify(currentIdeas.map((i: BusinessIdea) => ({
     id: i.id,
     name: i.name,
@@ -169,7 +176,7 @@ ${currentSelectedIdea.metrics ? `- Metrics: Market Fit ${currentSelectedIdea.met
       break;
   }
 
-  const context = `${challengeSection}${marketSection}${selectedIdeaSection}
+  const context = `${challengeSection}${marketSection}${selectedIdeaSection}${viewingIdeaSection}
 
 Current Ideas: ${ideasSummary}
 

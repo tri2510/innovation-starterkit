@@ -349,22 +349,73 @@ Your task: Generate 3-5 innovative business ideas based on the challenge and mar
       "industries": ["manufacturing", "healthcare"],
       "technologies": ["ai-edge", "cloud"],
       "reasoning": "Natural explanation of why these fields apply"
+    },
+    "metrics": {
+      "marketFit": <number 0-100>,
+      "feasibility": <number 0-100>,
+      "innovation": <number 0-100>,
+      "uniqueness": <number 0-100>,
+      "roi": "high" | "medium" | "low",
+      "risk": "high" | "medium" | "low"
     }
   }
 ]
 \`\`\`
+
+## Metric Scoring Guidelines
+
+**marketFit (0-100):**
+- How well does the solution address the market need?
+- Consider problem clarity, market size, and target audience alignment
+- Score >80: Strong market fit
+- Score 60-79: Moderate market fit
+- Score <60: Weak market fit
+
+**feasibility (0-100):**
+- How feasible is this to implement with current technology?
+- Consider technical complexity, resource requirements, and timeline
+- Score >80: Highly feasible with proven technology
+- Score 60-79: Moderately feasible, some challenges
+- Score <60: Low feasibility, high technical risk
+
+**innovation (0-100):**
+- How innovative is this approach?
+- Market creation = higher score (85-100)
+- Market improvement = medium score (60-84)
+- Incremental change = lower score (40-59)
+
+**uniqueness (0-100):**
+- How unique/different is this idea from typical solutions?
+- Consider novel approaches, technology combinations, business model innovation
+- Score >80: Highly unique, novel approach
+- Score 60-79: Somewhat unique, some differentiation
+- Score <60: Common approach, low differentiation
+
+**roi (high/medium/low):**
+- Based on market potential and scalability
+- High: $10B+ market, scalable solution
+- Medium: $1-10B market, moderate scalability
+- Low: <$1B market, limited scalability
+
+**risk (high/medium/low):**
+- Based on technical feasibility, market competition, execution complexity
+- High: Proven tech, clear market, low complexity
+- Medium: Some risk factors
+- Low: High risk, uncertain outcomes
 
 ## Quality Standards
 - Focus on innovative, practical solutions
 - Ideas should directly address the stated problem
 - Each idea should have a clear value proposition
 - Search fields should align with idea characteristics
-- Remove scoring/metrics - these will be added in appraisal phase
+- Ensure diversity in ideas (varying marketFit, innovation, uniqueness scores)
+- At least 1 idea should have uniqueness >80
+- At least 1 idea should have feasibility >80
 
 ## Important
-- Do NOT include metrics, scores, ROI, risk, or any evaluation fields
+- DO include metrics (marketFit, feasibility, innovation, uniqueness, roi, risk) with each idea
 - Do NOT include businessModel, estimatedInvestment, timeframe - these will be generated in appraisal
-- Only include: id, name, tagline, description, problemSolved, searchFields`;
+- Include: id, name, tagline, description, problemSolved, searchFields, metrics`;
 
 export const PITCH_DECK_PROMPT = `You are an expert pitch deck creator crafting compelling investor presentations.
 
