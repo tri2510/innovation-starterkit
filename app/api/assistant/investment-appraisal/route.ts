@@ -326,13 +326,19 @@ Financial Model:
 
             if (parsed.FINAL_SUMMARY) {
               safeEnqueue(`data: ${JSON.stringify({ done: true, type: "appraisal_update", data: parsed.FINAL_SUMMARY })}\n\n`);
-              controller.close();
+              if (!controllerClosed) {
+                controller.close();
+                controllerClosed = true;
+              }
               return;
             }
 
             if (parsed.APPRAISAL_UPDATE) {
               safeEnqueue(`data: ${JSON.stringify({ done: true, type: "appraisal_update", data: parsed.APPRAISAL_UPDATE })}\n\n`);
-              controller.close();
+              if (!controllerClosed) {
+                controller.close();
+                controllerClosed = true;
+              }
               return;
             }
           } catch (e) {

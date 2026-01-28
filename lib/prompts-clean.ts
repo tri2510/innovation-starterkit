@@ -688,11 +688,56 @@ Provide a conversational summary FIRST, then a JSON block at the VERY END with t
       "totalInitial": "$XXX,XXX"
     },
     "revenueForecasts": {
-      "year1": {"projected": "$XXX,XXX", "growth": "-", "assumptions": "Assumptions"},
-      "year2": {"projected": "$XXX,XXX", "growth": "XX%", "assumptions": "Assumptions"},
-      "year3": {"projected": "$XXX,XXX", "growth": "XX%", "assumptions": "Assumptions"},
-      "year4": {"projected": "$XXX,XXX", "growth": "XX%", "assumptions": "Assumptions"},
-      "year5": {"projected": "$XXX,XXX", "growth": "XX%", "assumptions": "Assumptions"}
+      "year1": {
+        "projected": "$XXX,XXX",
+        "growth": "-",
+        "assumptions": "Assumptions",
+        "capex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX"},
+        "opex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX", "percentOfRevenue": "XX%"},
+        "ebitda": "$X,XXX",
+        "depreciation": "$X,XXX",
+        "ebit": "$X,XXX"
+      },
+      "year2": {
+        "projected": "$XXX,XXX",
+        "growth": "XX%",
+        "assumptions": "Assumptions",
+        "capex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX"},
+        "opex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX", "percentOfRevenue": "XX%"},
+        "ebitda": "$X,XXX",
+        "depreciation": "$X,XXX",
+        "ebit": "$X,XXX"
+      },
+      "year3": {
+        "projected": "$XXX,XXX",
+        "growth": "XX%",
+        "assumptions": "Assumptions",
+        "capex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX"},
+        "opex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX", "percentOfRevenue": "XX%"},
+        "ebitda": "$X,XXX",
+        "depreciation": "$X,XXX",
+        "ebit": "$X,XXX"
+      },
+      "year4": {
+        "projected": "$XXX,XXX",
+        "growth": "XX%",
+        "assumptions": "Assumptions",
+        "capex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX"},
+        "opex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX", "percentOfRevenue": "XX%"},
+        "ebitda": "$X,XXX",
+        "depreciation": "$X,XXX",
+        "ebit": "$X,XXX"
+      },
+      "year5": {
+        "projected": "$XXX,XXX",
+        "growth": "XX%",
+        "assumptions": "Assumptions",
+        "capex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX"},
+        "opex": {"total": "$X,XXX", "investorFunded": "$X,XXX", "selfFunded": "$X,XXX", "percentOfRevenue": "XX%"},
+        "ebitda": "$X,XXX",
+        "depreciation": "$X,XXX",
+        "ebit": "$X,XXX"
+      }
     },
     "financialAnalysis": {
       "totalInvestment": "$XXX,XXX",
