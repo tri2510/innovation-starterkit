@@ -67,7 +67,7 @@ export interface Competitor {
 }
 
 // Business Idea
-// Fields generated in ideate phase: id, name, tagline, description, problemSolved, searchFields, metrics
+// Fields generated in ideate phase: id, name, tagline, description, problemSolved, searchFields, brief, metrics, evaluation
 // Fields generated in appraisal phase: targetMarket, businessModel, revenueStreams, competitiveAdvantage, estimatedInvestment, timeframe, financialPreview
 export interface BusinessIdea {
   id: string;
@@ -76,7 +76,9 @@ export interface BusinessIdea {
   description: string;
   problemSolved: string;
   searchFields?: SearchFieldAssignment; // AI-assigned search fields (generated in ideate phase)
-  metrics?: IdeaMetrics; // Quick metrics (uniqueness, feasibility, etc.) - generated in ideate phase
+  brief?: string; // Detailed reasoning brief explaining the idea's concept, differentiation, implementation, and positioning
+  metrics?: IdeaMetrics; // Quick metrics (uniqueness, feasibility, etc.) - generated in ideate phase via separate evaluation call
+  evaluation?: IdeaEvaluation; // Critical evaluation with strengths, weaknesses, assumptions, questions - generated in ideate phase via separate evaluation call
   // Fields generated in appraisal phase (optional until appraisal is complete)
   targetMarket?: string;
   businessModel?: string;
@@ -95,6 +97,14 @@ export interface IdeaMetrics {
   uniqueness: number; // 0-100 - How unique/different this idea is from others
   roi: "high" | "medium" | "low";
   risk: "high" | "medium" | "low";
+}
+
+// Critical evaluation from the skeptical investor evaluator
+export interface IdeaEvaluation {
+  strengths: string[]; // What's genuinely good about this idea
+  weaknesses: string[]; // What could cause failure
+  assumptions: string[]; // What are they assuming without proof
+  criticalQuestions: string[]; // What would a skeptical investor ask
 }
 
 // New 6-criteria scoring system with weighted evaluation

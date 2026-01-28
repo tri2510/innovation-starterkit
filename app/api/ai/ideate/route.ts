@@ -1,11 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendClaudeMessage } from "@/lib/claude";
-import { IDEATION_PROMPT, buildIdeationContext } from "@/lib/prompts-clean";
+import {
+  IDEATION_PROMPT,
+  IDEATION_EVALUATION_PROMPT,
+  buildIdeationContext,
+} from "@/lib/prompts-clean";
 import type { Challenge, MarketAnalysis, BusinessIdea } from "@/types/innovation";
+
+// Type for the generation phase output (without metrics/evaluation)
+type GeneratedIdea = Omit<BusinessIdea, "metrics" | "evaluation"> & {
+  brief: string; // brief is required from generation
+};
+
+// Type for the evaluation phase input
+type EvaluatedIdea = {
+  id: string;
+  metrics: BusinessIdea["metrics"];
+  evaluation: BusinessIdea["evaluation"];
+};
 
 export async function POST(request: NextRequest) {
   try {
-    const { challenge, marketAnalysis, userInput, conversationHistory } = await request.json();
+    const { challenge, marketAnalysis, userInput, conversationHistory } =
+      await request.json();
 
     if (!challenge) {
       return NextResponse.json(
@@ -20,32 +37,162 @@ export async function POST(request: NextRequest) {
       marketAnalysis as MarketAnalysis
     );
 
-    // Build messages with conversation history
-    const messages = [
+    // === PHASE 1: GENERATION ===
+    // First call: Generate ideas with detailed briefs (no self-scoring)
+    console.log("[Ideation API] Phase 1: Generating ideas with briefs...");
+
+    const generationMessages = [
       ...(conversationHistory || []),
       {
         role: "user" as const,
-        content: userInput || `Generate business ideas for this innovation challenge:\n\n${context}`,
+        content:
+          userInput ||
+          `Generate business ideas for this innovation challenge:\n\n${context}`,
       },
     ];
 
-    // Call Claude
-    const response = await sendClaudeMessage<BusinessIdea[]>(
-      messages,
+    const generationResponse = await sendClaudeMessage<GeneratedIdea[]>(
+      generationMessages,
       IDEATION_PROMPT,
       8000
     );
 
-    if (!response.success) {
+    if (!generationResponse.success) {
       return NextResponse.json(
-        { error: response.error || "Failed to generate ideas" },
+        {
+          error:
+            generationResponse.error || "Failed to generate ideas",
+          phase: "generation",
+        },
         { status: 500 }
       );
     }
 
+    const generatedIdeas = generationResponse.data;
+
+    if (!generatedIdeas || generatedIdeas.length === 0) {
+      return NextResponse.json(
+        { error: "No ideas were generated" },
+        { status: 500 }
+      );
+    }
+
+    console.log(
+      `[Ideation API] Generated ${generatedIdeas.length} ideas with briefs`
+    );
+
+    // === PHASE 2: EVALUATION ===
+    // Second call: Evaluate the generated ideas independently
+    console.log("[Ideation API] Phase 2: Evaluating ideas independently...");
+
+    // Build evaluation context with full challenge, market, and generated ideas
+    const evaluationContext = `## Challenge Context
+${context}
+
+## Generated Ideas to Evaluate
+
+${generatedIdeas
+  .map(
+    (idea, index) => `
+### Idea ${index + 1}: ${idea.name}
+**ID**: ${idea.id}
+**Tagline**: ${idea.tagline}
+**Description**: ${idea.description}
+**Problem Solved**: ${idea.problemSolved}
+**Search Fields**:
+- Industries: ${idea.searchFields?.industries.join(", ") || "none"}
+- Technologies: ${idea.searchFields?.technologies.join(", ") || "none"}
+- Reasoning: ${idea.searchFields?.reasoning || "none"}
+
+**Detailed Brief**:
+${idea.brief || "No brief provided"}
+`
+  )
+  .join("\n---\n")}
+
+---
+
+Please evaluate these ideas critically and provide objective scores.`;
+
+    const evaluationMessages = [
+      {
+        role: "user" as const,
+        content: evaluationContext,
+      },
+    ];
+
+    const evaluationResponse = await sendClaudeMessage<EvaluatedIdea[]>(
+      evaluationMessages,
+      IDEATION_EVALUATION_PROMPT,
+      8000
+    );
+
+    if (!evaluationResponse.success) {
+      console.error(
+        "[Ideation API] Evaluation failed, returning generated ideas without metrics:",
+        evaluationResponse.error
+      );
+      // Return generated ideas even if evaluation fails
+      return NextResponse.json({
+        success: true,
+        data: generatedIdeas.map((idea) => ({
+          ...idea,
+          metrics: undefined,
+          evaluation: undefined,
+        })),
+        warning:
+          "Ideas were generated but evaluation failed. Please try evaluating again.",
+      });
+    }
+
+    const evaluatedIdeas = evaluationResponse.data;
+
+    if (!evaluatedIdeas || evaluatedIdeas.length === 0) {
+      console.error(
+        "[Ideation API] Evaluation returned no data, returning generated ideas without metrics"
+      );
+      return NextResponse.json({
+        success: true,
+        data: generatedIdeas.map((idea) => ({
+          ...idea,
+          metrics: undefined,
+          evaluation: undefined,
+        })),
+        warning:
+          "Ideas were generated but evaluation failed. Please try evaluating again.",
+      });
+    }
+
+    console.log(
+      `[Ideation API] Successfully evaluated ${evaluatedIdeas.length} ideas`
+    );
+
+    // === PHASE 3: MERGE RESULTS ===
+    // Combine generated ideas with their evaluations
+    const finalIdeas: BusinessIdea[] = generatedIdeas.map((idea) => {
+      const evaluation = evaluatedIdeas.find((ev) => ev.id === idea.id);
+
+      if (!evaluation) {
+        console.warn(
+          `[Ideation API] No evaluation found for idea ${idea.id}, returning without metrics`
+        );
+        return {
+          ...idea,
+          metrics: undefined,
+          evaluation: undefined,
+        };
+      }
+
+      return {
+        ...idea,
+        metrics: evaluation.metrics,
+        evaluation: evaluation.evaluation,
+      };
+    });
+
     return NextResponse.json({
       success: true,
-      data: response.data,
+      data: finalIdeas,
     });
   } catch (error) {
     console.error("Ideation API error:", error);
