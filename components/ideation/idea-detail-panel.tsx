@@ -177,17 +177,13 @@ export function IdeaDetailPanel({
     setIsGenerating(false);
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600 dark:text-green-400';
-    if (score >= 60) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-red-600 dark:text-red-400';
-  };
+  const getUniquenessColor = () => 'text-purple-700 dark:text-purple-300';
+  const getUniquenessBg = () => 'bg-purple-50 dark:bg-purple-900/20';
+  const getUniquenessProgress = () => 'bg-purple-500';
 
-  const getScoreBg = (score: number) => {
-    if (score >= 80) return 'bg-green-50 dark:bg-green-900/20';
-    if (score >= 60) return 'bg-yellow-50 dark:bg-yellow-900/20';
-    return 'bg-red-50 dark:bg-red-900/20';
-  };
+  const getFeasibilityColor = () => 'text-blue-700 dark:text-blue-300';
+  const getFeasibilityBg = () => 'bg-blue-50 dark:bg-blue-900/20';
+  const getFeasibilityProgress = () => 'bg-blue-500';
 
   return (
     <motion.div
@@ -257,21 +253,16 @@ export function IdeaDetailPanel({
               {isUniquenessExpanded && uniquenessAnalysis && (
                 <div className="p-4 space-y-3">
                   {/* Score Display */}
-                  <div className={cn("p-3 rounded-lg", getScoreBg(uniquenessAnalysis.score))}>
+                  <div className={cn("p-3 rounded-lg", getUniquenessBg())}>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-semibold">Uniqueness Score</span>
-                      <span className={cn("text-xl font-bold", getScoreColor(uniquenessAnalysis.score))}>
+                      <span className={cn("text-xl font-bold", getUniquenessColor())}>
                         {uniquenessAnalysis.score}
                       </span>
                     </div>
                     <div className="h-3 bg-muted rounded-full overflow-hidden mb-2">
                       <div
-                        className={cn(
-                          "h-full rounded-full transition-all",
-                          uniquenessAnalysis.score >= 80 ? "bg-green-500" :
-                          uniquenessAnalysis.score >= 60 ? "bg-yellow-500" :
-                          "bg-red-500"
-                        )}
+                        className={cn("h-full rounded-full transition-all", getUniquenessProgress())}
                         style={{ width: `${uniquenessAnalysis.score}%` }}
                       />
                     </div>
@@ -315,7 +306,7 @@ export function IdeaDetailPanel({
                                   <span className="font-medium text-neutral-700 dark:text-neutral-300 text-xs">
                                     {labels[key as keyof typeof labels]}
                                   </span>
-                                  <span className={cn("font-bold text-xs", getScoreColor(value.score))}>{value.score}</span>
+                                  <span className={cn("font-bold text-xs", getUniquenessColor())}>{value.score}</span>
                                 </div>
                                 <p className="text-neutral-600 dark:text-neutral-400 text-[10px] leading-relaxed">{value.description}</p>
                               </div>
@@ -415,21 +406,16 @@ export function IdeaDetailPanel({
               {isFeasibilityExpanded && feasibilityAnalysis && (
                 <div className="p-4 space-y-3">
                   {/* Score Display */}
-                  <div className={cn("p-3 rounded-lg", getScoreBg(feasibilityAnalysis.score))}>
+                  <div className={cn("p-3 rounded-lg", getFeasibilityBg())}>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-semibold">Feasibility Score</span>
-                      <span className={cn("text-xl font-bold", getScoreColor(feasibilityAnalysis.score))}>
+                      <span className={cn("text-xl font-bold", getFeasibilityColor())}>
                         {feasibilityAnalysis.score}
                       </span>
                     </div>
                     <div className="h-3 bg-muted rounded-full overflow-hidden mb-2">
                       <div
-                        className={cn(
-                          "h-full rounded-full transition-all",
-                          feasibilityAnalysis.score >= 80 ? "bg-green-500" :
-                          feasibilityAnalysis.score >= 60 ? "bg-yellow-500" :
-                          "bg-red-500"
-                        )}
+                        className={cn("h-full rounded-full transition-all", getFeasibilityProgress())}
                         style={{ width: `${feasibilityAnalysis.score}%` }}
                       />
                     </div>
@@ -458,7 +444,7 @@ export function IdeaDetailPanel({
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-1">
                                 <span className="font-medium text-neutral-700 dark:text-neutral-300 text-xs">Technical</span>
-                                <span className={cn("font-bold text-xs", getScoreColor(feasibilityAnalysis.factors.technicalComplexity.score))}>
+                                <span className={cn("font-bold text-xs", getFeasibilityColor())}>
                                   {feasibilityAnalysis.factors.technicalComplexity.score}
                                 </span>
                               </div>
@@ -478,7 +464,7 @@ export function IdeaDetailPanel({
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-1">
                                 <span className="font-medium text-neutral-700 dark:text-neutral-300 text-xs">Resources</span>
-                                <span className={cn("font-bold text-xs", getScoreColor(feasibilityAnalysis.factors.resourceRequirements.score))}>
+                                <span className={cn("font-bold text-xs", getFeasibilityColor())}>
                                   {feasibilityAnalysis.factors.resourceRequirements.score}
                                 </span>
                               </div>
@@ -498,7 +484,7 @@ export function IdeaDetailPanel({
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-1">
                                 <span className="font-medium text-neutral-700 dark:text-neutral-300 text-xs">Timeline</span>
-                                <span className={cn("font-bold text-xs", getScoreColor(feasibilityAnalysis.factors.timeline.score))}>
+                                <span className={cn("font-bold text-xs", getFeasibilityColor())}>
                                   {feasibilityAnalysis.factors.timeline.score}
                                 </span>
                               </div>

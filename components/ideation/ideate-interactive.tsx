@@ -10,7 +10,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2, Sparkles, Lightbulb, BarChart3, ChevronDown, ChevronUp, TrendingUp, Users, Target, Zap, CheckCircle2, Circle, Check } from "lucide-react";
+import { Send, Loader2, Sparkles, Lightbulb, BarChart3, ChevronDown, ChevronUp, TrendingUp, Users, Target, Zap, CheckCircle2, Circle, Check, X } from "lucide-react";
 import { streamChatResponse } from "@/hooks/use-chat-streaming";
 import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { ChatMessageWithRetry } from "@/components/chat/chat-message";
@@ -26,7 +26,7 @@ import {
   getIdeateProgressTip,
   type IdeateProgressItem
 } from "@/lib/ideate-utils";
-import { IdeaDetailPanel } from "./idea-detail-panel";
+import { IdeaDetailView } from "./idea-detail-view";
 
 interface InteractiveIdeationProps {
   challenge: Challenge;
@@ -64,8 +64,8 @@ export function InteractiveIdeation({
   const [lastUserMessage, setLastUserMessage] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isMarketExpanded, setIsMarketExpanded] = useState(false);
-  const [showDetailPanel, setShowDetailPanel] = useState(false);
-  const [selectedIdeaForDetail, setSelectedIdeaForDetail] = useState<BusinessIdea | null>(null);
+  const [selectedIdeaForView, setSelectedIdeaForView] = useState<BusinessIdea | null>(null);
+  const [isDetailView, setIsDetailView] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -152,30 +152,26 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
   };
 
   const handleSelectIdea = (ideaId: string) => {
-    // Show detail panel when clicking an idea
+    // In grid mode, clicking an idea switches to detail view
     const selectedIdea = ideas.find((i) => i.id === ideaId);
     if (selectedIdea) {
-      setSelectedIdeaForDetail(selectedIdea);
-      setShowDetailPanel(true);
+      setSelectedIdeaForView(selectedIdea);
+      setIsDetailView(true);
     }
   };
 
-  const handleCloseDetailPanel = () => {
-    setShowDetailPanel(false);
-    setSelectedIdeaForDetail(null);
+  const handleViewIdea = (ideaId: string) => {
+    // Update right panel view without changing mode
+    const selectedIdea = ideas.find((i) => i.id === ideaId);
+    if (selectedIdea) {
+      setSelectedIdeaForView(selectedIdea);
+    }
   };
 
-  // Update the panel when ideas array changes (e.g., after AI modification)
-  useEffect(() => {
-    if (showDetailPanel && selectedIdeaForDetail) {
-      // Find the updated version of the currently viewed idea
-      const updatedIdea = ideas.find((i) => i.id === selectedIdeaForDetail.id);
-      if (updatedIdea) {
-        setSelectedIdeaForDetail(updatedIdea);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ideas, showDetailPanel, selectedIdeaForDetail]);
+  const handleCloseDetailMode = () => {
+    setIsDetailView(false);
+    setSelectedIdeaForView(null);
+  };
 
   const handleConfirmIdeaSelection = (ideaId: string) => {
     setSelectedIdeaId(ideaId);
@@ -196,9 +192,6 @@ You can:
       };
       setMessages((prev) => [...prev, msg]);
     }
-
-    // Close detail panel but keep selection
-    setShowDetailPanel(false);
   };
 
   const generateInitialIdeas = async () => {
@@ -335,7 +328,7 @@ Browse through the ideas on the right, hover to preview, and click to select you
           marketAnalysis: marketAnalysis,
           ideas: ideas,
           selectedIdea: selectedIdeaId ? ideas.find((i) => i.id === selectedIdeaId) : null,
-          viewingIdea: selectedIdeaForDetail || null,
+          viewingIdea: selectedIdeaForView || null,
         },
         {
           filterDisplayContent: (content) => {
@@ -509,239 +502,237 @@ Browse through the ideas on the right, hover to preview, and click to select you
 
       {/* Ideas Display Panel */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
-          <div className="flex items-center gap-2">
-            <Lightbulb className="h-4 w-4 text-purple-600" />
-            <h1 className="text-sm font-semibold">
-              {ideas.length > 0 ? "Your Ideas" : "Generate Ideas"}
-            </h1>
-            {ideas.length > 0 && (
-              <Badge variant="secondary" className="text-xs">{ideas.length}</Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">
-              {isGenerating ? "Generating..." : ideas.length > 0 ? "Ready" : "Waiting"}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto pb-20">
-          <div className="px-6 py-6 space-y-6">
-            {/* Progress Tip */}
-            {progressTip && (
-              <div className={cn(
-                "flex items-center gap-2 text-sm px-4 py-3 rounded-lg",
-                progressTip.type === "success" && "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300",
-                progressTip.type !== "success" && "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
-              )}>
-                <Sparkles className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium">{progressTip.text}</span>
+        {!isDetailView ? (
+          /* GRID MODE - 3 Column Layout */
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="max-w-7xl mx-auto">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Lightbulb className="h-5 w-5 text-purple-600" />
+                  <h1 className="text-lg font-bold">
+                    {ideas.length > 0 ? "Your Ideas" : "Generate Ideas"}
+                  </h1>
+                  {ideas.length > 0 && (
+                    <Badge variant="secondary" className="text-sm">{ideas.length}</Badge>
+                  )}
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {isGenerating ? "Generating..." : ideas.length > 0 ? "Ready" : "Waiting"}
+                </span>
               </div>
-            )}
 
-            {/* Market Context Card */}
-            <Card className="border-2">
-              <div className="px-5 py-3 border-b bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => setIsMarketExpanded(!isMarketExpanded)}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-7 w-7 rounded-md bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                      <BarChart3 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <span className="text-sm font-semibold">Market Context</span>
-                    <Badge variant="outline" className="text-xs">TAM: {extractMarketValue(marketAnalysis?.tam || "N/A").value}</Badge>
-                  </div>
-                  {isMarketExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+              {/* Progress Tip */}
+              {progressTip && (
+                <div className={cn(
+                  "flex items-center gap-2 text-sm px-4 py-3 rounded-lg mb-4",
+                  progressTip.type === "success" && "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300",
+                  progressTip.type !== "success" && "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
+                )}>
+                  <Sparkles className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm font-medium">{progressTip.text}</span>
+                </div>
+              )}
+
+              {/* Ideas Grid */}
+              {ideas.length === 0 ? (
+                <Card className="border-dashed">
+                  <CardContent className="flex flex-col items-center justify-center py-16">
+                    <Lightbulb className="h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="text-sm text-muted-foreground">No ideas yet. Click "Generate Ideas" to start.</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {ideas.map((idea) => {
+                    const isConfirmed = selectedIdeaId === idea.id;
+                    const uniquenessScore = Math.round(idea.metrics?.uniqueness || 70);
+                    const feasibilityScore = Math.round(idea.metrics?.feasibility || 70);
+
+                    const getScoreColor = (score: number) => {
+                      if (score >= 80) return 'text-green-700 dark:text-green-300';
+                      if (score >= 60) return 'text-yellow-700 dark:text-yellow-300';
+                      return 'text-red-700 dark:text-red-300';
+                    };
+
+                    return (
+                      <Card
+                        key={idea.id}
+                        className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-purple-300 relative"
+                        onClick={() => handleSelectIdea(idea.id)}
+                      >
+                        {/* Select Button - Top Right */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleConfirmIdeaSelection(idea.id);
+                          }}
+                          className="absolute top-3 right-3 z-10 transition-all hover:scale-110"
+                          title={isConfirmed ? "Selected for appraisal" : "Select for appraisal"}
+                        >
+                          {isConfirmed ? (
+                            <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center shadow-md">
+                              <Check className="h-4 w-4 text-white" />
+                            </div>
+                          ) : (
+                            <div className="h-8 w-8 rounded-full border-2 border-purple-400 bg-white hover:border-purple-600 flex items-center justify-center shadow-sm" />
+                          )}
+                        </button>
+
+                        <div className="p-5 space-y-3">
+                          {/* Header */}
+                          <div className="flex items-start gap-3 pr-10">
+                            <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                              <Lightbulb className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm font-bold leading-tight mb-1">
+                                {idea.name}
+                              </h3>
+                              <p className="text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2">
+                                {idea.tagline}
+                              </p>
+                            </div>
+                          </div>
+
+                        {/* Description */}
+                        <p className="text-xs leading-relaxed text-neutral-700 dark:text-neutral-300 line-clamp-3">
+                          {idea.description}
+                        </p>
+
+                        {/* Compact Metrics */}
+                        {idea.metrics && (
+                          <div className="flex items-center gap-2 text-[10px]">
+                            <span className={cn("font-medium", getScoreColor(uniquenessScore))}>
+                              {uniquenessScore}% unique
+                            </span>
+                            <span className="text-neutral-400">•</span>
+                            <span className={cn("font-medium", getScoreColor(feasibilityScore))}>
+                              {feasibilityScore}% feasible
+                            </span>
+                          </div>
+                        )}
+
+                      </div>
+                    </Card>
+                  );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* DETAIL MODE - LinkedIn-style Layout */
+          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+            {/* Left Sidebar - Compact Idea List */}
+            <div className="flex-shrink-0 border-r bg-muted/5 flex flex-col w-full lg:w-[280px]">
+              {/* Header */}
+              <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
+                <div className="flex items-center gap-2">
+                  <Lightbulb className="h-4 w-4 text-purple-600" />
+                  <h1 className="text-sm font-semibold">Your Ideas</h1>
+                  <Badge variant="secondary" className="text-xs">{ideas.length}</Badge>
                 </div>
               </div>
-              {isMarketExpanded && (
-                <CardContent className="pt-4">
-                  <div className="grid grid-cols-3 gap-3 font-serif mb-4">
-                    {["TAM", "SAM", "SOM"].map((size) => {
-                      const value = size === "TAM" ? marketAnalysis?.tam : size === "SAM" ? marketAnalysis?.sam : marketAnalysis?.som;
-                      const { value: displayValue, description } = extractMarketValue(value || "N/A");
-                      return (
-                        <div key={size} className="text-center p-3 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
-                          <p className="text-[10px] font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide mb-1">{size}</p>
-                          <p className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{displayValue}</p>
-                          {description && description !== value && (
-                            <p className="text-[10px] text-neutral-400 dark:text-neutral-600 mt-1.5 leading-relaxed">{description}</p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {marketAnalysis?.trends && marketAnalysis.trends.length > 0 && (
-                    <div>
-                      <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-1.5">
-                        <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
-                        Key Trends
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {marketAnalysis.trends.slice(0, 3).map((trend: any, index: number) => (
-                          <Badge key={index} variant="outline" className="text-xs">{trend.name}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              )}
-            </Card>
 
-            {/* Ideas Grid */}
-            {ideas.length === 0 ? (
-              <Card className="border-dashed">
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <Lightbulb className="h-10 w-10 text-muted-foreground mb-3" />
-                  <p className="text-sm text-muted-foreground">No ideas yet. Click "Generate Ideas" to start.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-3 gap-4">
+              {/* Scrollable List */}
+              <div className="flex-1 overflow-y-auto p-3 space-y-2">
                 {ideas.map((idea) => {
-                  const isSelected = selectedIdeaId === idea.id;
+                  const uniquenessScore = Math.round(idea.metrics?.uniqueness || 70);
+                  const feasibilityScore = Math.round(idea.metrics?.feasibility || 70);
+
+                  const getScoreColor = (score: number) => {
+                    if (score >= 80) return 'text-green-700 dark:text-green-300';
+                    if (score >= 60) return 'text-yellow-700 dark:text-yellow-300';
+                    return 'text-red-700 dark:text-red-300';
+                  };
+
                   return (
                     <Card
                       key={idea.id}
                       className={cn(
-                        "cursor-pointer transition-all overflow-hidden border-2 relative group",
-                        isSelected ? "ring-2 ring-purple-500 ring-offset-2 border-purple-300" : "border-neutral-200 hover:border-purple-300 hover:shadow-md"
+                        "cursor-pointer transition-all overflow-hidden border relative group",
+                        "hover:shadow-md",
+                        selectedIdeaForView?.id === idea.id
+                          ? "border-purple-500 bg-purple-50/50 dark:bg-purple-950/20 shadow-sm"
+                          : "border-neutral-200 dark:border-neutral-800 hover:border-purple-300"
                       )}
-                      onClick={() => handleSelectIdea(idea.id)}
+                      onClick={() => handleViewIdea(idea.id)}
                     >
-                      {/* Select Button - positioned absolute top-right */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleConfirmIdeaSelection(idea.id);
-                        }}
-                        className={cn(
-                          "absolute top-3 right-3 z-10 transition-all",
-                          "hover:scale-110"
-                        )}
-                        title={isSelected ? "Selected" : "Select this idea"}
-                      >
-                        {isSelected ? (
-                          <div className="h-6 w-6 rounded-full bg-purple-600 flex items-center justify-center shadow-lg">
-                            <Check className="h-3.5 w-3.5 text-white" />
-                          </div>
-                        ) : (
-                          <div className="h-6 w-6 rounded-full border-2 border-neutral-300 bg-white hover:border-purple-500 transition-colors shadow-sm" />
-                        )}
-                      </button>
+                      {/* Selection Indicator */}
+                      {selectedIdeaForView?.id === idea.id && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500" />
+                      )}
 
-                      <div className={cn(
-                        "px-4 py-3 border-b pr-12",
-                        isSelected ? "bg-purple-50 dark:bg-purple-950/30" : "bg-neutral-50 dark:bg-neutral-900/30"
-                      )}>
-                        <div className="flex items-start gap-2">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">{idea.name}</h3>
-                            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">{idea.tagline}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <CardContent className="p-4 space-y-3">
-                        <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">{idea.description}</p>
-                        {/* Problem Solved */}
-                        <div className="flex items-start gap-2">
-                          <Target className="h-3.5 w-3.5 text-purple-600 flex-shrink-0 mt-0.5" />
-                          <div className="flex-1">
-                            <p className="font-semibold text-neutral-600 dark:text-neutral-400 text-xs">Problem Solved</p>
-                            <p className="text-neutral-700 dark:text-neutral-300 text-xs">{idea.problemSolved}</p>
-                          </div>
-                        </div>
-                        {/* Strategic Focus Areas */}
-                        {idea.searchFields && (
-                          <div>
-                            <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-2">Strategic Focus Areas</p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {idea.searchFields.industries?.map((industry, index) => (
-                                <Badge key={`ind-${index}`} variant="outline" className="text-xs">
-                                  {industry}
-                                </Badge>
-                              ))}
-                              {idea.searchFields.technologies?.map((tech, index) => (
-                                <Badge key={`tech-${index}`} variant="secondary" className="text-xs">
-                                  {tech}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {/* Uniqueness & Feasibility Metrics */}
+                      {/* Card Content */}
+                      <div className="p-3">
+                        <h3 className={cn(
+                          "text-xs font-bold leading-tight mb-1",
+                          selectedIdeaForView?.id === idea.id ? "text-purple-900 dark:text-purple-100" : "text-neutral-900 dark:text-neutral-100"
+                        )}>
+                          {idea.name}
+                        </h3>
+                        <p className="text-[10px] text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+                          {idea.tagline}
+                        </p>
+
+                        {/* Quick Metrics */}
                         {idea.metrics && (
-                          <div className="pt-3 border-t border-neutral-200 dark:border-neutral-700">
-                            <div className="grid grid-cols-2 gap-3">
-                              {/* Uniqueness */}
-                              <div>
-                                <div className="flex items-center justify-between mb-1">
-                                  <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 flex items-center gap-1">
-                                    <Sparkles className="h-3 w-3" />
-                                    Uniqueness
-                                  </span>
-                                  <span className={cn(
-                                    "text-xs font-bold",
-                                    idea.metrics.uniqueness && idea.metrics.uniqueness >= 80 ? "text-green-600 dark:text-green-400" :
-                                    idea.metrics.uniqueness && idea.metrics.uniqueness >= 60 ? "text-yellow-600 dark:text-yellow-400" :
-                                    idea.metrics.uniqueness ? "text-red-600 dark:text-red-400" : "text-neutral-400"
-                                  )}>
-                                    {idea.metrics.uniqueness ? Math.round(idea.metrics.uniqueness) : 'N/A'}
-                                  </span>
-                                </div>
-                                <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                                  <div
-                                    className={cn(
-                                      "h-full rounded-full transition-all",
-                                      idea.metrics.uniqueness && idea.metrics.uniqueness >= 80 ? "bg-green-500" :
-                                      idea.metrics.uniqueness && idea.metrics.uniqueness >= 60 ? "bg-yellow-500" :
-                                      idea.metrics.uniqueness ? "bg-red-500" : "bg-neutral-400"
-                                    )}
-                                    style={{ width: `${idea.metrics.uniqueness ? Math.round(idea.metrics.uniqueness) : 0}%` }}
-                                  />
-                                </div>
-                              </div>
-                              {/* Feasibility */}
-                              <div>
-                                <div className="flex items-center justify-between mb-1">
-                                  <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 flex items-center gap-1">
-                                    <Zap className="h-3 w-3" />
-                                    Feasibility
-                                  </span>
-                                  <span className={cn(
-                                    "text-xs font-bold",
-                                    idea.metrics.feasibility && idea.metrics.feasibility >= 80 ? "text-green-600 dark:text-green-400" :
-                                    idea.metrics.feasibility && idea.metrics.feasibility >= 60 ? "text-yellow-600 dark:text-yellow-400" :
-                                    idea.metrics.feasibility ? "text-red-600 dark:text-red-400" : "text-neutral-400"
-                                  )}>
-                                    {idea.metrics.feasibility ? Math.round(idea.metrics.feasibility) : 'N/A'}
-                                  </span>
-                                </div>
-                                <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                                  <div
-                                    className={cn(
-                                      "h-full rounded-full transition-all",
-                                      idea.metrics.feasibility && idea.metrics.feasibility >= 80 ? "bg-green-500" :
-                                      idea.metrics.feasibility && idea.metrics.feasibility >= 60 ? "bg-yellow-500" :
-                                      idea.metrics.feasibility ? "bg-red-500" : "bg-neutral-400"
-                                    )}
-                                    style={{ width: `${idea.metrics.feasibility ? Math.round(idea.metrics.feasibility) : 0}%` }}
-                                  />
-                                </div>
-                              </div>
-                            </div>
+                          <div className="mt-2 flex items-center gap-2">
+                            <span className={cn("text-[10px] font-medium", getScoreColor(uniquenessScore))}>
+                              {uniquenessScore}% unique
+                            </span>
+                            <span className="text-[10px] text-neutral-400">•</span>
+                            <span className={cn("text-[10px] font-medium", getScoreColor(feasibilityScore))}>
+                              {feasibilityScore}% feasible
+                            </span>
                           </div>
                         )}
-                      </CardContent>
+
+                        {/* Selected Badge */}
+                        {selectedIdeaId === idea.id && (
+                          <div className="mt-2 flex items-center gap-1 text-[10px] text-purple-700 dark:text-purple-300 font-medium">
+                            <Check className="h-3 w-3" />
+                            Selected
+                          </div>
+                        )}
+                      </div>
                     </Card>
                   );
                 })}
               </div>
+            </div>
+
+            {/* Right Panel - Detailed View */}
+            {selectedIdeaForView && (
+              <div className="flex-1 bg-background flex flex-col">
+                {/* Mobile Back Button */}
+                <div className="lg:hidden flex-shrink-0 px-4 py-2 border-b bg-background/95 flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCloseDetailMode}
+                    className="text-xs"
+                  >
+                    ← Back to grid
+                  </Button>
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <IdeaDetailView
+                    idea={selectedIdeaForView}
+                    marketAnalysis={marketAnalysis}
+                    allIdeas={ideas}
+                    onClose={handleCloseDetailMode}
+                    onSelect={handleConfirmIdeaSelection}
+                    selectedIdeaId={selectedIdeaId}
+                  />
+                </div>
+              </div>
             )}
           </div>
-        </div>
+        )}
 
-        {/* Fixed Bottom Navigation */}
+        {/* Fixed Bottom Navigation - Same for both modes */}
         {(onBack || onContinue) && (
           <div className="flex-shrink-0 border-t bg-background/95 px-4 py-3">
             <WizardNav
@@ -754,17 +745,6 @@ Browse through the ideas on the right, hover to preview, and click to select you
           </div>
         )}
       </div>
-
-      {/* Idea Detail Panel */}
-      {showDetailPanel && selectedIdeaForDetail && (
-        <IdeaDetailPanel
-          idea={selectedIdeaForDetail}
-          marketAnalysis={marketAnalysis}
-          allIdeas={ideas}
-          onClose={handleCloseDetailPanel}
-          onSelect={handleConfirmIdeaSelection}
-        />
-      )}
     </div>
   );
 }
