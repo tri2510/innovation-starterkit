@@ -452,6 +452,53 @@ export function isStepAccessible(step: WizardStep): boolean {
 }
 
 /**
+ * Clear all phases after the specified step
+ * When user goes back to refine earlier work, later phases should be invalidated
+ */
+export function clearPhasesAfter(step: WizardStep): InnovationSession {
+  const session = getSession();
+  if (!session) return createInitialSession();
+
+  const updatedSession = { ...session };
+  const stepOrder: WizardStep[] = ["challenge", "market", "ideation", "investment-appraisal", "pitch"];
+  const currentIndex = stepOrder.indexOf(step);
+
+  // Clear all phases after the current step
+  for (let i = currentIndex + 1; i < stepOrder.length; i++) {
+    const phaseToClear = stepOrder[i];
+    switch (phaseToClear) {
+      case "challenge":
+        delete (updatedSession as any).challenge;
+        delete (updatedSession as any).challengeProgress;
+        break;
+      case "market":
+        delete (updatedSession as any).marketAnalysis;
+        break;
+      case "ideation":
+        delete (updatedSession as any).ideas;
+        delete (updatedSession as any).generatedIdeas;
+        delete (updatedSession as any).selectedIdeaId;
+        break;
+      case "investment-appraisal":
+        delete (updatedSession as any).investmentAppraisal;
+        delete (updatedSession as any).investmentProgress;
+        break;
+      case "pitch":
+        delete (updatedSession as any).pitchDeck;
+        break;
+    }
+
+    // Clear conversation history for this phase
+    const historyField = `${phaseToClear}ConversationHistory` as keyof InnovationSession;
+    delete (updatedSession as any)[historyField];
+  }
+
+  updatedSession.updatedAt = Date.now();
+  saveSession(updatedSession);
+  return updatedSession;
+}
+
+/**
  * Navigate to a step
  */
 export function navigateToStep(step: WizardStep): InnovationSession {

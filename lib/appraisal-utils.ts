@@ -22,7 +22,8 @@ export interface ProgressTip {
   type: "success" | "normal" | "celebration";
 }
 
-// 6 appraisal sections (business idea fields + financial model merged, excluding financial_metrics as it's in 5-Year table)
+// 6 appraisal sections (business idea fields + financial model merged)
+// Note: financial_metrics removed - already shown in Financial Summary & Innovation Radar section
 export const defaultAppraisalProgress: AppraisalProgressItem[] = [
   { id: "target_market", label: "Target Market", icon: Users, status: "waiting" },
   { id: "business_model", label: "Business Model", icon: Briefcase, status: "waiting" },
@@ -33,9 +34,10 @@ export const defaultAppraisalProgress: AppraisalProgressItem[] = [
 ];
 
 export function calculateAppraisalProgress(items: AppraisalProgressItem[]): number {
+  const totalItems = 6; // 6 appraisal sections (financial_metrics removed)
   const completedCount = items.filter(i => i.status === "complete").length;
   const gatheringCount = items.filter(i => i.status === "gathering").length;
-  return Math.round(((completedCount * 100 + gatheringCount * 50) / (items.length * 100)) * 100);
+  return Math.round(((completedCount * 100 + gatheringCount * 50) / (totalItems * 100)) * 100);
 }
 
 export function getAppraisalProgressTip(

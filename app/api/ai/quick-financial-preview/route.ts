@@ -7,7 +7,6 @@ import type {
   QuickFinancialPreview,
   RadarScores,
 } from '@/types/innovation';
-import { getRadarComparison, calculateRadarScoresFromIdea } from '@/lib/innovation-database';
 import { validateFinancialProjections } from '@/lib/financial-calculator';
 
 // System prompt for financial projection generation
@@ -203,9 +202,6 @@ async function generateQuickFinancialPreview(
   // These scores are based on AI analysis of the idea's viability
   const radarScores = aiResult.radarScores;
 
-  // Generate database comparison using innovation database utility
-  const databaseComparison = getRadarComparison(idea, radarScores);
-
   return {
     fiveYearCumulativeROI: aiResult.fiveYearCumulativeROI,
     breakEvenYear: aiResult.breakEvenYear,
@@ -215,7 +211,6 @@ async function generateQuickFinancialPreview(
     radarScores,
     gate1Status,
     gate2Status,
-    databaseComparison,
   };
 }
 

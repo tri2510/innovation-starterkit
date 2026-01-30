@@ -54,7 +54,6 @@ export function IdeaSelectionPanel({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFinancialExpanded, setIsFinancialExpanded] = useState(true);
-  const [isComparisonExpanded, setIsComparisonExpanded] = useState(true);
 
   useEffect(() => {
     fetchFinancialPreview();
@@ -315,62 +314,6 @@ export function IdeaSelectionPanel({
                   )}
                 </Card>
 
-                {/* Database Comparison */}
-                <Card>
-                  <div
-                    className="px-4 py-3 border-b bg-muted/30 cursor-pointer hover:bg-muted/50 flex items-center justify-between"
-                    onClick={() => setIsComparisonExpanded(!isComparisonExpanded)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <BarChart3 className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-semibold">Database Comparison</span>
-                    </div>
-                    {isComparisonExpanded ? (
-                      <ChevronUp className="h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4" />
-                    )}
-                  </div>
-
-                  {isComparisonExpanded && (
-                    <div className="p-4 space-y-3">
-                      {Object.entries(preview.databaseComparison).map(([key, value]) => (
-                        <div key={key} className="space-y-1">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="capitalize font-medium">{formatLabel(key)}</span>
-                            <Badge
-                              variant={value.rating === 'above-average' ? 'default' : 'secondary'}
-                              className="text-xs"
-                            >
-                              {value.percentile}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                              <div
-                                className={cn(
-                                  'h-full rounded-full transition-all',
-                                  value.rating === 'above-average'
-                                    ? 'bg-green-500'
-                                    : value.rating === 'below-average'
-                                    ? 'bg-orange-500'
-                                    : 'bg-blue-500'
-                                )}
-                                style={{ width: `${value.yourScore}%` }}
-                              />
-                            </div>
-                            <span className="text-xs font-medium w-16 text-right">
-                              {value.yourScore}%
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-muted-foreground">
-                            DB avg: {value.databaseAverage}%
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </Card>
               </div>
             </div>
           ) : null}
@@ -393,16 +336,4 @@ export function IdeaSelectionPanel({
       </motion.div>
     </motion.div>
   );
-}
-
-function formatLabel(key: string): string {
-  const labels: Record<string, string> = {
-    marketFit: 'Market Fit',
-    innovation: 'Innovation',
-    financialViability: 'Financial Viability',
-    strategicFit: 'Strategic Fit',
-    riskLevel: 'Risk Level',
-    marketSize: 'Market Size',
-  };
-  return labels[key] || key;
 }

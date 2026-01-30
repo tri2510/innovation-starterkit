@@ -1,10 +1,8 @@
 import type {
   Industry,
   RadarScores,
-  DatabaseComparison,
   BusinessIdea,
   QuickFinancialPreview,
-  ComparisonMetric,
 } from '@/types/innovation';
 
 /**
@@ -79,84 +77,6 @@ const TECHNOLOGY_MULTIPLIERS: Record<string, Partial<RadarScores>> = {
     riskLevel: 5,
   },
 };
-
-/**
- * Get radar score comparison against innovation database
- */
-export function getRadarComparison(
-  idea: BusinessIdea,
-  radarScores: RadarScores
-): DatabaseComparison {
-  // Determine primary industry
-  const industry = idea.searchFields?.industries?.[0] || 'manufacturing';
-  const technologies = idea.searchFields?.technologies || [];
-
-  // Get base benchmark for industry
-  let benchmarks = { ...INDUSTRY_BENCHMARKS[industry] };
-
-  // Apply technology multipliers (average of all technologies)
-  if (technologies.length > 0) {
-    const techMultipliers = technologies.map((tech) => TECHNOLOGY_MULTIPLIERS[tech] || {});
-
-    Object.keys(benchmarks).forEach((key) => {
-      const keyTyped = key as keyof RadarScores;
-      const avgMultiplier =
-        techMultipliers.reduce((sum, mult) => {
-          const value = mult[keyTyped] || 0;
-          return sum + value;
-        }, 0) / techMultipliers.length;
-
-      benchmarks[keyTyped] = Math.min(100, benchmarks[keyTyped] + avgMultiplier);
-    });
-  }
-
-  // Generate comparison metrics
-  return {
-    marketFit: compareScore(radarScores.marketFit, benchmarks.marketFit),
-    innovation: compareScore(radarScores.innovation, benchmarks.innovation),
-    financialViability: compareScore(
-      radarScores.financialViability,
-      benchmarks.financialViability
-    ),
-    strategicFit: compareScore(radarScores.strategicFit, benchmarks.strategicFit),
-    riskLevel: compareScore(radarScores.riskLevel, benchmarks.riskLevel),
-    marketSize: compareScore(radarScores.marketSize, benchmarks.marketSize),
-  };
-}
-
-/**
- * Compare a score against database average
- */
-function compareScore(
-  yourScore: number,
-  databaseAverage: number
-): ComparisonMetric {
-  const diff = yourScore - databaseAverage;
-
-  let rating: 'above-average' | 'average' | 'below-average';
-  let percentile: string;
-
-  if (diff >= 15) {
-    rating = 'above-average';
-    // Calculate rough percentile (simplified)
-    const topPercent = Math.max(5, Math.min(25, Math.floor((100 - yourScore) / 4)));
-    percentile = `Top ${topPercent}%`;
-  } else if (diff <= -15) {
-    rating = 'below-average';
-    const bottomPercent = Math.max(5, Math.min(40, Math.floor(yourScore / 5)));
-    percentile = `Bottom ${bottomPercent}%`;
-  } else {
-    rating = 'average';
-    percentile = 'Top 50%';
-  }
-
-  return {
-    yourScore: Math.round(yourScore),
-    databaseAverage: Math.round(databaseAverage),
-    percentile,
-    rating,
-  };
-}
 
 /**
  * Get industry benchmarks for display

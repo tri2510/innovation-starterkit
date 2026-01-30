@@ -266,9 +266,6 @@ export interface QuickFinancialPreview {
 
   // Radar chart scores (0-100)
   radarScores: RadarScores;
-
-  // Comparison with innovation database
-  databaseComparison: DatabaseComparison;
 }
 
 // Radar chart scores for innovation comparison
@@ -279,23 +276,6 @@ export interface RadarScores {
   strategicFit: number; // Alignment with strategic focus
   riskLevel: number; // Risk-adjusted viability (higher = better)
   marketSize: number; // Market size and growth potential
-}
-
-// Comparison data from innovation database
-export interface DatabaseComparison {
-  marketFit: ComparisonMetric;
-  innovation: ComparisonMetric;
-  financialViability: ComparisonMetric;
-  strategicFit: ComparisonMetric;
-  riskLevel: ComparisonMetric;
-  marketSize: ComparisonMetric;
-}
-
-export interface ComparisonMetric {
-  yourScore: number; // 0-100
-  databaseAverage: number; // 0-100
-  percentile: string; // e.g., "Top 15%"
-  rating: "above-average" | "average" | "below-average";
 }
 
 // Innovation database benchmark data by industry

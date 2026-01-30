@@ -1,15 +1,14 @@
 /**
  * Appraisal Detail View Component
  * Shows full content for a selected appraisal section
- * With back button to return to grid
  */
 
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Briefcase, Award, DollarSign, TrendingUp, BarChart3, AlertTriangle, Database, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Users, Briefcase, Award, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
 import type { AppraisalProgressItem } from "@/lib/appraisal-utils";
 import type { BusinessIdea } from "@/types/innovation";
 
@@ -21,17 +20,12 @@ interface AppraisalDetailViewProps {
 }
 
 export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBack }: AppraisalDetailViewProps) {
+  const Icon = section.icon;
   const renderSectionContent = () => {
     switch (section.id) {
       case "target_market":
         return (
           <div className="space-y-4">
-            {/* Data Source Badge */}
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-200 dark:border-purple-800">
-              <Sparkles className="h-3 w-3" />
-              <span>AI-generated analysis based on challenge and market data</span>
-            </div>
-
             <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
               <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                 {appraisalData?.targetMarket || selectedIdea?.targetMarket || "Gathering target market data..."}
@@ -43,12 +37,6 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "business_model":
         return (
           <div className="space-y-4">
-            {/* Data Source Badge */}
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-200 dark:border-purple-800">
-              <Sparkles className="h-3 w-3" />
-              <span>AI-generated analysis based on business idea description</span>
-            </div>
-
             <div>
               <h4 className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase">Business Model</h4>
               <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
@@ -76,12 +64,6 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "competitive_advantage":
         return (
           <div className="space-y-4">
-            {/* Data Source Badge */}
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-200 dark:border-purple-800">
-              <Sparkles className="h-3 w-3" />
-              <span>AI-generated analysis based on market competitors</span>
-            </div>
-
             <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800">
               <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                 {appraisalData?.competitiveAdvantage || selectedIdea?.competitiveAdvantage || "Gathering competitive advantage data..."}
@@ -93,11 +75,6 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "investment_costs":
         return (
           <div className="space-y-4">
-            {/* Data Source Badge */}
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-blue-50 dark:bg-blue-950/20 rounded-md border border-blue-200 dark:border-blue-800">
-              <Sparkles className="h-3 w-3" />
-              <span>AI-generated with transparent calculations & sources</span>
-            </div>
 
             {/* Investment Summary */}
             {appraisalData?.estimatedInvestment && (
@@ -188,12 +165,6 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "revenue_forecasts":
         return (
           <div className="space-y-4">
-            {/* Data Source Badge */}
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-blue-50 dark:bg-blue-950/20 rounded-md border border-blue-200 dark:border-blue-800">
-              <Sparkles className="h-3 w-3" />
-              <span>AI-generated with pricing model, customer counts, and growth assumptions</span>
-            </div>
-
             {appraisalData?.revenueForecasts ? (
               <div className="space-y-3">
                 {["year1", "year2", "year3", "year4", "year5"].map((year) => {
@@ -230,12 +201,6 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "risk_assessment":
         return (
           <div className="space-y-4">
-            {/* Data Source Badge */}
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-200 dark:border-purple-800">
-              <Sparkles className="h-3 w-3" />
-              <span>AI-generated assessment based on financial projections and market factors</span>
-            </div>
-
             {/* Risk Level Banner */}
             {appraisalData?.riskAssessment && (
               <div className={`p-4 rounded-lg border-2 ${
@@ -340,32 +305,38 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
   };
 
   return (
-    <div className="space-y-4">
-      {/* Back Button */}
-      <Button onClick={onBack} variant="ghost" size="sm" className="gap-2">
-        <ArrowLeft className="h-4 w-4" />
-        Back to overview
-      </Button>
-
-      {/* Section Card */}
-      <Card className="border-2">
-        <div className="px-5 py-4 border-b bg-purple-50 dark:bg-purple-950/30">
+    <Card className="border-2">
+      <CardHeader className="border-b bg-purple-50 dark:bg-purple-950/30">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
-              <section.icon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{section.label}</h2>
-              {section.status === "complete" && (
-                <Badge variant="default" className="text-xs mt-1">Complete</Badge>
-              )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              className="h-8 w-8 p-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
+                <Icon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-100">
+                  {section.label}
+                </h2>
+                <p className="text-xs text-muted-foreground">AI-generated analysis</p>
+              </div>
             </div>
           </div>
+          {section.status === "complete" && (
+            <Badge variant="default">Complete</Badge>
+          )}
         </div>
-        <CardContent className="p-6">
-          {renderSectionContent()}
-        </CardContent>
-      </Card>
-    </div>
+      </CardHeader>
+      <CardContent className="p-6">
+        {renderSectionContent()}
+      </CardContent>
+    </Card>
   );
 }

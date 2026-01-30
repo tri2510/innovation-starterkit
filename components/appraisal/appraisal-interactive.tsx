@@ -10,7 +10,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2, Sparkles, BarChart3, Target, ChevronDown, ChevronUp, Users, Briefcase, Award, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
+import { Send, Loader2, Sparkles, BarChart3, Target, ChevronDown, ChevronUp } from "lucide-react";
 import { streamChatResponse } from "@/hooks/use-chat-streaming";
 import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { ChatMessageWithRetry } from "@/components/chat/chat-message";
@@ -290,8 +290,80 @@ When you're ready, click **"Generate Appraisal"** to generate the full qualitati
   };
 
   const generateAppraisal = async () => {
-    // Use the chat function to generate full appraisal
-    await handleSendMessage("Generate comprehensive investment appraisal with all sections");
+    if (!selectedIdea || isLoading) return;
+
+    setIsLoading(true);
+
+    // Show loading message
+    const loadingMsg: ChatMessage = {
+      id: Date.now().toString(),
+      role: "assistant",
+      content: "Generating your investment appraisal...",
+      timestamp: Date.now(),
+    };
+    setMessages((prev) => [...prev, loadingMsg]);
+
+    try {
+      const response = await fetch("/api/ai/appraisal/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          challenge: challenge,
+          marketAnalysis: marketAnalysis,
+          idea: selectedIdea,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to generate appraisal");
+      }
+
+      // Update appraisal data
+      const appraisalResult = data.data;
+      setAppraisalData(appraisalResult);
+      onSaveAppraisal(appraisalResult);
+
+      // Show success message
+      const successMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `Investment appraisal generated successfully!
+
+**Summary:**
+- Estimated Investment: ${appraisalResult.estimatedInvestment}
+- Timeframe: ${appraisalResult.timeframe}
+- 5-Year ROI: ${appraisalResult.financialAnalysis?.roi || "N/A"}
+- Risk Level: ${appraisalResult.riskAssessment?.riskLevel || "N/A"}
+
+You can review the full appraisal details in the panel on the right. I'm here if you want to refine any specific sections.`,
+        timestamp: Date.now(),
+      };
+
+      // Replace loading message with success message
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === loadingMsg.id ? successMsg : msg
+        )
+      );
+
+      // Mark celebration
+      setCelebrationMessage("Appraisal complete! Review your financial projections below.");
+    } catch (error) {
+      console.error("Error generating appraisal:", error);
+      const errorMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Sorry, I encountered an error generating the appraisal. Please try again.",
+        timestamp: Date.now(),
+      };
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === loadingMsg.id ? errorMsg : msg))
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const progressTip: ProgressTip | null = getAppraisalProgressTip(overallProgress, !!appraisalData, celebrationMessage);
@@ -541,13 +613,12 @@ When you're ready, click **"Generate Appraisal"** to generate the full qualitati
             {/* Section Cards or Detail View */}
             {selectedSectionId ? (
               <AppraisalDetailView
-                section={appraisalProgress.find(s => s.id === selectedSectionId)!}
+                section={appraisalProgress.find((s) => s.id === selectedSectionId)!}
                 appraisalData={appraisalData}
                 selectedIdea={selectedIdea}
                 onBack={() => setSelectedSectionId(undefined)}
               />
             ) : (
-              /* Always show section cards (waiting or complete) */
               <AppraisalSectionCards
                 sections={appraisalProgress}
                 selectedSectionId={selectedSectionId}

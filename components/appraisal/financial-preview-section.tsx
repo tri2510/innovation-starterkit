@@ -20,7 +20,6 @@ import {
   ChevronDown,
   ChevronUp,
   Info,
-  Database,
   Sparkles,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -29,9 +28,9 @@ import { Button } from '@/components/ui/button';
 import type { QuickFinancialPreview } from '@/types/innovation';
 import { cn } from '@/lib/utils';
 import { getSession, saveSession } from '@/lib/session';
-import { getDatabaseSampleSize } from '@/lib/innovation-database';
 import { parseAssumptions, extractKeyMetrics } from '@/lib/financial-formatter';
 import type { Industry } from '@/types/innovation';
+import { FinancialFiveYearTable, parseFiveYearDataFromAppraisal, type FiveYearFinancialData } from './financial-five-year-table';
 
 // Component to display formatted financial assumptions
 function FinancialAssumptionsDisplay({ assumptions }: { assumptions: string }) {
@@ -191,14 +190,6 @@ export function FinancialPreviewSection({
       radarScores,
       gate1Status,
       gate2Status,
-      databaseComparison: preview?.databaseComparison || {
-        marketFit: { yourScore: radarScores.marketFit, databaseAverage: 68, percentile: 'Top 50%', rating: 'average' },
-        innovation: { yourScore: radarScores.innovation, databaseAverage: 72, percentile: 'Top 50%', rating: 'average' },
-        financialViability: { yourScore: radarScores.financialViability, databaseAverage: 65, percentile: 'Top 50%', rating: 'average' },
-        strategicFit: { yourScore: radarScores.strategicFit, databaseAverage: 70, percentile: 'Top 50%', rating: 'average' },
-        riskLevel: { yourScore: radarScores.riskLevel, databaseAverage: 64, percentile: 'Top 50%', rating: 'average' },
-        marketSize: { yourScore: radarScores.marketSize, databaseAverage: 66, percentile: 'Top 50%', rating: 'average' },
-      },
     };
   }
 
@@ -501,73 +492,28 @@ export function FinancialPreviewSection({
                 </Card>
               </div>
 
-              {/* Database Comparison */}
-              <Card className="p-3">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-bold">Database Comparison</h4>
-                  <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                    <Database className="h-3 w-3" />
-                    <span>Innovation DB</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                  {Object.entries(preview.databaseComparison).map(([key, value]) => (
-                    <div key={key} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="capitalize font-medium">{formatLabel(key)}</span>
-                        <Badge
-                          variant={value.rating === 'above-average' ? 'default' : 'secondary'}
-                          className="text-xs"
-                        >
-                          {value.percentile}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className={cn(
-                              "h-full rounded-full transition-all",
-                              value.rating === 'above-average'
-                                ? 'bg-green-500'
-                                : value.rating === 'below-average'
-                                ? 'bg-orange-500'
-                                : 'bg-blue-500'
-                            )}
-                            style={{ width: `${value.yourScore}%` }}
-                          />
-                        </div>
-                        <span className="text-[10px] font-medium w-10 text-right">{value.yourScore}</span>
-                      </div>
-                      <p className="text-[9px] text-muted-foreground">DB avg: {value.databaseAverage}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-3 pt-3 border-t">
-                  <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
-                    <Info className="h-3 w-3" />
-                    <span>
-                      Comparison based on {getDatabaseSampleSize('manufacturing').toLocaleString()}+ historical innovation projects.
-                      Benchmarks adjusted for industry and technology focus.
-                    </span>
-                  </div>
-                </div>
-              </Card>
+
+              {/* 5-Year Financial Model Table */}
+              {(() => {
+                // Only show table if we have full appraisal data with financial forecasts
+                if (appraisalData?.financialAnalysis && (appraisalData.personnelCosts || appraisalData.operatingExpenses || appraisalData.capitalInvestments || appraisalData.revenueForecasts)) {
+                  const parsedData = parseFiveYearDataFromAppraisal(appraisalData);
+                  if (parsedData) {
+                    return (
+                      <FinancialFiveYearTable
+                        data={parsedData.data}
+                        financialAnalysis={parsedData.financialAnalysis}
+                        radarScores={parsedData.radarScores}
+                      />
+                    );
+                  }
+                }
+                return null;
+              })()}
             </div>
           ) : null}
         </div>
       )}
     </Card>
   );
-}
-
-function formatLabel(key: string): string {
-  const labels: Record<string, string> = {
-    marketFit: 'Market Fit',
-    innovation: 'Innovation',
-    financialViability: 'Financial Viability',
-    strategicFit: 'Strategic Fit',
-    riskLevel: 'Risk Level',
-    marketSize: 'Market Size',
-  };
-  return labels[key] || key;
 }

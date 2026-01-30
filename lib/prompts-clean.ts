@@ -985,6 +985,150 @@ Be:
 
 Respond naturally without forced JSON structure for conversational exploration.`;
 
+// Simplified appraisal prompt for quick generation
+export const SIMPLIFIED_APPRAISAL_PROMPT = `You are a financial analyst generating a concise investment appraisal.
+
+Generate a complete, realistic investment appraisal for this business idea. Be conservative, not optimistic.
+
+CRITICAL: Return ONLY valid JSON - no markdown blocks, no explanatory text.
+
+## JSON Structure (return this EXACT structure):
+{
+  "FINAL_SUMMARY": {
+    "targetMarket": "Brief description of target customers and market size",
+    "businessModel": "How the business makes money (pricing, revenue model)",
+    "revenueStreams": ["Stream 1", "Stream 2", "Stream 3"],
+    "competitiveAdvantage": "Key differentiators and competitive moat",
+    "estimatedInvestment": "$XXX,XXX - $XXX,XXX",
+    "timeframe": "X months to MVP",
+    "metrics": {
+      "problemClarity": {"score": 75, "weight": 0.35, "feedback": "Brief feedback"},
+      "marketSize": {"score": 70, "weight": 0.10, "feedback": "Brief feedback"},
+      "innovation": {"score": 72, "weight": 0.10, "feedback": "Brief feedback"},
+      "financialViability": {"score": 68, "weight": 0.15, "feedback": "Brief feedback"},
+      "strategicFit": {"score": 70, "weight": 0.05, "feedback": "Brief feedback"},
+      "marketFit": {"score": 74, "weight": 0.25, "feedback": "Brief feedback"},
+      "overallScore": 72,
+      "roi": "medium",
+      "risk": "medium"
+    },
+    "personnelCosts": {
+      "team": [
+        {"role": "CEO/Founder", "headcount": 1, "annualSalary": "$120,000", "equity": "5%"},
+        {"role": "CTO/Lead Developer", "headcount": 1, "annualSalary": "$140,000", "equity": "3%"},
+        {"role": "Marketing Lead", "headcount": 1, "annualSalary": "$90,000", "equity": "2%"}
+      ],
+      "totalAnnual": "$350,000",
+      "totalWithBenefits": "$385,000"
+    },
+    "operatingExpenses": {
+      "items": [
+        {"category": "Office/Co-working", "monthly": "$3,000", "annual": "$36,000"},
+        {"category": "Software & Tools", "monthly": "$1,500", "annual": "$18,000"},
+        {"category": "Marketing", "monthly": "$5,000", "annual": "$60,000"},
+        {"category": "Legal/Accounting", "monthly": "$1,000", "annual": "$12,000"}
+      ],
+      "totalMonthly": "$10,500",
+      "totalAnnual": "$126,000"
+    },
+    "capitalInvestments": {
+      "items": [
+        {"category": "Product Development", "amount": "$200,000", "description": "MVP development"},
+        {"category": "Equipment", "amount": "$30,000", "description": "Computers and infrastructure"},
+        {"category": "Initial Marketing", "amount": "$40,000", "description": "Launch campaign"},
+        {"category": "Legal/IP", "amount": "$20,000", "description": "Patent and setup"}
+      ],
+      "totalInitial": "$290,000"
+    },
+    "revenueForecasts": {
+      "year1": {
+        "projected": "$250,000",
+        "growth": "-",
+        "assumptions": "Conservative customer acquisition",
+        "capex": {"total": "$200,000", "investorFunded": "$150,000", "selfFunded": "$50,000"},
+        "opex": {"total": "$350,000", "investorFunded": "$250,000", "selfFunded": "$100,000", "percentOfRevenue": "140%"},
+        "ebitda": "-$300,000",
+        "depreciation": "$40,000",
+        "ebit": "-$340,000"
+      },
+      "year2": {
+        "projected": "$375,000",
+        "growth": "50%",
+        "assumptions": "Market penetration and referrals",
+        "capex": {"total": "$100,000", "investorFunded": "$75,000", "selfFunded": "$25,000"},
+        "opex": {"total": "$420,000", "investorFunded": "$300,000", "selfFunded": "$120,000", "percentOfRevenue": "112%"},
+        "ebitda": "-$145,000",
+        "depreciation": "$70,000",
+        "ebit": "-$215,000"
+      },
+      "year3": {
+        "projected": "$525,000",
+        "growth": "40%",
+        "assumptions": "Product expansion",
+        "capex": {"total": "$80,000", "investorFunded": "$60,000", "selfFunded": "$20,000"},
+        "opex": {"total": "$490,000", "investorFunded": "$350,000", "selfFunded": "$140,000", "percentOfRevenue": "93%"},
+        "ebitda": "-$45,000",
+        "depreciation": "$90,000",
+        "ebit": "-$135,000"
+      },
+      "year4": {
+        "projected": "$630,000",
+        "growth": "20%",
+        "assumptions": "Market maturation",
+        "capex": {"total": "$60,000", "investorFunded": "$45,000", "selfFunded": "$15,000"},
+        "opex": {"total": "$550,000", "investorFunded": "$390,000", "selfFunded": "$160,000", "percentOfRevenue": "87%"},
+        "ebitda": "$30,000",
+        "depreciation": "$100,000",
+        "ebit": "-$70,000"
+      },
+      "year5": {
+        "projected": "$700,000",
+        "growth": "11%",
+        "assumptions": "Steady growth in established market",
+        "capex": {"total": "$50,000", "investorFunded": "$35,000", "selfFunded": "$15,000"},
+        "opex": {"total": "$600,000", "investorFunded": "$420,000", "selfFunded": "$180,000", "percentOfRevenue": "86%"},
+        "ebitda": "$50,000",
+        "depreciation": "$105,000",
+        "ebit": "-$55,000"
+      }
+    },
+    "financialAnalysis": {
+      "totalInvestment": "$1,125,000",
+      "fiveYearRevenue": "$2,480,000",
+      "fiveYearProfitAfterExpenses": "$850,000",
+      "roi": "76%",
+      "paybackPeriod": "36 months",
+      "npv": "$420,000",
+      "irr": "28%",
+      "breakEvenPoint": "Month 30"
+    },
+    "riskAssessment": {
+      "riskLevel": "medium",
+      "viabilityScore": "72",
+      "keyRisks": ["Market adoption uncertainty", "Competitive response", "Execution risk"],
+      "mitigations": ["Strong value proposition", "Agile development approach", "Experienced team"],
+      "recommendation": "Proceed with pilot to validate assumptions before full investment."
+    }
+  }
+}
+
+## Guidelines:
+- Use realistic, conservative numbers (30-50% YoY growth, not 150%+)
+- Break-even in Year 3-4 is realistic, not Year 1
+- ROI of 30-80% is typical, not 200%+
+- Keep feedback brief and constructive
+- All numbers must be mathematically consistent
+- **IMPORTANT**: For each year, calculate:
+  - capex: Capital expenditures (total, with investor/selfFunded split)
+  - opex: Operating expenses (total, with investor/selfFunded split, and percentOfRevenue)
+  - ebitda: Earnings before interest, taxes, depreciation, amortization (Revenue - Opex)
+  - depreciation: ~20% of capex (straight-line over 5 years)
+  - ebit: EBIT = EBITDA - Depreciation
+- Early years typically show negative EBIT (losses) before break-even
+- opexPercentRevenue should decrease over time (from ~140% in Year 1 to ~80% by Year 5)
+- Include realistic investor vs self-funded split (typically 70-80% investor funded)
+`;
+
 export const REFINEMENT_PROMPT = `You are an expert business analyst helping refine and improve innovation concepts.
 
 Your task: When a user edits a field, analyze the change and update related content to maintain consistency.
