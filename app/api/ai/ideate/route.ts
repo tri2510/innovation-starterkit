@@ -21,7 +21,7 @@ type EvaluatedIdea = {
 
 export async function POST(request: NextRequest) {
   try {
-    const { challenge, marketAnalysis, userInput, conversationHistory } =
+    const { challenge, marketAnalysis, userInput, conversationHistory, skipEvaluation = false } =
       await request.json();
 
     if (!challenge) {
@@ -80,6 +80,19 @@ export async function POST(request: NextRequest) {
     console.log(
       `[Ideation API] Generated ${generatedIdeas.length} ideas with briefs`
     );
+
+    // Skip evaluation if requested (for faster initial generation)
+    if (skipEvaluation) {
+      console.log("[Ideation API] Skipping evaluation phase as requested");
+      return NextResponse.json({
+        success: true,
+        data: generatedIdeas.map((idea) => ({
+          ...idea,
+          metrics: undefined,
+          evaluation: undefined,
+        })),
+      });
+    }
 
     // === PHASE 2: EVALUATION ===
     // Second call: Evaluate the generated ideas independently

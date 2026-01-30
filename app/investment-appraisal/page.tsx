@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Sparkles } from "lucide-react";
-import { setStep, saveConversationHistory, saveInvestmentAppraisal, saveIdeas, clearPhasesAfter } from "@/lib/session";
+import { setStep, saveConversationHistory, saveInvestmentAppraisal, saveIdeas } from "@/lib/session";
 import { DEMO_APPRAISAL } from "@/lib/demo-data";
 import type { BusinessIdea } from "@/types/innovation";
 import { PhaseLayout } from "@/components/wizard";
@@ -99,8 +99,8 @@ export default function InvestmentAppraisalPage() {
 
   // Handle navigation
   const handleBack = () => {
-    // Clear downstream phases (investment-appraisal, pitch) when going back to ideation
-    clearPhasesAfter("ideation");
+    // Navigate back to ideation without clearing appraisal data
+    // Appraisal and conversation history are preserved
     setStep("ideation");
     saveConversationHistory("investment-appraisal", messages);
     router.push("/ideation");

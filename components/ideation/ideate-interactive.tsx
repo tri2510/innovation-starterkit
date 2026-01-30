@@ -82,6 +82,10 @@ export function InteractiveIdeation({
     }
   }, [messages, onMessagesChange]);
 
+  // Track the previous ideas array to detect replacements
+  const prevIdeasRef = useRef<BusinessIdea[]>([]);
+  const [replacementIdeaId, setReplacementIdeaId] = useState<string | null>(null);
+
   // Auto-update detail view when ideas change (e.g., when scores are regenerated via chat)
   useEffect(() => {
     if (selectedIdeaForView && ideas.length > 0) {
@@ -103,7 +107,21 @@ export function InteractiveIdeation({
         }
       } else {
         // Idea no longer exists (was replaced or removed)
-        // Select the first available idea or clear selection
+        // Try to find the replacement idea by comparing with previous ideas
+        const prevIdeaIds = new Set(prevIdeasRef.current.map(i => i.id));
+        const newIdeas = ideas.filter(i => !prevIdeaIds.has(i.id));
+
+        if (newIdeas.length > 0 && replacementIdeaId) {
+          // Use the tracked replacement idea
+          const replacement = ideas.find(i => i.id === replacementIdeaId);
+          if (replacement) {
+            setSelectedIdeaForView(replacement);
+            setReplacementIdeaId(null);
+            return;
+          }
+        }
+
+        // Fallback: Select the first available idea or clear selection
         if (ideas.length > 0) {
           setSelectedIdeaForView(ideas[0]);
         } else {
@@ -111,7 +129,10 @@ export function InteractiveIdeation({
         }
       }
     }
-  }, [ideas, selectedIdeaForView]);
+
+    // Update prevIdeasRef for next comparison
+    prevIdeasRef.current = ideas;
+  }, [ideas, selectedIdeaForView, replacementIdeaId]);
 
   // Initialize greeting
   useEffect(() => {
@@ -515,6 +536,24 @@ Browse through the ideas in the left panel, click to view details, and click "Ge
               // - Adding new ideas (assistant returns more ideas)
               // - Replacing/removing ideas (assistant returns fewer ideas)
               // - Updating ideas (assistant returns modified versions)
+
+              // Track if the currently viewed idea is being replaced
+              if (selectedIdeaForView) {
+                const currentIdeaStillExists = processedIdeas.some((i: BusinessIdea) => i.id === selectedIdeaForView.id);
+                if (!currentIdeaStillExists) {
+                  // The currently viewed idea was replaced - find the replacement
+                  // Look for ideas that are new (not in the original ideas list)
+                  const originalIdeaIds = new Set(ideas.map(i => i.id));
+                  const newIdeas = processedIdeas.filter((i: BusinessIdea) => !originalIdeaIds.has(i.id));
+
+                  // If there's exactly one new idea, that's likely the replacement
+                  // If there are multiple new ideas, pick the first one
+                  if (newIdeas.length > 0) {
+                    setReplacementIdeaId(newIdeas[0].id);
+                  }
+                }
+              }
+
               setIdeas(processedIdeas);
               saveIdeas(processedIdeas);
             }

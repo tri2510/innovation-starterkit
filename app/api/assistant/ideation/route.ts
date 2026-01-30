@@ -148,6 +148,8 @@ CRITICAL: When updating ideas, you MUST include ALL required fields:
 
 CRITICAL RULES:
 - **ALWAYS return a COMPLETE list of ideas** in your JSON response - never just the changed ones
+- **JSON MUST ALWAYS USE DOUBLE QUOTES** - Never use single quotes for keys or string values
+- **When copying existing ideas with nested quotes**, escape inner double quotes with backslashes (e.g., "tagline": "The \"Virtual\" Manager" - NOT 'The "Virtual" Manager')
 - **PRESERVE ideas exactly as-is** when copying them - do NOT modify, rewrite, or regenerate ideas you're not explicitly changing
 - Include the JSON block when user asks to: UPDATE, MODIFY, CHANGE, CREATE, GENERATE, ADD, or REPLACE ideas
 - When user asks to generate/create/add new ideas:
@@ -425,7 +427,56 @@ ${subStepContext}
 
           if (jsonStr) {
             try {
-              const parsed = JSON.parse(jsonStr.trim());
+              // Fix common JSON issues: single quotes instead of double quotes
+              // This happens when AI copies ideas with quotes in content and uses single quotes to avoid escaping
+              let fixedJson = jsonStr.trim();
+
+              // Simple approach: replace single quotes with double quotes
+              // But we need to be careful about nested quotes
+              // Use a state machine approach to handle this properly
+              let result = '';
+              let inDoubleQuote = false;
+              let inSingleQuote = false;
+              let i = 0;
+
+              while (i < fixedJson.length) {
+                const char = fixedJson[i];
+                const nextChar = fixedJson[i + 1] || '';
+
+                if (char === '\\' && nextChar) {
+                  // Escaped character - preserve as-is
+                  result += char + nextChar;
+                  i += 2;
+                  continue;
+                }
+
+                if (char === '"' && !inSingleQuote) {
+                  inDoubleQuote = !inDoubleQuote;
+                  result += char;
+                  i++;
+                  continue;
+                }
+
+                if (char === "'" && !inDoubleQuote) {
+                  // Found a single quote outside double quotes
+                  // Check if this starts/ends a single-quoted string
+                  const remaining = fixedJson.substring(i);
+                  const match = remaining.match(/^'([^']*?)'/);
+                  if (match) {
+                    // Convert to double-quoted with proper escaping
+                    const content = match[1];
+                    const escapedContent = content.replace(/"/g, '\\"');
+                    result += '"' + escapedContent + '"';
+                    i += match[0].length;
+                    continue;
+                  }
+                }
+
+                result += char;
+                i++;
+              }
+
+              const parsed = JSON.parse(result);
 
               if (parsed.IDEAS_UPDATE && parsed.IDEAS_UPDATE.ideas && Array.isArray(parsed.IDEAS_UPDATE.ideas)) {
                 if (!controllerClosed) {

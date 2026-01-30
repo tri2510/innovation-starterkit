@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getSession, saveIdeas, setStep, saveConversationHistory, selectIdea, clearPhasesAfter } from "@/lib/session";
+import { getSession, saveIdeas, setStep, saveConversationHistory, selectIdea } from "@/lib/session";
 import { Lightbulb } from "lucide-react";
 import type { Challenge, MarketAnalysis, BusinessIdea, ChatMessage } from "@/types/innovation";
 import { DEMO_IDEAS } from "@/lib/demo-data";
@@ -95,8 +95,8 @@ export default function IdeationPage() {
   };
 
   const handleBack = () => {
-    // Clear downstream phases (ideation, investment-appraisal, pitch) when going back to market
-    clearPhasesAfter("market");
+    // Navigate back to market without clearing ideation data
+    // Ideas and conversation history are preserved
     setStep("market");
     saveConversationHistory("ideation", messages);
     router.push("/market");
