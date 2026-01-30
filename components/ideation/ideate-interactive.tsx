@@ -10,7 +10,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2, Sparkles, Lightbulb, BarChart3, ChevronDown, ChevronUp, TrendingUp, Users, Target, Zap, CheckCircle2, Circle, Check, X } from "lucide-react";
+import { Send, Loader2, Sparkles, Lightbulb, Target, Check } from "lucide-react";
 import { streamChatResponse } from "@/hooks/use-chat-streaming";
 import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { ChatMessageWithRetry } from "@/components/chat/chat-message";
@@ -65,7 +65,8 @@ export function InteractiveIdeation({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isMarketExpanded, setIsMarketExpanded] = useState(false);
   const [selectedIdeaForView, setSelectedIdeaForView] = useState<BusinessIdea | null>(null);
-  const [isDetailView, setIsDetailView] = useState(false);
+  const [scoringIdeaId, setScoringIdeaId] = useState<string | null>(null);
+  const [isScoringAll, setIsScoringAll] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -80,6 +81,37 @@ export function InteractiveIdeation({
       onMessagesChange(messages);
     }
   }, [messages, onMessagesChange]);
+
+  // Auto-update detail view when ideas change (e.g., when scores are regenerated via chat)
+  useEffect(() => {
+    if (selectedIdeaForView && ideas.length > 0) {
+      const updatedIdea = ideas.find((i) => i.id === selectedIdeaForView.id);
+
+      if (updatedIdea) {
+        // Idea still exists - check if it has meaningful updates
+        if (updatedIdea !== selectedIdeaForView) {
+          const hasNewMetrics =
+            (updatedIdea.metrics && !selectedIdeaForView.metrics) ||
+            (updatedIdea.evaluation && !selectedIdeaForView.evaluation) ||
+            (updatedIdea.metrics && selectedIdeaForView.metrics &&
+              (updatedIdea.metrics.uniqueness !== selectedIdeaForView.metrics.uniqueness ||
+               updatedIdea.metrics.feasibility !== selectedIdeaForView.metrics.feasibility));
+
+          if (hasNewMetrics) {
+            setSelectedIdeaForView(updatedIdea);
+          }
+        }
+      } else {
+        // Idea no longer exists (was replaced or removed)
+        // Select the first available idea or clear selection
+        if (ideas.length > 0) {
+          setSelectedIdeaForView(ideas[0]);
+        } else {
+          setSelectedIdeaForView(null);
+        }
+      }
+    }
+  }, [ideas, selectedIdeaForView]);
 
   // Initialize greeting
   useEffect(() => {
@@ -98,10 +130,11 @@ export function InteractiveIdeation({
           timestamp: Date.now(),
         };
       } else if (hasIdeas) {
+        const needsScoring = ideas.some(i => !i.metrics);
         greetingMessage = {
           id: "greeting",
           role: "assistant",
-          content: `I've generated ${ideas.length} innovative ideas for "${challenge.problem.substring(0, 40)}...". Browse through them, click to select your favorite, or ask me to refine specific concepts.`,
+          content: `I've generated ${ideas.length} innovative ideas for "${challenge.problem.substring(0, 40)}..."${needsScoring ? '. Click on an idea to view details and generate scores when ready.' : '. Browse through the list, click to view details, and select your favorite.'} You can also ask me to refine specific concepts.`,
           timestamp: Date.now(),
         };
       } else {
@@ -151,26 +184,11 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
     }
   };
 
-  const handleSelectIdea = (ideaId: string) => {
-    // In grid mode, clicking an idea switches to detail view
-    const selectedIdea = ideas.find((i) => i.id === ideaId);
-    if (selectedIdea) {
-      setSelectedIdeaForView(selectedIdea);
-      setIsDetailView(true);
-    }
-  };
-
   const handleViewIdea = (ideaId: string) => {
-    // Update right panel view without changing mode
     const selectedIdea = ideas.find((i) => i.id === ideaId);
     if (selectedIdea) {
       setSelectedIdeaForView(selectedIdea);
     }
-  };
-
-  const handleCloseDetailMode = () => {
-    setIsDetailView(false);
-    setSelectedIdeaForView(null);
   };
 
   const handleConfirmIdeaSelection = (ideaId: string) => {
@@ -191,6 +209,99 @@ You can:
         timestamp: Date.now(),
       };
       setMessages((prev) => [...prev, msg]);
+    }
+  };
+
+  const handleGenerateScores = async (ideaId: string, scoreAll: boolean = false) => {
+    setScoringIdeaId(ideaId);
+    if (scoreAll) setIsScoringAll(true);
+
+    try {
+      let ideasToScore;
+      let scoreAllMode = false;
+
+      if (scoreAll) {
+        // Score all unscored ideas
+        const unscoredIdeas = ideas.filter((idea) => !idea.metrics);
+        ideasToScore = unscoredIdeas.length > 0 ? unscoredIdeas : [ideas.find((i) => i.id === ideaId)!];
+        scoreAllMode = true;
+      } else {
+        // Score only this specific idea
+        const idea = ideas.find((i) => i.id === ideaId);
+        ideasToScore = idea ? [idea] : [];
+      }
+
+      // Score ideas in parallel for faster results
+      const scorePromises = ideasToScore.map(async (idea) => {
+        const response = await fetch("/api/ai/ideate/score", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ideas: ideas,
+            ideaIds: [idea.id],
+            challenge: challenge,
+            marketAnalysis: marketAnalysis,
+          }),
+        });
+        const data = await response.json();
+        if (!data.success) throw new Error(`Failed to score ${idea.name}`);
+        return data.data[0]; // Return the scored idea
+      });
+
+      // Wait for all scoring to complete in parallel
+      const scoredIdeas = await Promise.all(scorePromises);
+
+      // Update all ideas with their new scores
+      const updatedIdeas = ideas.map((idea) => {
+        const scored = scoredIdeas.find((s: any) => s.id === idea.id);
+        return scored
+          ? { ...idea, metrics: scored.metrics, evaluation: scored.evaluation }
+          : idea;
+      });
+
+      setIdeas(updatedIdeas);
+      saveIdeas(updatedIdeas);
+
+      // Update the selected idea for view
+      setSelectedIdeaForView(updatedIdeas.find((i) => i.id === ideaId) || null);
+
+      const msg: ChatMessage = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: scoreAllMode
+          ? `Generated scores for ${scoredIdeas.length} idea${scoredIdeas.length > 1 ? 's' : ''}!
+
+${scoredIdeas.map((scored: any) => {
+  const idea = updatedIdeas.find((i) => i.id === scored.id);
+  return `• "${idea?.name}": ${Math.round(scored.metrics.uniqueness)}% unique, ${Math.round(scored.metrics.feasibility)}% feasible`;
+}).join('\n')}
+
+You can ask me to explain these metrics or suggest improvements to increase the scores.`
+          : `Generated scores for "${updatedIdeas.find((i) => i.id === ideaId)?.name}"!
+
+- Uniqueness: ${Math.round(scoredIdeas[0].metrics.uniqueness)}%
+- Feasibility: ${Math.round(scoredIdeas[0].metrics.feasibility)}%
+- Innovation: ${Math.round(scoredIdeas[0].metrics.innovation)}%
+- Market Fit: ${Math.round(scoredIdeas[0].metrics.marketFit)}%
+- ROI: ${scoredIdeas[0].metrics.roi}
+- Risk: ${scoredIdeas[0].metrics.risk}
+
+You can ask me to explain these metrics or suggest improvements to increase the scores.`,
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, msg]);
+    } catch (error) {
+      console.error("Error generating scores:", error);
+      const errorMsg: ChatMessage = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: "Sorry, I encountered an error generating scores. Please try again.",
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setScoringIdeaId(null);
+      setIsScoringAll(false);
     }
   };
 
@@ -244,6 +355,7 @@ You can:
             opportunities: marketAnalysis?.opportunities || [],
             challenges: marketAnalysis?.challenges || [],
           },
+          skipEvaluation: true, // Skip evaluation for faster generation
         }),
       });
 
@@ -253,6 +365,11 @@ You can:
 
       setIdeas(data.data);
       saveIdeas(data.data);
+
+      // Auto-select first idea for viewing
+      if (data.data.length > 0) {
+        setSelectedIdeaForView(data.data[0]);
+      }
 
       // Mark all progress as complete
       const updatedProgress: IdeateProgressItem[] = [
@@ -271,7 +388,7 @@ You can:
 
 Each idea addresses the problem: "${challenge.problem}"
 
-Browse through the ideas on the right, hover to preview, and click to select your favorite. You can also ask me to refine specific concepts or generate more alternatives.`,
+Browse through the ideas in the left panel, click to view details, and click "Generate Scores" when you want to evaluate an idea. You can also ask me to refine specific concepts or generate more alternatives.`,
         timestamp: Date.now(),
       };
       setMessages((prev) =>
@@ -364,13 +481,42 @@ Browse through the ideas on the right, hover to preview, and click to select you
               )
             );
             if (data.type === "update" && data.data?.ideas) {
-              // Clear financial previews from all ideas since they may have been modified
-              const clearedIdeas = data.data.ideas.map((idea: BusinessIdea) => ({
-                ...idea,
-                financialPreview: undefined,
-              }));
-              setIdeas(clearedIdeas);
-              saveIdeas(clearedIdeas);
+              // Process each idea from the assistant's response
+              const processedIdeas = data.data.ideas.map((updatedIdea: BusinessIdea) => {
+                const existingIdea = ideas.find((i) => i.id === updatedIdea.id);
+
+                // If this is an update to an existing idea
+                if (existingIdea) {
+                  // If updated idea has no metrics but existing one does, preserve existing metrics
+                  if (!updatedIdea.metrics && existingIdea.metrics) {
+                    return {
+                      ...updatedIdea,
+                      metrics: existingIdea.metrics,
+                      evaluation: existingIdea.evaluation,
+                      financialPreview: undefined,
+                    };
+                  }
+                  // Preserve financialPreview flag
+                  return {
+                    ...updatedIdea,
+                    financialPreview: undefined,
+                  };
+                }
+
+                // This is a new idea - just return it as-is
+                return {
+                  ...updatedIdea,
+                  financialPreview: undefined,
+                };
+              });
+
+              // Trust the assistant's response completely - use the returned list
+              // This allows for:
+              // - Adding new ideas (assistant returns more ideas)
+              // - Replacing/removing ideas (assistant returns fewer ideas)
+              // - Updating ideas (assistant returns modified versions)
+              setIdeas(processedIdeas);
+              saveIdeas(processedIdeas);
             }
           },
 
@@ -398,8 +544,6 @@ Browse through the ideas on the right, hover to preview, and click to select you
       setIsLoading(false);
     }
   };
-
-  const progressTip = getIdeateProgressTip(overallProgress, ideas.length > 0, ideas.length, isGenerating);
 
   return (
     <div className="flex gap-4 h-full">
@@ -502,142 +646,30 @@ Browse through the ideas on the right, hover to preview, and click to select you
 
       {/* Ideas Display Panel */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {!isDetailView ? (
-          /* GRID MODE - 3 Column Layout */
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="max-w-7xl mx-auto">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-purple-600" />
-                  <h1 className="text-lg font-bold">
-                    {ideas.length > 0 ? "Your Ideas" : "Generate Ideas"}
-                  </h1>
-                  {ideas.length > 0 && (
-                    <Badge variant="secondary" className="text-sm">{ideas.length}</Badge>
-                  )}
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {isGenerating ? "Generating..." : ideas.length > 0 ? "Ready" : "Waiting"}
-                </span>
+        {/* Detail Mode - LinkedIn-style Layout */}
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+          {/* Left Sidebar - Compact Idea List */}
+          <div className="flex-shrink-0 border-r bg-muted/5 flex flex-col w-full lg:w-[380px]">
+            {/* Header */}
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="h-4 w-4 text-blue-600" />
+                <h1 className="text-sm font-semibold">Your Ideas</h1>
+                <Badge variant="secondary" className="text-xs">{ideas.length}</Badge>
               </div>
+            </div>
 
-              {/* Progress Tip */}
-              {progressTip && (
-                <div className={cn(
-                  "flex items-center gap-2 text-sm px-4 py-3 rounded-lg mb-4",
-                  progressTip.type === "success" && "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300",
-                  progressTip.type !== "success" && "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
-                )}>
-                  <Sparkles className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm font-medium">{progressTip.text}</span>
-                </div>
-              )}
-
-              {/* Ideas Grid */}
+            {/* Scrollable List */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
               {ideas.length === 0 ? (
                 <Card className="border-dashed">
-                  <CardContent className="flex flex-col items-center justify-center py-16">
-                    <Lightbulb className="h-12 w-12 text-muted-foreground mb-4" />
-                    <p className="text-sm text-muted-foreground">No ideas yet. Click "Generate Ideas" to start.</p>
+                  <CardContent className="flex flex-col items-center justify-center py-8 px-3">
+                    <Lightbulb className="h-8 w-8 text-muted-foreground mb-3" />
+                    <p className="text-xs text-muted-foreground text-center">No ideas yet. Click "Generate Ideas" to start.</p>
                   </CardContent>
                 </Card>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {ideas.map((idea) => {
-                    const isConfirmed = selectedIdeaId === idea.id;
-                    const uniquenessScore = Math.round(idea.metrics?.uniqueness || 70);
-                    const feasibilityScore = Math.round(idea.metrics?.feasibility || 70);
-
-                    const getScoreColor = (score: number) => {
-                      if (score >= 80) return 'text-green-700 dark:text-green-300';
-                      if (score >= 60) return 'text-yellow-700 dark:text-yellow-300';
-                      return 'text-red-700 dark:text-red-300';
-                    };
-
-                    return (
-                      <Card
-                        key={idea.id}
-                        className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-purple-300 relative"
-                        onClick={() => handleSelectIdea(idea.id)}
-                      >
-                        {/* Select Button - Top Right */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleConfirmIdeaSelection(idea.id);
-                          }}
-                          className="absolute top-3 right-3 z-10 transition-all hover:scale-110"
-                          title={isConfirmed ? "Selected for appraisal" : "Select for appraisal"}
-                        >
-                          {isConfirmed ? (
-                            <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center shadow-md">
-                              <Check className="h-4 w-4 text-white" />
-                            </div>
-                          ) : (
-                            <div className="h-8 w-8 rounded-full border-2 border-purple-400 bg-white hover:border-purple-600 flex items-center justify-center shadow-sm" />
-                          )}
-                        </button>
-
-                        <div className="p-5 space-y-3">
-                          {/* Header */}
-                          <div className="flex items-start gap-3 pr-10">
-                            <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
-                              <Lightbulb className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-sm font-bold leading-tight mb-1">
-                                {idea.name}
-                              </h3>
-                              <p className="text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2">
-                                {idea.tagline}
-                              </p>
-                            </div>
-                          </div>
-
-                        {/* Description */}
-                        <p className="text-xs leading-relaxed text-neutral-700 dark:text-neutral-300 line-clamp-3">
-                          {idea.description}
-                        </p>
-
-                        {/* Compact Metrics */}
-                        {idea.metrics && (
-                          <div className="flex items-center gap-2 text-[10px]">
-                            <span className={cn("font-medium", getScoreColor(uniquenessScore))}>
-                              {uniquenessScore}% unique
-                            </span>
-                            <span className="text-neutral-400">•</span>
-                            <span className={cn("font-medium", getScoreColor(feasibilityScore))}>
-                              {feasibilityScore}% feasible
-                            </span>
-                          </div>
-                        )}
-
-                      </div>
-                    </Card>
-                  );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          /* DETAIL MODE - LinkedIn-style Layout */
-          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* Left Sidebar - Compact Idea List */}
-            <div className="flex-shrink-0 border-r bg-muted/5 flex flex-col w-full lg:w-[280px]">
-              {/* Header */}
-              <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
-                <div className="flex items-center gap-2">
-                  <Lightbulb className="h-4 w-4 text-purple-600" />
-                  <h1 className="text-sm font-semibold">Your Ideas</h1>
-                  <Badge variant="secondary" className="text-xs">{ideas.length}</Badge>
-                </div>
-              </div>
-
-              {/* Scrollable List */}
-              <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                {ideas.map((idea) => {
+                ideas.map((idea) => {
                   const uniquenessScore = Math.round(idea.metrics?.uniqueness || 70);
                   const feasibilityScore = Math.round(idea.metrics?.feasibility || 70);
 
@@ -654,31 +686,68 @@ Browse through the ideas on the right, hover to preview, and click to select you
                         "cursor-pointer transition-all overflow-hidden border relative group",
                         "hover:shadow-md",
                         selectedIdeaForView?.id === idea.id
-                          ? "border-purple-500 bg-purple-50/50 dark:bg-purple-950/20 shadow-sm"
-                          : "border-neutral-200 dark:border-neutral-800 hover:border-purple-300"
+                          ? "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20 shadow-sm"
+                          : "border-neutral-200 dark:border-neutral-800 hover:border-blue-300"
                       )}
                       onClick={() => handleViewIdea(idea.id)}
                     >
                       {/* Selection Indicator */}
                       {selectedIdeaForView?.id === idea.id && (
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500" />
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
                       )}
 
                       {/* Card Content */}
-                      <div className="p-3">
+                      <div className="p-4">
                         <h3 className={cn(
-                          "text-xs font-bold leading-tight mb-1",
+                          "text-sm font-bold leading-tight mb-1.5",
                           selectedIdeaForView?.id === idea.id ? "text-purple-900 dark:text-purple-100" : "text-neutral-900 dark:text-neutral-100"
                         )}>
                           {idea.name}
                         </h3>
-                        <p className="text-[10px] text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+                        <p className="text-[11px] text-neutral-600 dark:text-neutral-400 leading-relaxed mb-3">
                           {idea.tagline}
                         </p>
 
+                        {/* Short Summary */}
+                        {idea.description && (
+                          <p className="text-[10px] text-neutral-700 dark:text-neutral-300 line-clamp-3 leading-relaxed mb-3">
+                            {idea.description}
+                          </p>
+                        )}
+
+                        {/* Strategic Focus Areas */}
+                        {idea.searchFields && (idea.searchFields.industries?.length || idea.searchFields.technologies?.length) && (
+                          <div className="mb-3 space-y-1.5">
+                            {idea.searchFields.industries && idea.searchFields.industries.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {idea.searchFields.industries.slice(0, 3).map((industry, idx) => (
+                                  <span
+                                    key={`ind-${idx}`}
+                                    className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                  >
+                                    {industry}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {idea.searchFields.technologies && idea.searchFields.technologies.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {idea.searchFields.technologies.slice(0, 3).map((tech, idx) => (
+                                  <span
+                                    key={`tech-${idx}`}
+                                    className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                  >
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {/* Quick Metrics */}
                         {idea.metrics && (
-                          <div className="mt-2 flex items-center gap-2">
+                          <div className="flex items-center gap-2 pt-2 border-t border-neutral-200 dark:border-neutral-700">
                             <span className={cn("text-[10px] font-medium", getScoreColor(uniquenessScore))}>
                               {uniquenessScore}% unique
                             </span>
@@ -691,7 +760,7 @@ Browse through the ideas on the right, hover to preview, and click to select you
 
                         {/* Selected Badge */}
                         {selectedIdeaId === idea.id && (
-                          <div className="mt-2 flex items-center gap-1 text-[10px] text-purple-700 dark:text-purple-300 font-medium">
+                          <div className="mt-2 flex items-center gap-1 text-[10px] text-blue-700 dark:text-blue-300 font-medium">
                             <Check className="h-3 w-3" />
                             Selected
                           </div>
@@ -699,38 +768,30 @@ Browse through the ideas on the right, hover to preview, and click to select you
                       </div>
                     </Card>
                   );
-                })}
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Right Panel - Detailed View */}
+          {selectedIdeaForView && (
+            <div className="flex-1 bg-background flex flex-col">
+              <div className="flex-1 overflow-hidden">
+                <IdeaDetailView
+                  idea={selectedIdeaForView}
+                  marketAnalysis={marketAnalysis}
+                  allIdeas={ideas}
+                  onSelect={handleConfirmIdeaSelection}
+                  onGenerateScores={handleGenerateScores}
+                  isScoring={!isScoringAll && scoringIdeaId === selectedIdeaForView.id}
+                  isScoringAll={isScoringAll}
+                  selectedIdeaId={selectedIdeaId}
+                  hasUnscoredIdeas={ideas.some(i => !i.metrics)}
+                />
               </div>
             </div>
-
-            {/* Right Panel - Detailed View */}
-            {selectedIdeaForView && (
-              <div className="flex-1 bg-background flex flex-col">
-                {/* Mobile Back Button */}
-                <div className="lg:hidden flex-shrink-0 px-4 py-2 border-b bg-background/95 flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleCloseDetailMode}
-                    className="text-xs"
-                  >
-                    ← Back to grid
-                  </Button>
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <IdeaDetailView
-                    idea={selectedIdeaForView}
-                    marketAnalysis={marketAnalysis}
-                    allIdeas={ideas}
-                    onClose={handleCloseDetailMode}
-                    onSelect={handleConfirmIdeaSelection}
-                    selectedIdeaId={selectedIdeaId}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Fixed Bottom Navigation - Same for both modes */}
         {(onBack || onContinue) && (

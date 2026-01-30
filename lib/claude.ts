@@ -92,17 +92,18 @@ export async function sendClaudeMessage<T = unknown>(
  */
 export async function* streamClaudeMessage(
   messages: ClaudeMessage[],
-  systemPrompt: string
+  systemPrompt: string,
+  maxTokens: number = 8192
 ): AsyncGenerator<string, void, unknown> {
   if (!config.anthropic.apiKey) {
     throw new Error("ANTHROPIC_API_KEY is not configured");
   }
 
-  console.log("[streamClaudeMessage] Starting stream with max_tokens: 8192");
+  console.log("[streamClaudeMessage] Starting stream with max_tokens:", maxTokens);
 
   const stream = await anthropic.messages.create({
     model: config.anthropic.defaultModel,
-    max_tokens: 8192, // Increased from 4096 to prevent cutoff
+    max_tokens: maxTokens,
     system: systemPrompt,
     messages: messages,
     stream: true,
@@ -113,6 +114,23 @@ export async function* streamClaudeMessage(
 
   for await (const event of stream) {
     eventCount++;
+
+    // Check for message_stop to detect completion and truncation
+    if (event.type === 'message_stop') {
+      console.log(`[streamClaudeMessage] Received message_stop event`);
+    }
+
+    // Check stop_reason to detect if response was truncated
+    if (event.type === 'message_delta' && event.delta?.stop_reason) {
+      const stopReason = event.delta.stop_reason;
+      console.log(`[streamClaudeMessage] Stop reason:`, stopReason);
+
+      if (stopReason === 'max_tokens') {
+        console.warn(`[streamClaudeMessage] WARNING: Response was truncated due to max_tokens limit!`);
+        console.warn(`[streamClaudeMessage] Current content length: ${totalContentLength} chars`);
+        console.warn(`[streamClaudeMessage] Consider increasing max_tokens if responses are consistently cut off`);
+      }
+    }
 
     if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
       const text = event.delta.text;

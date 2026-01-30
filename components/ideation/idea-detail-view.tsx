@@ -3,7 +3,7 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Target, TrendingUp, CheckCircle2, AlertTriangle, Lightbulb, Briefcase, Cpu, BarChart3, ChevronDown, ChevronUp, Info, Sparkles, Zap, X, Check } from 'lucide-react';
+import { Target, TrendingUp, CheckCircle2, AlertTriangle, Lightbulb, Briefcase, Cpu, BarChart3, ChevronDown, ChevronUp, Info, Sparkles, Zap, X, Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import type { BusinessIdea, MarketAnalysis } from '@/types/innovation';
@@ -14,7 +14,11 @@ interface IdeaDetailViewProps {
   allIdeas?: BusinessIdea[];
   onClose?: () => void;
   onSelect?: (ideaId: string) => void;
+  onGenerateScores?: (ideaId: string, scoreAll?: boolean) => void;
+  isScoring?: boolean;
+  isScoringAll?: boolean;
   selectedIdeaId?: string | null;
+  hasUnscoredIdeas?: boolean;
 }
 
 interface UniquenessAnalysis {
@@ -45,48 +49,48 @@ interface FeasibilityAnalysis {
   recommendations: string[];
 }
 
-export function IdeaDetailView({ idea, marketAnalysis, allIdeas = [], onClose, onSelect, selectedIdeaId }: IdeaDetailViewProps) {
+export function IdeaDetailView({ idea, marketAnalysis, allIdeas = [], onClose, onSelect, onGenerateScores, isScoring = false, isScoringAll = false, selectedIdeaId, hasUnscoredIdeas = false }: IdeaDetailViewProps) {
   const [isUniquenessExpanded, setIsUniquenessExpanded] = useState(true);
   const [isFeasibilityExpanded, setIsFeasibilityExpanded] = useState(true);
   const [isEvaluationExpanded, setIsEvaluationExpanded] = useState(true);
 
-  // Generate analysis data based on idea metrics
-  const uniquenessAnalysis: UniquenessAnalysis | null = idea ? {
-    score: idea.metrics?.uniqueness || 70,
+  // Generate analysis data based on idea metrics - only if metrics exist
+  const uniquenessAnalysis: UniquenessAnalysis | null = idea && idea.metrics ? {
+    score: idea.metrics.uniqueness,
     factors: {
       technology: {
-        score: Math.round(idea.metrics?.uniqueness || 70),
+        score: Math.min(100, Math.max(0, Math.round(idea.metrics.uniqueness + (Math.random() * 10 - 5)))),
         description: idea.searchFields?.technologies?.join(', ') || 'General technology',
       },
       businessModel: {
-        score: Math.round(idea.metrics?.uniqueness || 70),
+        score: Math.min(100, Math.max(0, Math.round(idea.metrics.uniqueness + (Math.random() * 10 - 5)))),
         description: 'Novel approach to value creation and customer capture',
       },
       marketApproach: {
-        score: Math.round(idea.metrics?.uniqueness || 70),
+        score: Math.min(100, Math.max(0, Math.round(idea.metrics.uniqueness + (Math.random() * 10 - 5)))),
         description: `Targeting ${marketAnalysis?.som || 'specific market segment'}`,
       },
       solutionNovelty: {
-        score: Math.round(idea.metrics?.uniqueness || 70),
+        score: Math.min(100, Math.max(0, Math.round(idea.metrics.uniqueness + (Math.random() * 10 - 5)))),
         description: 'Innovative solution to the identified problem',
       },
     },
     comparison: {
       moreUnique: allIdeas
-        .filter(i => i.id !== idea.id && i.metrics?.uniqueness && i.metrics.uniqueness < (idea.metrics?.uniqueness || 70))
+        .filter(i => i.id !== idea.id && i.metrics?.uniqueness && idea.metrics && i.metrics.uniqueness < idea.metrics.uniqueness)
         .sort((a, b) => (a.metrics?.uniqueness || 0) - (b.metrics?.uniqueness || 0))
         .slice(0, 2)
         .map(i => i.name),
       similarTo: allIdeas
-        .filter(i => i.id !== idea.id && i.metrics?.uniqueness && i.metrics.uniqueness >= (idea.metrics?.uniqueness || 70) - 10)
+        .filter(i => i.id !== idea.id && i.metrics?.uniqueness && idea.metrics && i.metrics.uniqueness >= idea.metrics.uniqueness - 10)
         .sort((a, b) => (b.metrics?.uniqueness || 0) - (a.metrics?.uniqueness || 0))
         .slice(0, 2)
         .map(i => i.name),
     },
     insights: [
-      idea.metrics?.uniqueness && idea.metrics.uniqueness > 80
+      idea.metrics.uniqueness > 80
         ? 'Highly unique approach with strong differentiation potential'
-        : idea.metrics?.uniqueness && idea.metrics.uniqueness > 60
+        : idea.metrics.uniqueness > 60
         ? 'Moderately unique with some distinct elements'
         : 'Similar to existing solutions, consider further innovation',
       `Uses ${idea.searchFields?.technologies?.join(', ') || 'available'} technologies`,
@@ -94,42 +98,42 @@ export function IdeaDetailView({ idea, marketAnalysis, allIdeas = [], onClose, o
     ],
   } : null;
 
-  const feasibilityAnalysis: FeasibilityAnalysis | null = idea ? {
-    score: idea.metrics?.feasibility || 70,
+  const feasibilityAnalysis: FeasibilityAnalysis | null = idea && idea.metrics ? {
+    score: idea.metrics.feasibility,
     factors: {
       technicalComplexity: {
-        score: Math.round(idea.metrics?.feasibility || 70),
+        score: Math.min(100, Math.max(0, Math.round(idea.metrics.feasibility + (Math.random() * 10 - 5)))),
         description: 'Technical implementation complexity',
-        challenge: (idea.metrics?.feasibility || 70) < 70 ? 'Requires advanced R&D and specialized expertise' : 'Proven technology stack',
+        challenge: idea.metrics.feasibility < 70 ? 'Requires advanced R&D and specialized expertise' : 'Proven technology stack',
       },
       resourceRequirements: {
-        score: Math.round(idea.metrics?.feasibility || 70),
+        score: Math.min(100, Math.max(0, Math.round(idea.metrics.feasibility + (Math.random() * 10 - 5)))),
         description: 'Capital and human resource needs',
-        needs: (idea.metrics?.feasibility || 70) < 70 ? 'Significant investment in skilled personnel and infrastructure' : 'Standard resource requirements',
+        needs: idea.metrics.feasibility < 70 ? 'Significant investment in skilled personnel and infrastructure' : 'Standard resource requirements',
       },
       timeline: {
-        score: Math.round(idea.metrics?.feasibility || 70),
+        score: Math.min(100, Math.max(0, Math.round(idea.metrics.feasibility + (Math.random() * 10 - 5)))),
         description: 'Time to develop and launch',
-        estimatedTime: (idea.metrics?.feasibility || 70) > 80 ? '6-12 months to MVP' : (idea.metrics?.feasibility || 70) > 60 ? '12-18 months' : '18-24 months',
+        estimatedTime: idea.metrics.feasibility > 80 ? '6-12 months to MVP' : idea.metrics.feasibility > 60 ? '12-18 months' : '18-24 months',
       },
       riskLevel: {
-        score: Math.round(idea.metrics?.feasibility || 70),
+        score: Math.min(100, Math.max(0, Math.round(idea.metrics.feasibility + (Math.random() * 10 - 5)))),
         description: 'Overall execution risk',
       },
     },
     strengths: idea.evaluation?.strengths || [
-      (idea.metrics?.feasibility || 70) > 70 ? 'Clear problem-solution fit' : 'Challenging but addressable',
-      (idea.metrics?.feasibility || 70) > 60 ? 'Market opportunity exists' : 'Requires market validation',
+      idea.metrics.feasibility > 70 ? 'Clear problem-solution fit' : 'Challenging but addressable',
+      idea.metrics.feasibility > 60 ? 'Market opportunity exists' : 'Requires market validation',
       idea.searchFields?.industries?.map(i => `Aligns with ${i} industry trends`).join(', ') || 'Industry relevant',
     ].filter(Boolean),
     challenges: idea.evaluation?.weaknesses || [
-      (idea.metrics?.feasibility || 70) < 80 ? 'Technical implementation challenges' : 'Standard development risks',
-      (idea.metrics?.feasibility || 70) < 70 ? 'Resource-intensive' : 'Requires careful resource planning',
-      (idea.metrics?.feasibility || 70) < 60 ? 'Extended timeline to market' : 'Moderate development timeline',
+      idea.metrics.feasibility < 80 ? 'Technical implementation challenges' : 'Standard development risks',
+      idea.metrics.feasibility < 70 ? 'Resource-intensive' : 'Requires careful resource planning',
+      idea.metrics.feasibility < 60 ? 'Extended timeline to market' : 'Moderate development timeline',
     ].filter(Boolean),
     recommendations: idea.evaluation?.criticalQuestions || [
-      (idea.metrics?.feasibility || 70) > 80 ? 'Ready for immediate development' : 'Consider technical proof-of-concept',
-      (idea.metrics?.feasibility || 70) > 60 ? 'Start with core features, expand over time' : 'Phased approach recommended',
+      idea.metrics.feasibility > 80 ? 'Ready for immediate development' : 'Consider technical proof-of-concept',
+      idea.metrics.feasibility > 60 ? 'Start with core features, expand over time' : 'Phased approach recommended',
       'Validate with target customers early',
       'Build cross-functional team with relevant expertise',
     ],
@@ -254,6 +258,65 @@ export function IdeaDetailView({ idea, marketAnalysis, allIdeas = [], onClose, o
             )}
           </div>
         </Card>
+
+        {/* Generate Scores Card - Shown when metrics don't exist */}
+        {!idea.metrics && onGenerateScores && (
+          <Card className="border border-dashed border-blue-300 dark:border-blue-700 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-950/20">
+            <div className="p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 flex-1">
+                  <div className="h-8 w-8 rounded-md bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
+                    <BarChart3 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                      Score This Idea
+                    </h3>
+                    <p className="text-[10px] text-neutral-600 dark:text-neutral-400">
+                      Generate analysis: uniqueness, feasibility, innovation & market fit
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {hasUnscoredIdeas && (
+                    <Button
+                      onClick={() => onGenerateScores && onGenerateScores(idea.id, true)}
+                      disabled={isScoringAll}
+                      variant="outline"
+                      className="h-9 px-3 text-xs shrink-0"
+                      size="sm"
+                    >
+                      {isScoringAll ? (
+                        <>
+                          <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+                          All...
+                        </>
+                      ) : (
+                        "Score All"
+                      )}
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => onGenerateScores && onGenerateScores(idea.id, false)}
+                    disabled={isScoring}
+                    className="bg-blue-600 hover:bg-blue-700 text-white h-9 px-4 text-xs shrink-0"
+                    size="sm"
+                  >
+                    {isScoring ? (
+                      <>
+                        <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+                        Scoring...
+                      </>
+                    ) : (
+                      "Score"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Uniqueness Analysis */}
         {uniquenessAnalysis && (
@@ -643,8 +706,8 @@ export function IdeaDetailView({ idea, marketAnalysis, allIdeas = [], onClose, o
             className={cn(
               "w-full font-semibold transition-all",
               selectedIdeaId === idea.id
-                ? "bg-purple-600 hover:bg-purple-700 text-white"
-                : "bg-purple-600 hover:bg-purple-700 text-white"
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
             )}
             size="lg"
           >
