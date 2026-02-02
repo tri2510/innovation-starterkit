@@ -133,11 +133,6 @@ export async function* streamClaudeMessage(
   for await (const chunk of stream) {
     const delta = chunk.choices[0]?.delta;
 
-    // Skip reasoning_content (thinking)
-    if ((delta as any)?.reasoning_content) {
-      continue;
-    }
-
     if (delta?.content) {
       yield delta.content;
     }
@@ -161,10 +156,7 @@ export async function* streamClaudeWithThinking(
     throw new Error("OPENAI_API_KEY is not configured");
   }
 
-  console.log("[streamClaudeWithThinking] Starting stream with thinking:", options?.thinking !== false, "webSearch:", options?.webSearch);
-
-  // Note: Z.AI's thinking mode and web search are enabled by default for glm-4.7
-  // We don't need to add special parameters
+  console.log("[streamClaudeWithThinking] Starting stream");
 
   const stream = await openai.chat.completions.create({
     model: config.openai.defaultModel,
@@ -180,25 +172,14 @@ export async function* streamClaudeWithThinking(
   }) as AsyncIterable<ChatCompletionChunk>;
 
   let eventCount = 0;
-  let hasThinkingContent = false;
 
   for await (const chunk of stream) {
     eventCount++;
     const delta = chunk.choices[0]?.delta;
 
-    // Log first few events to understand the structure
+    // Log first few events
     if (eventCount <= 3) {
       console.log(`[stream event ${eventCount}] delta:`, delta);
-    }
-
-    // Check for reasoning_content (thinking process from Z.AI)
-    if ((delta as any)?.reasoning_content) {
-      const thinkingText = (delta as any).reasoning_content;
-      if (thinkingText) {
-        hasThinkingContent = true;
-        console.log("[stream] Yielding thinking:", thinkingText.slice(0, 50) + "...");
-        yield { type: "thinking", text: thinkingText };
-      }
     }
 
     // Regular content
@@ -208,5 +189,5 @@ export async function* streamClaudeWithThinking(
     }
   }
 
-  console.log("[stream] Complete. Total events:", eventCount, "Had thinking:", hasThinkingContent);
+  console.log("[stream] Complete. Total events:", eventCount);
 }

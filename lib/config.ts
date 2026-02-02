@@ -5,11 +5,11 @@
 
 // API Keys (Required - no defaults for security)
 export const config = {
-  // OpenAI API Configuration (using Z.AI OpenAI-compatible endpoint)
+  // OpenAI API Configuration
   openai: {
-    apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY || '',
-    baseURL: process.env.OPENAI_BASE_URL || 'https://api.z.ai/api/paas/v4/',
-    defaultModel: process.env.OPENAI_DEFAULT_MODEL || 'glm-4.7',
+    apiKey: process.env.OPENAI_API_KEY || '',
+    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+    defaultModel: process.env.OPENAI_DEFAULT_MODEL || 'gpt-4o',
   },
 
   // Tavily Search API (Optional - for web search features)
@@ -19,7 +19,7 @@ export const config = {
 
   // API Client Settings (with sensible defaults)
   api: {
-    timeout: parseInt(process.env.API_TIMEOUT || '60000', 10),
+    timeout: parseInt(process.env.API_TIMEOUT || '60000', 10), // 60 seconds
     maxRetries: parseInt(process.env.API_MAX_RETRIES || '3', 10),
   },
 

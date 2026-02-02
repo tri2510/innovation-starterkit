@@ -78,15 +78,15 @@ export async function streamChatResponseWithProgress(
       max_tokens: 4096,
       messages: openaiMessages,
       stream: true,
+      // Disable Z.AI thinking mode for faster responses (no reasoning_content)
+      thinking: { type: "disabled" } as any,
     });
 
     for await (const chunk of stream) {
       const delta = chunk.choices[0]?.delta;
 
-      // Check for reasoning_content (thinking) first
+      // Check for reasoning_content (Z.AI thinking mode) - skip it
       if ((delta as any)?.reasoning_content) {
-        const thinking = (delta as any).reasoning_content;
-        // Skip thinking content for now, or could handle differently
         continue;
       }
 
@@ -182,6 +182,8 @@ export async function getStructuredAIResponse<T>(
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt }
       ],
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
 
     const content = response.choices[0]?.message?.content;
@@ -277,6 +279,8 @@ Return ONLY the JSON, no additional text`;
         { role: 'system', content: extractionPrompt },
         { role: 'user', content: 'Extract the progress update from this conversation.' }
       ],
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
 
     const content = response.choices[0]?.message?.content;
@@ -374,6 +378,8 @@ Rules:
         { role: 'system', content: extractionPrompt },
         { role: 'user', content: 'Extract the market progress update from this conversation.' }
       ],
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
 
     const content = response.choices[0]?.message?.content;
@@ -693,6 +699,8 @@ export async function getConversationalResponse(
       model: getModel(),
       max_tokens: 4096,
       messages: messages,
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
 
     const content = response.choices[0]?.message?.content;
