@@ -669,14 +669,14 @@ export function EnhancedAnalysisPanel({
                       <div className="pt-3 border-t border-border/50">
                         <details
                           className="group"
-                          open={true} // Default open to show all sources
+                          open={false} // Default collapsed - click to expand
                         >
                           <summary className="flex items-center justify-between cursor-pointer text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors list-none mb-2">
                             <span className="flex items-center gap-1.5">
                               <Globe className="h-3 w-3" />
                               Sources ({msg.sources.length})
                             </span>
-                            <span className="opacity-50 group-hover:opacity-100 text-[10px]">(Click to collapse)</span>
+                            <span className="opacity-50 group-hover:opacity-100 text-[10px]">(Click to expand)</span>
                           </summary>
                           <div className="space-y-2">
                             {msg.sources.map((source, i) => (
