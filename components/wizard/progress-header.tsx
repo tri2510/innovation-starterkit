@@ -90,7 +90,7 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
               <span className="text-white font-semibold text-base">IK</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold text-base leading-tight text-neutral-900 dark:text-neutral-100">Innovation Kit</span>
+              <span className="font-semibold text-base leading-tight text-neutral-900 dark:text-neutral-100">Innovation StarterKit</span>
               <span className="text-[9px] font-medium text-red-400 dark:text-red-500 uppercase tracking-wide -mt-0.5 text-right">Alpha 3</span>
             </div>
           </Link>

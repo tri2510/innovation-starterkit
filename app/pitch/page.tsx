@@ -468,8 +468,8 @@ export default function PitchPage() {
   // Navigate back
   const handleBack = () => {
     saveConversationHistory("pitch", messages);
-    setStep("ideation");
-    router.push("/ideation");
+    setStep("investment-appraisal");
+    router.push("/investment-appraisal");
   };
 
   // Generate pitch deck
