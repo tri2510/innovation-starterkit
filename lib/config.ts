@@ -7,7 +7,7 @@
 export const config = {
   // OpenAI API Configuration (using Z.AI OpenAI-compatible endpoint)
   openai: {
-    apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY || '',
+    apiKey: process.env.OPENAI_API_KEY || '',
     baseURL: process.env.OPENAI_BASE_URL || 'https://api.z.ai/api/paas/v4/',
     defaultModel: process.env.OPENAI_DEFAULT_MODEL || 'glm-4.7',
   },
