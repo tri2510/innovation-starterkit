@@ -92,25 +92,59 @@ export async function sendClaudeMessage<T = unknown>(
  */
 export async function* streamClaudeMessage(
   messages: ClaudeMessage[],
-  systemPrompt: string
+  systemPrompt: string,
+  maxTokens: number = 8192
 ): AsyncGenerator<string, void, unknown> {
   if (!config.anthropic.apiKey) {
     throw new Error("ANTHROPIC_API_KEY is not configured");
   }
 
+  console.log("[streamClaudeMessage] Starting stream with max_tokens:", maxTokens);
+
   const stream = await anthropic.messages.create({
     model: config.anthropic.defaultModel,
-    max_tokens: 4096,
+    max_tokens: maxTokens,
     system: systemPrompt,
     messages: messages,
     stream: true,
   });
 
+  let eventCount = 0;
+  let totalContentLength = 0;
+
   for await (const event of stream) {
+    eventCount++;
+
+    // Check for message_stop to detect completion and truncation
+    if (event.type === 'message_stop') {
+      console.log(`[streamClaudeMessage] Received message_stop event`);
+    }
+
+    // Check stop_reason to detect if response was truncated
+    if (event.type === 'message_delta' && event.delta?.stop_reason) {
+      const stopReason = event.delta.stop_reason;
+      console.log(`[streamClaudeMessage] Stop reason:`, stopReason);
+
+      if (stopReason === 'max_tokens') {
+        console.warn(`[streamClaudeMessage] WARNING: Response was truncated due to max_tokens limit!`);
+        console.warn(`[streamClaudeMessage] Current content length: ${totalContentLength} chars`);
+        console.warn(`[streamClaudeMessage] Consider increasing max_tokens if responses are consistently cut off`);
+      }
+    }
+
     if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-      yield event.delta.text;
+      const text = event.delta.text;
+      totalContentLength += text.length;
+      yield text;
+    }
+
+    // Log every 100 events to avoid spam
+    if (eventCount % 100 === 0) {
+      console.log(`[streamClaudeMessage] Processed ${eventCount} events, ${totalContentLength} chars`);
     }
   }
+
+  console.log(`[streamClaudeMessage] Stream complete. Total events: ${eventCount}, Total chars: ${totalContentLength}`);
 }
 
 /**
@@ -184,7 +218,7 @@ export async function* streamClaudeWithThinking(
   // Build base request parameters
   const requestParams: Record<string, unknown> = {
     model: config.anthropic.defaultModel,
-    max_tokens: 4096,
+    max_tokens: 8192, // Increased from 4096 to prevent cutoff
     system: systemPrompt,
     messages: messages,
     stream: true,
@@ -213,10 +247,13 @@ export async function* streamClaudeWithThinking(
   }
 
   console.log("[streamClaudeWithThinking] Request params keys:", Object.keys(requestParams));
+  console.log("[streamClaudeWithThinking] Using max_tokens: 8192");
   const stream = await anthropic.messages.create(requestParams as any) as unknown as AsyncIterable<unknown>;
 
   let eventCount = 0;
   let hasThinkingContent = false;
+  let totalThinkingLength = 0;
+  let totalContentLength = 0;
 
   for await (const event of stream) {
     eventCount++;
@@ -231,6 +268,11 @@ export async function* streamClaudeWithThinking(
       if (evt.message) {
         console.log(`[stream event ${eventCount}] message keys:`, Object.keys(evt.message));
       }
+    }
+
+    // Log every 100 events to track progress
+    if (eventCount % 100 === 0) {
+      console.log(`[streamClaudeWithThinking] Processed ${eventCount} events, thinking: ${totalThinkingLength} chars, content: ${totalContentLength} chars`);
     }
 
     // Extract thinking content from various possible locations
@@ -277,18 +319,40 @@ export async function* streamClaudeWithThinking(
     // Yield thinking content
     if (thinkingText) {
       hasThinkingContent = true;
+      totalThinkingLength += thinkingText.length;
       console.log("[stream] Yielding thinking:", thinkingText.slice(0, 50) + "...");
       yield { type: "thinking", text: thinkingText };
     }
 
     // Yield content
     if (contentText) {
+      totalContentLength += contentText.length;
       console.log("[stream] Yielding content:", contentText.slice(0, 50) + "...");
       yield { type: "content", text: contentText };
     }
+
+    // Check for message_stop event to detect completion
+    if (evt.type === 'message_stop') {
+      console.log("[streamClaudeWithThinking] Received message_stop event - stream complete");
+    }
+
+    // Check for stop_reason to detect if response was truncated
+    if (evt.message?.stop_reason) {
+      const stopReason = evt.message.stop_reason;
+      console.log("[streamClaudeWithThinking] Stop reason:", stopReason);
+
+      if (stopReason === 'max_tokens') {
+        console.warn("[streamClaudeWithThinking] WARNING: Response was truncated due to max_tokens limit!");
+        console.warn("[streamClaudeWithThinking] Current content length:", totalContentLength, "chars");
+        console.warn("[streamClaudeWithThinking] Consider increasing max_tokens further if responses are consistently cut off");
+      }
+    }
   }
 
-  console.log("[stream] Complete. Total events:", eventCount, "Had thinking:", hasThinkingContent);
+  console.log("[streamClaudeWithThinking] Stream complete. Total events:", eventCount);
+  console.log("[streamClaudeWithThinking] Final content length:", totalContentLength, "chars");
+  console.log("[streamClaudeWithThinking] Final thinking length:", totalThinkingLength, "chars");
+  console.log("[streamClaudeWithThinking] Had thinking content:", hasThinkingContent);
 }
 
 export { anthropic };

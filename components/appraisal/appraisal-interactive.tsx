@@ -29,6 +29,23 @@ import {
 import { AppraisalSectionCards } from "./appraisal-section-cards";
 import { AppraisalDetailView } from "./appraisal-detail-view";
 import { extractMarketValue } from "@/lib/market-utils";
+import { FinancialFiveYearTable, parseFiveYearDataFromAppraisal, type FiveYearFinancialData } from "./financial-five-year-table";
+
+// Helper function to create empty financial data for initial display
+function createEmptyFinancialData(): FiveYearFinancialData {
+  return {
+    years: [
+      { year: "2026", revenue: 0, capex: 0, investorCapex: 0, selfFundedCapex: 0, opex: 0, investorOpex: 0, selfFundedOpex: 0, opexPercentRevenue: 0, ebitda: 0, depreciation: 0, ebit: 0 },
+      { year: "2027", revenue: 0, capex: 0, investorCapex: 0, selfFundedCapex: 0, opex: 0, investorOpex: 0, selfFundedOpex: 0, opexPercentRevenue: 0, ebitda: 0, depreciation: 0, ebit: 0 },
+      { year: "2028", revenue: 0, capex: 0, investorCapex: 0, selfFundedCapex: 0, opex: 0, investorOpex: 0, selfFundedOpex: 0, opexPercentRevenue: 0, ebitda: 0, depreciation: 0, ebit: 0 },
+      { year: "2029", revenue: 0, capex: 0, investorCapex: 0, selfFundedCapex: 0, opex: 0, investorOpex: 0, selfFundedOpex: 0, opexPercentRevenue: 0, ebitda: 0, depreciation: 0, ebit: 0 },
+      { year: "2030", revenue: 0, capex: 0, investorCapex: 0, selfFundedCapex: 0, opex: 0, investorOpex: 0, selfFundedOpex: 0, opexPercentRevenue: 0, ebitda: 0, depreciation: 0, ebit: 0 },
+    ],
+    investmentMetrics: [],
+    totals: { revenue: 0, capex: 0, investorCapex: 0, selfFundedCapex: 0, opex: 0, investorOpex: 0, selfFundedOpex: 0, ebitda: 0, ebit: 0 },
+    gates: { fiveYearRoiTarget: 150, fiveYearRoiActual: 0 },
+  };
+}
 
 interface InteractiveAppraisalProps {
   challenge: { problem: string; targetAudience: string; currentSolutions: string };
@@ -91,8 +108,7 @@ export function InteractiveAppraisal({
         { ...defaultAppraisalProgress[2], status: appraisalData.competitiveAdvantage ? "complete" : "waiting", excerpt: appraisalData.competitiveAdvantage?.substring(0, 50) + "..." },
         { ...defaultAppraisalProgress[3], status: appraisalData.personnelCosts || appraisalData.estimatedInvestment ? "complete" : "waiting", excerpt: appraisalData.estimatedInvestment || appraisalData.personnelCosts?.totalAnnual },
         { ...defaultAppraisalProgress[4], status: appraisalData.revenueForecasts ? "complete" : "waiting", excerpt: appraisalData.financialAnalysis?.fiveYearRevenue },
-        { ...defaultAppraisalProgress[5], status: appraisalData.financialAnalysis || selectedIdea?.metrics ? "complete" : "waiting", excerpt: appraisalData.financialAnalysis?.roi },
-        { ...defaultAppraisalProgress[6], status: appraisalData.riskAssessment || selectedIdea?.timeframe ? "complete" : "waiting", excerpt: appraisalData.riskAssessment?.riskLevel || selectedIdea?.timeframe },
+        { ...defaultAppraisalProgress[5], status: appraisalData.riskAssessment || selectedIdea?.timeframe ? "complete" : "waiting", excerpt: appraisalData.riskAssessment?.riskLevel || selectedIdea?.timeframe },
       ];
       setAppraisalProgress(updatedProgress);
       setOverallProgress(calculateAppraisalProgress(updatedProgress));
@@ -118,16 +134,9 @@ You can review the detailed analysis on the right, click on any section to expan
           role: "assistant",
           content: `I'm your investment analyst. I'll help you build a comprehensive appraisal for "${selectedIdea?.name || "the selected idea"}".
 
-This will include:
-- **Target Market Analysis**
-- **Business Model & Revenue Streams**
-- **Competitive Advantage**
-- **Investment & Cost Structure**
-- **Revenue Forecasts**
-- **Financial Metrics & Scoring**
-- **Risk Assessment & Timeline**
+The Financial Projections & Innovation Radar above are calculated from industry benchmarks.
 
-Click "Generate Appraisal" to start the analysis.`,
+When you're ready, click **"Generate Appraisal"** to generate the full qualitative analysis including target market, business model, competitive advantage, and risk assessment.`,
           timestamp: Date.now(),
         };
       }
@@ -186,6 +195,10 @@ Click "Generate Appraisal" to start the analysis.`,
     setMessages((prev) => [...prev, aiMessage]);
 
     try {
+      // Increase timeout for full appraisal generation (comprehensive prompt takes longer)
+      const isFullAppraisalGeneration = contentToSend.includes("Generate comprehensive investment appraisal");
+      const timeout = isFullAppraisalGeneration ? 300000 : undefined; // 5 minutes for full appraisal
+
       await streamChatResponse(
         "/api/assistant/investment-appraisal",
         {
@@ -198,14 +211,18 @@ Click "Generate Appraisal" to start the analysis.`,
         },
         {
           filterDisplayContent: (content) => {
-            const hasAppraisalUpdate = content.includes("APPRAISAL_UPDATE");
+            const hasAppraisalUpdate = content.includes("APPRAISAL_UPDATE") || content.includes("FINAL_SUMMARY");
             if (hasAppraisalUpdate) {
               let filtered = content;
-              filtered = filtered.replace(/[\s\S]*?```json\s*[\s\S]*?APPRAISAL_UPDATE[\s\S]*?\n```/g, "");
-              filtered = filtered.replace(/[\s\S]*?Here['']?s? the updated appraisal[\s\S]*?APPRAISAL/g, "");
+              // Remove JSON blocks with APPRAISAL_UPDATE or FINAL_SUMMARY
+              filtered = filtered.replace(/[\s\S]*?```json\s*[\s\S]*?(?:APPRAISAL_UPDATE|FINAL_SUMMARY)[\s\S]*?\n```/g, "");
+              // Remove transitional text before JSON
+              filtered = filtered.replace(/[\s\S]*?Here['']?s? the updated appraisal[\s\S]*?(?:APPRAISAL|FINAL_SUMMARY)/g, "");
               filtered = filtered.replace(/Here['']?s? the updated appraisal[\s\S]*?```/gi, "");
-              filtered = filtered.replace(/[\s\S]*?Here's the updated data[\s\S]*?APPRAISAL/g, "");
-              filtered = filtered.replace(/Here is the updated data[\s\S]*?APPRAISAL/g, "");
+              filtered = filtered.replace(/[\s\S]*?Here's the updated data[\s\S]*?(?:APPRAISAL|FINAL_SUMMARY)/g, "");
+              filtered = filtered.replace(/Here is the updated data[\s\S]*?(?:APPRAISAL|FINAL_SUMMARY)/g, "");
+              // Remove any remaining "FINAL_SUMMARY" references
+              filtered = filtered.replace(/FINAL_SUMMARY[\s\S]*?```/g, "");
               return filtered.trim();
             }
             return content;
@@ -239,8 +256,7 @@ Click "Generate Appraisal" to start the analysis.`,
                 { ...defaultAppraisalProgress[2], status: "complete", excerpt: updatedAppraisal.competitiveAdvantage?.substring(0, 50) + "..." },
                 { ...defaultAppraisalProgress[3], status: "complete", excerpt: updatedAppraisal.estimatedInvestment },
                 { ...defaultAppraisalProgress[4], status: "complete", excerpt: updatedAppraisal.financialAnalysis?.fiveYearRevenue },
-                { ...defaultAppraisalProgress[5], status: "complete", excerpt: updatedAppraisal.financialAnalysis?.roi },
-                { ...defaultAppraisalProgress[6], status: "complete", excerpt: updatedAppraisal.riskAssessment?.riskLevel },
+                { ...defaultAppraisalProgress[5], status: "complete", excerpt: updatedAppraisal.riskAssessment?.riskLevel },
               ];
               setAppraisalProgress(updatedProgress);
               setOverallProgress(100);
@@ -256,6 +272,7 @@ Click "Generate Appraisal" to start the analysis.`,
               )
             );
           },
+          timeout,
         }
       );
     } catch (error) {
@@ -273,8 +290,80 @@ Click "Generate Appraisal" to start the analysis.`,
   };
 
   const generateAppraisal = async () => {
-    // Use the chat function instead of a separate endpoint
-    await handleSendMessage("Generate comprehensive investment appraisal with all sections");
+    if (!selectedIdea || isLoading) return;
+
+    setIsLoading(true);
+
+    // Show loading message
+    const loadingMsg: ChatMessage = {
+      id: Date.now().toString(),
+      role: "assistant",
+      content: "Generating your investment appraisal...",
+      timestamp: Date.now(),
+    };
+    setMessages((prev) => [...prev, loadingMsg]);
+
+    try {
+      const response = await fetch("/api/ai/appraisal/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          challenge: challenge,
+          marketAnalysis: marketAnalysis,
+          idea: selectedIdea,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to generate appraisal");
+      }
+
+      // Update appraisal data
+      const appraisalResult = data.data;
+      setAppraisalData(appraisalResult);
+      onSaveAppraisal(appraisalResult);
+
+      // Show success message
+      const successMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `Investment appraisal generated successfully!
+
+**Summary:**
+- Estimated Investment: ${appraisalResult.estimatedInvestment}
+- Timeframe: ${appraisalResult.timeframe}
+- 5-Year ROI: ${appraisalResult.financialAnalysis?.roi || "N/A"}
+- Risk Level: ${appraisalResult.riskAssessment?.riskLevel || "N/A"}
+
+You can review the full appraisal details in the panel on the right. I'm here if you want to refine any specific sections.`,
+        timestamp: Date.now(),
+      };
+
+      // Replace loading message with success message
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === loadingMsg.id ? successMsg : msg
+        )
+      );
+
+      // Mark celebration
+      setCelebrationMessage("Appraisal complete! Review your financial projections below.");
+    } catch (error) {
+      console.error("Error generating appraisal:", error);
+      const errorMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Sorry, I encountered an error generating the appraisal. Please try again.",
+        timestamp: Date.now(),
+      };
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === loadingMsg.id ? errorMsg : msg))
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const progressTip: ProgressTip | null = getAppraisalProgressTip(overallProgress, !!appraisalData, celebrationMessage);
@@ -499,36 +588,43 @@ Click "Generate Appraisal" to start the analysis.`,
               </Card>
             )}
 
+            {/* 5-Year Financial Model Table (with integrated radar & summary) */}
+            {(() => {
+              const parsedData = appraisalData ? parseFiveYearDataFromAppraisal(appraisalData) : null;
+              if (parsedData) {
+                return (
+                  <FinancialFiveYearTable
+                    data={parsedData.data}
+                    financialAnalysis={parsedData.financialAnalysis}
+                    radarScores={parsedData.radarScores}
+                  />
+                );
+              }
+              // Show empty state
+              return (
+                <FinancialFiveYearTable
+                  data={createEmptyFinancialData()}
+                  financialAnalysis={undefined}
+                  radarScores={undefined}
+                />
+              );
+            })()}
+
             {/* Section Cards or Detail View */}
             {selectedSectionId ? (
               <AppraisalDetailView
-                section={appraisalProgress.find(s => s.id === selectedSectionId)!}
+                section={appraisalProgress.find((s) => s.id === selectedSectionId)!}
                 appraisalData={appraisalData}
                 selectedIdea={selectedIdea}
                 onBack={() => setSelectedSectionId(undefined)}
               />
             ) : (
-              <>
-                {/* Always show section cards as placeholders */}
-                <AppraisalSectionCards
-                  sections={appraisalProgress}
-                  selectedSectionId={selectedSectionId}
-                  onSelectSection={setSelectedSectionId}
-                  isLoading={isLoading}
-                />
-
-                {/* Show empty state message below cards if no appraisal data */}
-                {!appraisalData && (
-                  <Card className="border-dashed mt-4">
-                    <div className="flex flex-col items-center justify-center py-8">
-                      <Sparkles className="h-8 w-8 text-purple-400 mb-2" />
-                      <p className="text-sm text-muted-foreground text-center px-8">
-                        Click "Generate Appraisal" to fill all sections
-                      </p>
-                    </div>
-                  </Card>
-                )}
-              </>
+              <AppraisalSectionCards
+                sections={appraisalProgress}
+                selectedSectionId={selectedSectionId}
+                onSelectSection={setSelectedSectionId}
+                isLoading={isLoading}
+              />
             )}
           </div>
         </div>

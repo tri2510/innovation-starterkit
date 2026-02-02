@@ -10,7 +10,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2, Sparkles, Lightbulb, BarChart3, ChevronDown, ChevronUp, TrendingUp, Users, Target, Zap, CheckCircle2, Circle } from "lucide-react";
+import { Send, Loader2, Sparkles, Lightbulb, Target, Check } from "lucide-react";
 import { streamChatResponse } from "@/hooks/use-chat-streaming";
 import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { ChatMessageWithRetry } from "@/components/chat/chat-message";
@@ -26,6 +26,7 @@ import {
   getIdeateProgressTip,
   type IdeateProgressItem
 } from "@/lib/ideate-utils";
+import { IdeaDetailView } from "./idea-detail-view";
 
 interface InteractiveIdeationProps {
   challenge: Challenge;
@@ -63,6 +64,9 @@ export function InteractiveIdeation({
   const [lastUserMessage, setLastUserMessage] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isMarketExpanded, setIsMarketExpanded] = useState(false);
+  const [selectedIdeaForView, setSelectedIdeaForView] = useState<BusinessIdea | null>(null);
+  const [scoringIdeaId, setScoringIdeaId] = useState<string | null>(null);
+  const [isScoringAll, setIsScoringAll] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -77,6 +81,58 @@ export function InteractiveIdeation({
       onMessagesChange(messages);
     }
   }, [messages, onMessagesChange]);
+
+  // Track the previous ideas array to detect replacements
+  const prevIdeasRef = useRef<BusinessIdea[]>([]);
+  const [replacementIdeaId, setReplacementIdeaId] = useState<string | null>(null);
+
+  // Auto-update detail view when ideas change (e.g., when scores are regenerated via chat)
+  useEffect(() => {
+    if (selectedIdeaForView && ideas.length > 0) {
+      const updatedIdea = ideas.find((i) => i.id === selectedIdeaForView.id);
+
+      if (updatedIdea) {
+        // Idea still exists - check if it has meaningful updates
+        if (updatedIdea !== selectedIdeaForView) {
+          const hasNewMetrics =
+            (updatedIdea.metrics && !selectedIdeaForView.metrics) ||
+            (updatedIdea.evaluation && !selectedIdeaForView.evaluation) ||
+            (updatedIdea.metrics && selectedIdeaForView.metrics &&
+              (updatedIdea.metrics.uniqueness !== selectedIdeaForView.metrics.uniqueness ||
+               updatedIdea.metrics.feasibility !== selectedIdeaForView.metrics.feasibility));
+
+          if (hasNewMetrics) {
+            setSelectedIdeaForView(updatedIdea);
+          }
+        }
+      } else {
+        // Idea no longer exists (was replaced or removed)
+        // Try to find the replacement idea by comparing with previous ideas
+        const prevIdeaIds = new Set(prevIdeasRef.current.map(i => i.id));
+        const newIdeas = ideas.filter(i => !prevIdeaIds.has(i.id));
+
+        if (newIdeas.length > 0 && replacementIdeaId) {
+          // Use the tracked replacement idea
+          const replacement = ideas.find(i => i.id === replacementIdeaId);
+          if (replacement) {
+            setSelectedIdeaForView(replacement);
+            setReplacementIdeaId(null);
+            return;
+          }
+        }
+
+        // Fallback: Select the first available idea or clear selection
+        if (ideas.length > 0) {
+          setSelectedIdeaForView(ideas[0]);
+        } else {
+          setSelectedIdeaForView(null);
+        }
+      }
+    }
+
+    // Update prevIdeasRef for next comparison
+    prevIdeasRef.current = ideas;
+  }, [ideas, selectedIdeaForView, replacementIdeaId]);
 
   // Initialize greeting
   useEffect(() => {
@@ -95,10 +151,11 @@ export function InteractiveIdeation({
           timestamp: Date.now(),
         };
       } else if (hasIdeas) {
+        const needsScoring = ideas.some(i => !i.metrics);
         greetingMessage = {
           id: "greeting",
           role: "assistant",
-          content: `I've generated ${ideas.length} innovative ideas for "${challenge.problem.substring(0, 40)}...". Browse through them, click to select your favorite, or ask me to refine specific concepts.`,
+          content: `I've generated ${ideas.length} innovative ideas for "${challenge.problem.substring(0, 40)}..."${needsScoring ? '. Click on an idea to view details and generate scores when ready.' : '. Browse through the list, click to view details, and select your favorite.'} You can also ask me to refine specific concepts.`,
           timestamp: Date.now(),
         };
       } else {
@@ -148,12 +205,14 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
     }
   };
 
-  const handleSelectIdea = (ideaId: string) => {
-    // If clicking the same idea that's already selected, just update selection without adding message
-    if (selectedIdeaId === ideaId) {
-      return;
+  const handleViewIdea = (ideaId: string) => {
+    const selectedIdea = ideas.find((i) => i.id === ideaId);
+    if (selectedIdea) {
+      setSelectedIdeaForView(selectedIdea);
     }
+  };
 
+  const handleConfirmIdeaSelection = (ideaId: string) => {
     setSelectedIdeaId(ideaId);
     saveConversationHistory("ideation", messages);
 
@@ -162,10 +221,108 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
       const msg: ChatMessage = {
         id: Date.now().toString(),
         role: "assistant",
-        content: `Selected "${selectedIdea.name}". Ready for investment appraisal? Click "Investment Appraisal" to continue, or ask me anything about this idea.`,
+        content: `Selected "${selectedIdea.name}". This idea has ${selectedIdea.metrics?.uniqueness ? Math.round(selectedIdea.metrics.uniqueness) : 'N/A'}% uniqueness and ${selectedIdea.metrics?.feasibility ? Math.round(selectedIdea.metrics.feasibility) : 'N/A'}% feasibility.
+
+You can:
+- Continue exploring other ideas
+- Click "Investment Appraisal" to see detailed financial projections
+- Ask me to compare ideas or explain specific metrics`,
         timestamp: Date.now(),
       };
       setMessages((prev) => [...prev, msg]);
+    }
+  };
+
+  const handleGenerateScores = async (ideaId: string, scoreAll: boolean = false) => {
+    setScoringIdeaId(ideaId);
+    if (scoreAll) setIsScoringAll(true);
+
+    try {
+      let ideasToScore;
+      let scoreAllMode = false;
+
+      if (scoreAll) {
+        // Score all unscored ideas
+        const unscoredIdeas = ideas.filter((idea) => !idea.metrics);
+        ideasToScore = unscoredIdeas.length > 0 ? unscoredIdeas : [ideas.find((i) => i.id === ideaId)!];
+        scoreAllMode = true;
+      } else {
+        // Score only this specific idea
+        const idea = ideas.find((i) => i.id === ideaId);
+        ideasToScore = idea ? [idea] : [];
+      }
+
+      // Score ideas in parallel for faster results
+      const scorePromises = ideasToScore.map(async (idea) => {
+        const response = await fetch("/api/ai/ideate/score", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ideas: ideas,
+            ideaIds: [idea.id],
+            challenge: challenge,
+            marketAnalysis: marketAnalysis,
+          }),
+        });
+        const data = await response.json();
+        if (!data.success) throw new Error(`Failed to score ${idea.name}`);
+        return data.data[0]; // Return the scored idea
+      });
+
+      // Wait for all scoring to complete in parallel
+      const scoredIdeas = await Promise.all(scorePromises);
+
+      // Update all ideas with their new scores
+      const updatedIdeas = ideas.map((idea) => {
+        const scored = scoredIdeas.find((s: any) => s.id === idea.id);
+        return scored
+          ? { ...idea, metrics: scored.metrics, evaluation: scored.evaluation }
+          : idea;
+      });
+
+      setIdeas(updatedIdeas);
+      saveIdeas(updatedIdeas);
+
+      // Update the selected idea for view
+      setSelectedIdeaForView(updatedIdeas.find((i) => i.id === ideaId) || null);
+
+      const msg: ChatMessage = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: scoreAllMode
+          ? `Generated scores for ${scoredIdeas.length} idea${scoredIdeas.length > 1 ? 's' : ''}!
+
+${scoredIdeas.map((scored: any) => {
+  const idea = updatedIdeas.find((i) => i.id === scored.id);
+  return `• "${idea?.name}": ${Math.round(scored.metrics.uniqueness)}% unique, ${Math.round(scored.metrics.feasibility)}% feasible`;
+}).join('\n')}
+
+You can ask me to explain these metrics or suggest improvements to increase the scores.`
+          : `Generated scores for "${updatedIdeas.find((i) => i.id === ideaId)?.name}"!
+
+- Uniqueness: ${Math.round(scoredIdeas[0].metrics.uniqueness)}%
+- Feasibility: ${Math.round(scoredIdeas[0].metrics.feasibility)}%
+- Innovation: ${Math.round(scoredIdeas[0].metrics.innovation)}%
+- Market Fit: ${Math.round(scoredIdeas[0].metrics.marketFit)}%
+- ROI: ${scoredIdeas[0].metrics.roi}
+- Risk: ${scoredIdeas[0].metrics.risk}
+
+You can ask me to explain these metrics or suggest improvements to increase the scores.`,
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, msg]);
+    } catch (error) {
+      console.error("Error generating scores:", error);
+      const errorMsg: ChatMessage = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: "Sorry, I encountered an error generating scores. Please try again.",
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setScoringIdeaId(null);
+      setIsScoringAll(false);
     }
   };
 
@@ -219,6 +376,7 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
             opportunities: marketAnalysis?.opportunities || [],
             challenges: marketAnalysis?.challenges || [],
           },
+          skipEvaluation: true, // Skip evaluation for faster generation
         }),
       });
 
@@ -228,6 +386,11 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
 
       setIdeas(data.data);
       saveIdeas(data.data);
+
+      // Auto-select first idea for viewing
+      if (data.data.length > 0) {
+        setSelectedIdeaForView(data.data[0]);
+      }
 
       // Mark all progress as complete
       const updatedProgress: IdeateProgressItem[] = [
@@ -246,7 +409,7 @@ Click "Generate Ideas" to get started, or tell me if you have specific concepts 
 
 Each idea addresses the problem: "${challenge.problem}"
 
-Browse through the ideas on the right, hover to preview, and click to select your favorite. You can also ask me to refine specific concepts or generate more alternatives.`,
+Browse through the ideas in the left panel, click to view details, and click "Generate Scores" when you want to evaluate an idea. You can also ask me to refine specific concepts or generate more alternatives.`,
         timestamp: Date.now(),
       };
       setMessages((prev) =>
@@ -303,6 +466,7 @@ Browse through the ideas on the right, hover to preview, and click to select you
           marketAnalysis: marketAnalysis,
           ideas: ideas,
           selectedIdea: selectedIdeaId ? ideas.find((i) => i.id === selectedIdeaId) : null,
+          viewingIdea: selectedIdeaForView || null,
         },
         {
           filterDisplayContent: (content) => {
@@ -338,8 +502,60 @@ Browse through the ideas on the right, hover to preview, and click to select you
               )
             );
             if (data.type === "update" && data.data?.ideas) {
-              setIdeas(data.data.ideas);
-              saveIdeas(data.data.ideas);
+              // Process each idea from the assistant's response
+              const processedIdeas = data.data.ideas.map((updatedIdea: BusinessIdea) => {
+                const existingIdea = ideas.find((i) => i.id === updatedIdea.id);
+
+                // If this is an update to an existing idea
+                if (existingIdea) {
+                  // If updated idea has no metrics but existing one does, preserve existing metrics
+                  if (!updatedIdea.metrics && existingIdea.metrics) {
+                    return {
+                      ...updatedIdea,
+                      metrics: existingIdea.metrics,
+                      evaluation: existingIdea.evaluation,
+                      financialPreview: undefined,
+                    };
+                  }
+                  // Preserve financialPreview flag
+                  return {
+                    ...updatedIdea,
+                    financialPreview: undefined,
+                  };
+                }
+
+                // This is a new idea - just return it as-is
+                return {
+                  ...updatedIdea,
+                  financialPreview: undefined,
+                };
+              });
+
+              // Trust the assistant's response completely - use the returned list
+              // This allows for:
+              // - Adding new ideas (assistant returns more ideas)
+              // - Replacing/removing ideas (assistant returns fewer ideas)
+              // - Updating ideas (assistant returns modified versions)
+
+              // Track if the currently viewed idea is being replaced
+              if (selectedIdeaForView) {
+                const currentIdeaStillExists = processedIdeas.some((i: BusinessIdea) => i.id === selectedIdeaForView.id);
+                if (!currentIdeaStillExists) {
+                  // The currently viewed idea was replaced - find the replacement
+                  // Look for ideas that are new (not in the original ideas list)
+                  const originalIdeaIds = new Set(ideas.map(i => i.id));
+                  const newIdeas = processedIdeas.filter((i: BusinessIdea) => !originalIdeaIds.has(i.id));
+
+                  // If there's exactly one new idea, that's likely the replacement
+                  // If there are multiple new ideas, pick the first one
+                  if (newIdeas.length > 0) {
+                    setReplacementIdeaId(newIdeas[0].id);
+                  }
+                }
+              }
+
+              setIdeas(processedIdeas);
+              saveIdeas(processedIdeas);
             }
           },
 
@@ -367,8 +583,6 @@ Browse through the ideas on the right, hover to preview, and click to select you
       setIsLoading(false);
     }
   };
-
-  const progressTip = getIdeateProgressTip(overallProgress, ideas.length > 0, ideas.length, isGenerating);
 
   return (
     <div className="flex gap-4 h-full">
@@ -471,160 +685,154 @@ Browse through the ideas on the right, hover to preview, and click to select you
 
       {/* Ideas Display Panel */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
-          <div className="flex items-center gap-2">
-            <Lightbulb className="h-4 w-4 text-purple-600" />
-            <h1 className="text-sm font-semibold">
-              {ideas.length > 0 ? "Your Ideas" : "Generate Ideas"}
-            </h1>
-            {ideas.length > 0 && (
-              <Badge variant="secondary" className="text-xs">{ideas.length}</Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">
-              {isGenerating ? "Generating..." : ideas.length > 0 ? "Ready" : "Waiting"}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto pb-20">
-          <div className="px-6 py-6 space-y-6">
-            {/* Progress Tip */}
-            {progressTip && (
-              <div className={cn(
-                "flex items-center gap-2 text-sm px-4 py-3 rounded-lg",
-                progressTip.type === "success" && "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300",
-                progressTip.type !== "success" && "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
-              )}>
-                <Sparkles className="h-4 w-4 flex-shrink-0" />
-                <span className="font-medium">{progressTip.text}</span>
+        {/* Detail Mode - LinkedIn-style Layout */}
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+          {/* Left Sidebar - Compact Idea List */}
+          <div className="flex-shrink-0 border-r bg-muted/5 flex flex-col w-full lg:w-[380px]">
+            {/* Header */}
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="h-4 w-4 text-blue-600" />
+                <h1 className="text-sm font-semibold">Your Ideas</h1>
+                <Badge variant="secondary" className="text-xs">{ideas.length}</Badge>
               </div>
-            )}
+            </div>
 
-            {/* Market Context Card */}
-            <Card className="border-2">
-              <div className="px-5 py-3 border-b bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => setIsMarketExpanded(!isMarketExpanded)}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-7 w-7 rounded-md bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                      <BarChart3 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <span className="text-sm font-semibold">Market Context</span>
-                    <Badge variant="outline" className="text-xs">TAM: {extractMarketValue(marketAnalysis?.tam || "N/A").value}</Badge>
-                  </div>
-                  {isMarketExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-                </div>
-              </div>
-              {isMarketExpanded && (
-                <CardContent className="pt-4">
-                  <div className="grid grid-cols-3 gap-3 font-serif mb-4">
-                    {["TAM", "SAM", "SOM"].map((size) => {
-                      const value = size === "TAM" ? marketAnalysis?.tam : size === "SAM" ? marketAnalysis?.sam : marketAnalysis?.som;
-                      const { value: displayValue, description } = extractMarketValue(value || "N/A");
-                      return (
-                        <div key={size} className="text-center p-3 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
-                          <p className="text-[10px] font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide mb-1">{size}</p>
-                          <p className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{displayValue}</p>
-                          {description && description !== value && (
-                            <p className="text-[10px] text-neutral-400 dark:text-neutral-600 mt-1.5 leading-relaxed">{description}</p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {marketAnalysis?.trends && marketAnalysis.trends.length > 0 && (
-                    <div>
-                      <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-1.5">
-                        <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
-                        Key Trends
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {marketAnalysis.trends.slice(0, 3).map((trend: any, index: number) => (
-                          <Badge key={index} variant="outline" className="text-xs">{trend.name}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              )}
-            </Card>
+            {/* Scrollable List */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {ideas.length === 0 ? (
+                <Card className="border-dashed">
+                  <CardContent className="flex flex-col items-center justify-center py-8 px-3">
+                    <Lightbulb className="h-8 w-8 text-muted-foreground mb-3" />
+                    <p className="text-xs text-muted-foreground text-center">No ideas yet. Click "Generate Ideas" to start.</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                ideas.map((idea) => {
+                  const uniquenessScore = Math.round(idea.metrics?.uniqueness || 70);
+                  const feasibilityScore = Math.round(idea.metrics?.feasibility || 70);
 
-            {/* Ideas Grid */}
-            {ideas.length === 0 ? (
-              <Card className="border-dashed">
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <Lightbulb className="h-10 w-10 text-muted-foreground mb-3" />
-                  <p className="text-sm text-muted-foreground">No ideas yet. Click "Generate Ideas" to start.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-3 gap-4">
-                {ideas.map((idea) => {
-                  const isSelected = selectedIdeaId === idea.id;
+                  const getScoreColor = (score: number) => {
+                    if (score >= 80) return 'text-green-700 dark:text-green-300';
+                    if (score >= 60) return 'text-yellow-700 dark:text-yellow-300';
+                    return 'text-red-700 dark:text-red-300';
+                  };
+
                   return (
                     <Card
                       key={idea.id}
                       className={cn(
-                        "cursor-pointer transition-all overflow-hidden border-2",
-                        isSelected ? "ring-2 ring-purple-500 ring-offset-2 border-purple-300" : "border-neutral-200 hover:border-purple-300 hover:shadow-md"
+                        "cursor-pointer transition-all overflow-hidden border relative group",
+                        "hover:shadow-md",
+                        selectedIdeaForView?.id === idea.id
+                          ? "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20 shadow-sm"
+                          : "border-neutral-200 dark:border-neutral-800 hover:border-blue-300"
                       )}
-                      onClick={() => handleSelectIdea(idea.id)}
+                      onClick={() => handleViewIdea(idea.id)}
                     >
-                      <div className={cn(
-                        "px-4 py-3 border-b",
-                        isSelected ? "bg-purple-50 dark:bg-purple-950/30" : "bg-neutral-50 dark:bg-neutral-900/30"
-                      )}>
-                        <div className="flex items-start gap-2">
-                          {isSelected ? (
-                            <CheckCircle2 className="h-4 w-4 text-purple-600 flex-shrink-0 mt-0.5" />
-                          ) : (
-                            <Circle className="h-4 w-4 text-neutral-300 flex-shrink-0 mt-0.5" />
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">{idea.name}</h3>
-                            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">{idea.tagline}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <CardContent className="p-4 space-y-3">
-                        <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">{idea.description}</p>
-                        {/* Problem Solved */}
-                        <div className="flex items-start gap-2">
-                          <Target className="h-3.5 w-3.5 text-purple-600 flex-shrink-0 mt-0.5" />
-                          <div className="flex-1">
-                            <p className="font-semibold text-neutral-600 dark:text-neutral-400 text-xs">Problem Solved</p>
-                            <p className="text-neutral-700 dark:text-neutral-300 text-xs">{idea.problemSolved}</p>
-                          </div>
-                        </div>
+                      {/* Selection Indicator */}
+                      {selectedIdeaForView?.id === idea.id && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+                      )}
+
+                      {/* Card Content */}
+                      <div className="p-4">
+                        <h3 className={cn(
+                          "text-sm font-bold leading-tight mb-1.5",
+                          selectedIdeaForView?.id === idea.id ? "text-purple-900 dark:text-purple-100" : "text-neutral-900 dark:text-neutral-100"
+                        )}>
+                          {idea.name}
+                        </h3>
+                        <p className="text-[11px] text-neutral-600 dark:text-neutral-400 leading-relaxed mb-3">
+                          {idea.tagline}
+                        </p>
+
+                        {/* Short Summary */}
+                        {idea.description && (
+                          <p className="text-[10px] text-neutral-700 dark:text-neutral-300 line-clamp-3 leading-relaxed mb-3">
+                            {idea.description}
+                          </p>
+                        )}
+
                         {/* Strategic Focus Areas */}
-                        {idea.searchFields && (
-                          <div>
-                            <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-2">Strategic Focus Areas</p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {idea.searchFields.industries?.map((industry, index) => (
-                                <Badge key={`ind-${index}`} variant="outline" className="text-xs">
-                                  {industry}
-                                </Badge>
-                              ))}
-                              {idea.searchFields.technologies?.map((tech, index) => (
-                                <Badge key={`tech-${index}`} variant="secondary" className="text-xs">
-                                  {tech}
-                                </Badge>
-                              ))}
-                            </div>
+                        {idea.searchFields && (idea.searchFields.industries?.length || idea.searchFields.technologies?.length) && (
+                          <div className="mb-3 space-y-1.5">
+                            {idea.searchFields.industries && idea.searchFields.industries.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {idea.searchFields.industries.slice(0, 3).map((industry, idx) => (
+                                  <span
+                                    key={`ind-${idx}`}
+                                    className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                  >
+                                    {industry}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {idea.searchFields.technologies && idea.searchFields.technologies.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {idea.searchFields.technologies.slice(0, 3).map((tech, idx) => (
+                                  <span
+                                    key={`tech-${idx}`}
+                                    className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                                  >
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         )}
-                      </CardContent>
+
+                        {/* Quick Metrics */}
+                        {idea.metrics && (
+                          <div className="flex items-center gap-2 pt-2 border-t border-neutral-200 dark:border-neutral-700">
+                            <span className={cn("text-[10px] font-medium", getScoreColor(uniquenessScore))}>
+                              {uniquenessScore}% unique
+                            </span>
+                            <span className="text-[10px] text-neutral-400">•</span>
+                            <span className={cn("text-[10px] font-medium", getScoreColor(feasibilityScore))}>
+                              {feasibilityScore}% feasible
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Selected Badge */}
+                        {selectedIdeaId === idea.id && (
+                          <div className="mt-2 flex items-center gap-1 text-[10px] text-blue-700 dark:text-blue-300 font-medium">
+                            <Check className="h-3 w-3" />
+                            Selected
+                          </div>
+                        )}
+                      </div>
                     </Card>
                   );
-                })}
-              </div>
-            )}
+                })
+              )}
+            </div>
           </div>
+
+          {/* Right Panel - Detailed View */}
+          {selectedIdeaForView && (
+            <div className="flex-1 bg-background flex flex-col">
+              <div className="flex-1 overflow-hidden">
+                <IdeaDetailView
+                  idea={selectedIdeaForView}
+                  marketAnalysis={marketAnalysis}
+                  allIdeas={ideas}
+                  onSelect={handleConfirmIdeaSelection}
+                  onGenerateScores={handleGenerateScores}
+                  isScoring={!isScoringAll && scoringIdeaId === selectedIdeaForView.id}
+                  isScoringAll={isScoringAll}
+                  selectedIdeaId={selectedIdeaId}
+                  hasUnscoredIdeas={ideas.some(i => !i.metrics)}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Fixed Bottom Navigation */}
+        {/* Fixed Bottom Navigation - Same for both modes */}
         {(onBack || onContinue) && (
           <div className="flex-shrink-0 border-t bg-background/95 px-4 py-3">
             <WizardNav

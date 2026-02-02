@@ -56,6 +56,14 @@ export const DEMO_IDEAS: BusinessIdea[] = [
       technologies: ["ai-edge", "cloud"],
       reasoning: "Leverages edge AI for real-time inventory processing with cloud-based analytics. Highly relevant for manufacturing inventory management and retail operations.",
     },
+    metrics: {
+      marketFit: 85,
+      feasibility: 72,
+      innovation: 88,
+      uniqueness: 82,
+      roi: "high",
+      risk: "medium",
+    },
   },
   {
     id: "idea-2",
@@ -68,6 +76,14 @@ export const DEMO_IDEAS: BusinessIdea[] = [
       technologies: ["cloud"],
       reasoning: "Cloud-native platform focused on e-commerce integrations. Most relevant for manufacturing and retail businesses with online sales channels.",
     },
+    metrics: {
+      marketFit: 78,
+      feasibility: 90,
+      innovation: 65,
+      uniqueness: 70,
+      roi: "medium",
+      risk: "low",
+    },
   },
   {
     id: "idea-3",
@@ -79,6 +95,14 @@ export const DEMO_IDEAS: BusinessIdea[] = [
       industries: ["manufacturing", "automotive"],
       technologies: ["cloud", "virtualization"],
       reasoning: "Cloud-based platform with virtualization support for multi-location operations. Relevant for manufacturing and automotive dealerships requiring inventory tracking across multiple sites.",
+    },
+    metrics: {
+      marketFit: 80,
+      feasibility: 75,
+      innovation: 70,
+      uniqueness: 68,
+      roi: "medium",
+      risk: "medium",
     },
   },
 ];

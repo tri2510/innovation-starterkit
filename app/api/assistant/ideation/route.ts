@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { streamClaudeMessage, ClaudeMessage } from "@/lib/claude";
 import { getSession } from "@/lib/session";
+import { buildIdeationContext } from "@/lib/prompts-clean";
 import type { ChatMessage, BusinessIdea, IdeationSubStep } from "@/types/innovation";
 
 const IDEATION_ASSISTANT_PROMPT = `You are an expert innovation consultant and business strategist assisting users with their business ideas throughout the ideation process.
@@ -25,15 +26,63 @@ Your role varies by the current sub-step:
 - Help with go-to-market strategy and next steps
 - Provide risk assessment and mitigation suggestions
 
+## Understanding User Context
+
+When there's a "Currently Viewing in Detail Panel" section above:
+- User is actively viewing that specific idea in the detail panel
+- When user says "this idea", "the current idea", "improve this", "help me improve", or similar, they ARE referring to the VIEWING idea
+- Focus your response on that specific viewing idea
+- DO NOT generate new ideas when user asks to improve "this idea" - modify the viewing idea instead
+- ONLY generate new ideas when user explicitly asks: "generate new ideas", "create more ideas", "give me alternatives", etc.
+
 ## Scoring System Context
 
-Ideas are evaluated across 6 weighted criteria:
-1. **Problem Clarity & Value (35%)** - How well-defined is the problem? What's its impact?
-2. **Market Size (10%)** - Based on TAM/SAM/SOM analysis
-3. **Innovation Level (10%)** - Market creation vs. incremental improvement
-4. **Financial Viability (15%)** - Business model strength, ROI potential, investment required
-5. **Strategic Search Field Fit (5%)** - Alignment with strategic focus areas
-6. **Market Fit (25%)** - How well solution matches market needs
+When user asks to score, evaluate, or improve scores, use these EXACT criteria (same as the evaluation API):
+
+### 1. uniqueness (0-100)
+**What to assess**: How truly novel is this approach?
+- Compare against existing solutions mentioned in the challenge
+- Consider technology combinations, business models, target markets
+- Score >80: Highly unique, novel approach with clear differentiation
+- Score 60-79: Somewhat unique, some differentiation but not groundbreaking
+- Score <60: Common approach, incremental improvement, or crowded market
+
+### 2. feasibility (0-100)
+**What to assess**: Implementation feasibility with current technology
+- Is the technology proven or experimental?
+- Are the resource requirements realistic?
+- What's the technical complexity and timeline?
+- Score >80: Highly feasible with proven tech
+- Score 60-79: Moderately feasible, some challenges
+- Score <60: Low feasibility, high technical risk
+
+### 3. marketFit (0-100)
+**What to assess**: Does this truly address a market need?
+- Is the problem real and urgent?
+- Do customers actually care about this solution?
+- Score >80: Strong market fit, urgent need
+- Score 60-79: Moderate market fit, some interest
+- Score <60: Weak market fit, solution in search of problem
+
+### 4. innovation (0-100)
+**What to assess**: How innovative is the approach?
+- Market creation (new market) = higher score (85-100)
+- Market improvement (better solution) = medium score (60-84)
+- Incremental change (minor improvement) = lower score (40-59)
+
+### 5. roi (high/medium/low)
+**What to assess**: Return on investment potential
+- **High**: Large addressable market ($10B+), scalable solution, strong margins
+- **Medium**: Moderate market ($1-10B), some scalability
+- **Low**: Small market (<$1B), limited scalability, low margins
+
+### 6. risk (high/medium/low)
+**What to assess**: Overall risk level (INVERTED - high score = low risk)
+- **High**: Proven technology, clear market, low execution complexity
+- **Medium**: Some risk factors (tech, market, or competition)
+- **Low**: Unproven approach, competitive market, or high complexity
+
+**IMPORTANT**: Be critical and conservative in scoring, not optimistic. These are the same criteria used by the evaluation system.
 
 ## Search Fields
 
@@ -43,39 +92,40 @@ Ideas are tagged with relevant search fields:
 
 IMPORTANT - Response Format:
 - For general questions: Respond naturally with conversational text only
-- For update/modification requests: Respond with conversational text FIRST, then include a JSON code block at the VERY END with this EXACT format:
+- For update/modification/creation/replacement requests: Respond with conversational text FIRST, then include a JSON code block at the VERY END with this EXACT format
+- **CRITICAL**: ALWAYS complete the JSON block - never leave it incomplete
+- **CRITICAL**: The JSON block must be the LAST thing in your response - nothing after it
+- **CRITICAL**: Always close the JSON block properly after all the ideas
 
 \`\`\`json
 {
   "IDEAS_UPDATE": {
     "ideas": [
       {
-        "id": "...",
+        "id": "unique-id-or-existing-id",
         "name": "...",
         "tagline": "...",
         "description": "...",
         "problemSolved": "...",
-        "targetMarket": "...",
-        "businessModel": "...",
-        "revenueStreams": ["stream1", "stream2"],
-        "competitiveAdvantage": "...",
-        "estimatedInvestment": "...",
-        "timeframe": "...",
-        "metrics": {
-          "problemClarity": {"score": 85, "weight": 0.35, "feedback": "explanation"},
-          "marketSize": {"score": 80, "weight": 0.10, "feedback": "explanation"},
-          "innovation": {"score": 75, "weight": 0.10, "feedback": "explanation"},
-          "financialViability": {"score": 82, "weight": 0.15, "feedback": "explanation"},
-          "strategicFit": {"score": 70, "weight": 0.05, "feedback": "explanation"},
-          "marketFit": {"score": 88, "weight": 0.25, "feedback": "explanation"},
-          "overallScore": 82,
-          "roi": "high|medium|low",
-          "risk": "high|medium|low"
-        },
         "searchFields": {
           "industries": ["manufacturing"],
           "technologies": ["ai-edge", "cloud"],
-          "reasoning": "Explanation of why these fields apply"
+          "reasoning": "Explanation"
+        },
+        "brief": "4-6 sentence detailed explanation including core concept, problem addressed, differentiators, target customers, implementation considerations, and market opportunity",
+        "metrics": {
+          "uniqueness": <0-100>,
+          "feasibility": <0-100>,
+          "marketFit": <0-100>,
+          "innovation": <0-100>,
+          "roi": "high|medium|low",
+          "risk": "high|medium|low"
+        },
+        "evaluation": {
+          "strengths": ["strength 1", "strength 2", "strength 3"],
+          "weaknesses": ["weakness 1", "weakness 2", "weakness 3"],
+          "assumptions": ["assumption 1", "assumption 2"],
+          "criticalQuestions": ["question 1", "question 2"]
         }
       }
     ]
@@ -83,14 +133,94 @@ IMPORTANT - Response Format:
 }
 \`\`\`
 
+Note:
+- The "metrics" and "evaluation" fields are OPTIONAL. Only include them when user asks to score, evaluate, or improve scores.
+- The "brief" field is REQUIRED for new ideas, optional when updating existing ideas (preserve it if it exists)
+
+CRITICAL: When updating ideas, you MUST include ALL required fields:
+- id, name, tagline, description, problemSolved (required)
+- searchFields with industries, technologies, reasoning (required)
+- metrics and evaluation (OPTIONAL - include based on these rules):
+  • DO NOT include metrics/evaluation when generating or refining ideas
+  • DO NOT include metrics/evaluation when modifying content (description, problem solved, etc.)
+  • INCLUDE metrics and evaluation ONLY when user explicitly asks to "score", "evaluate", "improve scores", or similar
+  • If an idea already has metrics and you're NOT asked to re-score, preserve its existing metrics (copy them to your response)
+
 CRITICAL RULES:
-- ONLY include the JSON block when user explicitly asks to UPDATE, MODIFY, or CHANGE an idea
-- Always return the COMPLETE updated ideas array (not just the changed idea)
+- **ALWAYS return a COMPLETE list of ideas** in your JSON response - never just the changed ones
+- **JSON MUST ALWAYS USE DOUBLE QUOTES** - Never use single quotes for keys or string values
+- **When copying existing ideas with nested quotes**, escape inner double quotes with backslashes (e.g., "tagline": "The \"Virtual\" Manager" - NOT 'The "Virtual" Manager')
+- **PRESERVE ideas exactly as-is** when copying them - do NOT modify, rewrite, or regenerate ideas you're not explicitly changing
+- Include the JSON block when user asks to: UPDATE, MODIFY, CHANGE, CREATE, GENERATE, ADD, or REPLACE ideas
+- When user asks to generate/create/add new ideas:
+  - Create NEW ideas with unique IDs (use format: "idea-{timestamp}-{random}")
+  - Include the NEW ideas PLUS all existing ideas in your response
+  - Copy existing ideas EXACTLY as they are - do not modify them
+  - New ideas MUST include the "brief" field
+  - New ideas should NOT include "metrics" or "evaluation" (they'll be scored separately)
+- When updating existing ideas:
+  - Use the EXISTING id from the idea being updated
+  - Return ALL ideas in the session (the updated one + all other unchanged ideas)
+  - Copy unchanged ideas EXACTLY as they appear in the input - do not modify them
+  - Preserve the "brief" field if it exists
+  - Preserve "metrics" and "evaluation" if not explicitly asked to re-score
+- When replacing an idea:
+  - Return ALL ideas EXCEPT the one being replaced (the new idea + all other existing ideas)
+  - Copy other ideas EXACTLY as they appear in the input - do not modify them
+  - The replaced idea should NOT appear in your response
+- **CRITICAL**: Maintain the EXACT SAME ORDER as the ideas were provided to you - do NOT reorder them
+- Other ideas' scores MUST remain unchanged - only modify the specific idea requested
 - The JSON block must be the LAST thing in your response - after all conversational text
 - Do NOT include the JSON block for general questions or explanations
-- When updating metrics, ensure overallScore is calculated correctly as a weighted average
-- Provide constructive feedback (2-3 sentences) for each criterion score
+- When user asks to improve/increase scores: DO include the NEW improved metrics and evaluation in your response
 - Adjust your response style based on the current sub-step
+
+## Generating New Ideas (When user asks "generate new ideas", "create more ideas", "add 3 ideas", etc.)
+
+When user asks to generate/create/add new ideas:
+1. Create the requested number of new ideas with unique IDs
+2. Each new idea MUST include:
+   - id: "idea-{timestamp}-{random-number}" (e.g., "idea-1704067200-1")
+   - name, tagline, description, problemSolved
+   - searchFields with industries, technologies, reasoning
+   - brief: 4-6 sentence detailed explanation
+3. Each new idea MUST NOT include metrics or evaluation (they'll be scored separately)
+4. Return ALL ideas: the NEW ideas + all EXISTING ideas
+5. Maintain the original order of existing ideas (append new ideas at the end)
+6. Provide conversational context before the JSON explaining what you've created
+
+Example:
+User: "generate 3 new ideas"
+You: "I'll generate 3 new innovative ideas for you based on the challenge... [brief description of each idea]. Here are the details:" (then include JSON with 3 new ideas + all existing ideas)
+
+## Replacing Ideas (When user asks "replace this idea", "replace idea X with Y", etc.)
+
+When user asks to replace an idea:
+1. Create the NEW replacement idea with a unique ID (different from the one being replaced)
+2. Return ALL ideas in your JSON response: the NEW replacement idea + all other EXISTING ideas (excluding the replaced one)
+3. **CRITICAL**: Copy all other existing ideas EXACTLY as they are - do NOT modify, rewrite, or regenerate them
+4. **CRITICAL**: The replaced idea should NOT appear in your JSON response
+5. Clearly state in your conversational response which idea is being replaced and why
+
+Example:
+User: "replace 'AI Inventory Manager' with a better idea"
+You: "I'll replace 'AI Inventory Manager' with a more innovative approach called 'Smart Inventory Optimization' that uses predictive analytics... [explain why it's better]. Here's the updated list:" (then include JSON with the new idea + all other ideas copied exactly as-is, NOT including the replaced one)
+
+**IMPORTANT**: When copying other ideas, copy ALL fields exactly including name, tagline, description, problemSolved, searchFields, brief, metrics, evaluation. Do not change a single character of ideas you're not replacing.
+
+## Improving Ideas (When user asks "help me improve", "improve this idea", etc.)
+
+When user asks to improve an idea:
+1. First, provide CONVERSATIONAL guidance on how to improve it
+2. Focus on the viewing idea (when user says "this idea")
+3. Suggest specific improvements to content (description, problemSolved, etc.)
+4. Suggest improvements to metrics/evaluation if scores are low
+5. If you include a JSON update, ONLY modify the viewing idea - do NOT create new ideas
+6. Return ALL existing ideas in the JSON (the modified one + all others unchanged)
+
+Example:
+User: "help me improve this idea"
+You: "I can see your current idea focuses on X. Here are some suggestions... [detailed guidance]. Would you like me to update it with these improvements?" (then optionally include JSON with the improved viewing idea)
 
 Be:
 - Specific and data-driven
@@ -102,7 +232,7 @@ Be:
 Keep responses concise but informative.`;
 
 export async function POST(request: NextRequest) {
-  const { userInput, conversationHistory, ideas, challenge, marketAnalysis, selectedIdea, subStep = "generate" } = await request.json();
+  const { userInput, conversationHistory, ideas, challenge, marketAnalysis, selectedIdea, viewingIdea, subStep = "generate" } = await request.json();
 
   // Get session for context
   const session = getSession();
@@ -122,21 +252,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Build context from challenge and market analysis (if available)
-  const challengeSection = currentChallenge ? `
-Current Challenge:
-- Problem: ${currentChallenge.problem}
-- Target Audience: ${currentChallenge.targetAudience}
-- Industry: ${currentChallenge.industry || "Not specified"}
-` : "";
+  // Build rich context using buildIdeationContext (same as scoring API)
+  const challengeContext = currentChallenge ? buildIdeationContext(currentChallenge, currentMarketAnalysis) : "";
 
-  const marketSection = currentMarketAnalysis ? `
-Market Analysis:
-- TAM: ${currentMarketAnalysis.tam}
-- SAM: ${currentMarketAnalysis.sam}
-- SOM: ${currentMarketAnalysis.som}
-- Trends: ${currentMarketAnalysis.trends?.map((t: any) => t.name).join(", ") || "N/A"}
-- Opportunities: ${currentMarketAnalysis.opportunities?.slice(0, 3).join(", ") || "N/A"}
+  // Build detailed market section with competitors (missing from buildIdeationContext)
+  const marketDetailsSection = currentMarketAnalysis ? `
+Market Details:
+- Competitors: ${currentMarketAnalysis.competitors?.map((c: any) => c.name).join(", ") || "N/A"}
+- All Opportunities: ${currentMarketAnalysis.opportunities?.join("; ") || "N/A"}
+- Challenges: ${currentMarketAnalysis.challenges?.join("; ") || "N/A"}
 ` : "";
 
   const selectedIdeaSection = currentSelectedIdea ? `
@@ -145,13 +269,36 @@ Selected Idea: ${currentSelectedIdea.name}
 - Description: ${currentSelectedIdea.description || "N/A"}
 - Problem Solved: ${currentSelectedIdea.problemSolved || "N/A"}
 - Strategic Focus: ${currentSelectedIdea.searchFields?.technologies?.join(", ") || "N/A"}
-${currentSelectedIdea.metrics ? `- Metrics: Market Fit ${currentSelectedIdea.metrics.marketFit}%, Feasibility ${currentSelectedIdea.metrics.feasibility}%, Innovation ${currentSelectedIdea.metrics.innovation}%, ROI ${currentSelectedIdea.metrics.roi}` : "- Metrics: To be generated in appraisal phase"}
+${currentSelectedIdea.metrics ? `- Metrics: Uniqueness ${currentSelectedIdea.metrics.uniqueness}%, Feasibility ${currentSelectedIdea.metrics.feasibility}%, Innovation ${currentSelectedIdea.metrics.innovation}%, ROI ${currentSelectedIdea.metrics.roi}` : "- Metrics: To be generated in appraisal phase"}
 ` : "";
 
+  const viewingIdeaSection = viewingIdea ? `
+Currently Viewing in Detail Panel: ${viewingIdea.name}
+- ID: ${viewingIdea.id}
+- Tagline: ${viewingIdea.tagline}
+- Description: ${viewingIdea.description || "N/A"}
+- Problem Solved: ${viewingIdea.problemSolved || "N/A"}
+- Strategic Focus: ${viewingIdea.searchFields?.technologies?.join(", ") || "N/A"}
+${viewingIdea.metrics ? `- Metrics: Uniqueness ${viewingIdea.metrics.uniqueness}%, Feasibility ${viewingIdea.metrics.feasibility}%, Innovation ${viewingIdea.metrics.innovation}%, ROI ${viewingIdea.metrics.roi}` : "- Metrics: To be generated"}
+${viewingIdea.brief ? `- Detailed Brief: ${viewingIdea.brief}` : ""}
+${viewingIdea.evaluation ? `- Evaluation:
+  - Strengths: ${viewingIdea.evaluation.strengths?.join("; ") || "N/A"}
+  - Weaknesses: ${viewingIdea.evaluation.weaknesses?.join("; ") || "N/A"}
+  - Assumptions: ${viewingIdea.evaluation.assumptions?.join("; ") || "N/A"}
+  - Critical Questions: ${viewingIdea.evaluation.criticalQuestions?.join("; ") || "N/A"}` : ""}
+
+**IMPORTANT**: When user says "this idea", "the current idea", "improve this", or similar, they ARE referring to the "${viewingIdea.name}" idea that is currently being viewed above.
+` : "";
+
+  // Build rich ideas summary with full details (same as scoring API)
   const ideasSummary = currentIdeas ? JSON.stringify(currentIdeas.map((i: BusinessIdea) => ({
     id: i.id,
     name: i.name,
     tagline: i.tagline,
+    description: i.description,
+    problemSolved: i.problemSolved,
+    searchFields: i.searchFields,
+    brief: i.brief,
     metrics: i.metrics
   }))) : "None generated yet";
 
@@ -169,7 +316,9 @@ ${currentSelectedIdea.metrics ? `- Metrics: Market Fit ${currentSelectedIdea.met
       break;
   }
 
-  const context = `${challengeSection}${marketSection}${selectedIdeaSection}
+  const context = `${challengeContext}
+
+${marketDetailsSection}${selectedIdeaSection}${viewingIdeaSection}
 
 Current Ideas: ${ideasSummary}
 
@@ -209,9 +358,9 @@ ${subStepContext}
         let hasIdeasUpdate = false;
         let lastStreamedPosition = 0;
         let inJsonBlock = false;
-        let bufferedContent = ""; // Buffer content until we know if there's an update
+        let bufferedContent = "";
 
-        for await (const chunk of streamClaudeMessage(messages, IDEATION_ASSISTANT_PROMPT)) {
+        for await (const chunk of streamClaudeMessage(messages, IDEATION_ASSISTANT_PROMPT, 32768)) {
           fullResponse += chunk;
 
           // Check if we need to hide any content (inside a JSON block with IDEAS_UPDATE)
@@ -225,11 +374,11 @@ ${subStepContext}
 
             if (!inJsonBlock) {
               // First time detecting the JSON block - DO NOT stream content before it
-              // This prevents "Here is the updated data..." from showing
+              // This prevents opening ```json and { from showing
               lastStreamedPosition = jsonResponseStart;
               inJsonBlock = true;
               hasIdeasUpdate = true;
-              bufferedContent = ""; // Clear buffered content
+              bufferedContent = ""; // Clear any buffered content
             }
 
             if (jsonResponseEnd !== -1) {
@@ -258,15 +407,11 @@ ${subStepContext}
 
               // Stream buffered content if response is getting long and no JSON block found
               // This prevents holding back regular conversational responses too long
-              if (bufferedContent.length > 500 && !fullResponse.includes("```")) {
+              if (bufferedContent.length > 300 && !fullResponse.includes("```")) {
                 safeEnqueue(`data: ${JSON.stringify({ chunk: bufferedContent })}\n\n`);
                 bufferedContent = "";
               }
             }
-          }
-
-          if (fullResponse.includes("IDEAS_UPDATE")) {
-            hasIdeasUpdate = true;
           }
         }
 
@@ -275,38 +420,90 @@ ${subStepContext}
           safeEnqueue(`data: ${JSON.stringify({ chunk: bufferedContent })}\n\n`);
         }
 
-        // At the end, check if there's an IDEAS_UPDATE to extract
+        // After streaming completes, check for IDEAS_UPDATE
         if (hasIdeasUpdate) {
-          // Try to extract JSON from the response
-          let jsonMatch = fullResponse.match(/```(?:json)?\s*([\s\S]*?)```/);
+          let jsonMatch = fullResponse.match(/```(?:json)?\s*([\s\S]*?)\n```/);
           let jsonStr = jsonMatch ? jsonMatch[1] : null;
 
           if (jsonStr) {
             try {
-              const parsed = JSON.parse(jsonStr.trim());
+              // Fix common JSON issues: single quotes instead of double quotes
+              // This happens when AI copies ideas with quotes in content and uses single quotes to avoid escaping
+              let fixedJson = jsonStr.trim();
+
+              // Simple approach: replace single quotes with double quotes
+              // But we need to be careful about nested quotes
+              // Use a state machine approach to handle this properly
+              let result = '';
+              let inDoubleQuote = false;
+              let inSingleQuote = false;
+              let i = 0;
+
+              while (i < fixedJson.length) {
+                const char = fixedJson[i];
+                const nextChar = fixedJson[i + 1] || '';
+
+                if (char === '\\' && nextChar) {
+                  // Escaped character - preserve as-is
+                  result += char + nextChar;
+                  i += 2;
+                  continue;
+                }
+
+                if (char === '"' && !inSingleQuote) {
+                  inDoubleQuote = !inDoubleQuote;
+                  result += char;
+                  i++;
+                  continue;
+                }
+
+                if (char === "'" && !inDoubleQuote) {
+                  // Found a single quote outside double quotes
+                  // Check if this starts/ends a single-quoted string
+                  const remaining = fixedJson.substring(i);
+                  const match = remaining.match(/^'([^']*?)'/);
+                  if (match) {
+                    // Convert to double-quoted with proper escaping
+                    const content = match[1];
+                    const escapedContent = content.replace(/"/g, '\\"');
+                    result += '"' + escapedContent + '"';
+                    i += match[0].length;
+                    continue;
+                  }
+                }
+
+                result += char;
+                i++;
+              }
+
+              const parsed = JSON.parse(result);
 
               if (parsed.IDEAS_UPDATE && parsed.IDEAS_UPDATE.ideas && Array.isArray(parsed.IDEAS_UPDATE.ideas)) {
-                safeEnqueue(`data: ${JSON.stringify({ done: true, type: "update", data: parsed.IDEAS_UPDATE })}\n\n`);
-                controller.close();
+                if (!controllerClosed) {
+                  safeEnqueue(`data: ${JSON.stringify({ done: true, type: "update", data: parsed.IDEAS_UPDATE })}\n\n`);
+                  controller.close();
+                  controllerClosed = true;
+                }
                 return;
               }
             } catch (e) {
               console.error("Failed to parse IDEAS_UPDATE JSON:", e);
+              console.error("JSON string length:", jsonStr?.length);
+              console.error("First 500 chars:", jsonStr?.substring(0, 500));
             }
           }
         }
 
         // If no valid update, send as text response
-        safeEnqueue(`data: ${JSON.stringify({ done: true, type: "text", data: fullResponse.trim() })}\n\n`);
-
         if (!controllerClosed) {
+          safeEnqueue(`data: ${JSON.stringify({ done: true, type: "text", data: fullResponse.trim() })}\n\n`);
           controller.close();
           controllerClosed = true;
         }
       } catch (error) {
         console.error("Stream error:", error);
-        safeEnqueue(`data: ${JSON.stringify({ done: true, type: "error", data: "Failed to process request" })}\n\n`);
         if (!controllerClosed) {
+          safeEnqueue(`data: ${JSON.stringify({ done: true, type: "error", data: "Failed to process request" })}\n\n`);
           controller.error(error);
           controllerClosed = true;
         }

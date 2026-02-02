@@ -56,7 +56,7 @@ export async function streamChatResponseWithProgress(
     
     const stream = await anthropic.messages.create({
       model: getModel(),
-      max_tokens: 4096,
+      max_tokens: 8192, // Increased from 4096 to prevent cutoff
       system: systemPrompt,
       messages: messages as any,
       stream: true,
@@ -149,7 +149,7 @@ export async function getStructuredAIResponse<T>(
   return executeAPIRequest(async () => {
     const response = await anthropic.messages.create({
       model: getModel(),
-      max_tokens: 4096,
+      max_tokens: 8192, // Increased from 4096 to prevent cutoff
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -733,7 +733,7 @@ export async function getConversationalResponse(
   return executeAPIRequest(async () => {
     const response = await anthropic.messages.create({
       model: getModel(),
-      max_tokens: 4096,
+      max_tokens: 8192, // Increased from 4096 to prevent cutoff
       system: systemPrompt,
       messages: [
         ...conversationHistory.map(msg => ({ role: msg.role as 'user' | 'assistant', content: msg.content })),

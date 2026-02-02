@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Sparkles } from "lucide-react";
-import { setStep, saveConversationHistory, saveInvestmentAppraisal } from "@/lib/session";
+import { setStep, saveConversationHistory, saveInvestmentAppraisal, saveIdeas } from "@/lib/session";
 import { DEMO_APPRAISAL } from "@/lib/demo-data";
 import type { BusinessIdea } from "@/types/innovation";
 import { PhaseLayout } from "@/components/wizard";
@@ -57,9 +57,39 @@ export default function InvestmentAppraisalPage() {
 
   // Get selected idea from session
   const idea = sessionData.ideas?.find((i: BusinessIdea) => i.id === sessionData.selectedIdeaId) || sessionData.ideas?.[0];
-  if (idea && !selectedIdea) {
-    setSelectedIdea(idea);
-  }
+
+  // Clear financial preview when switching to a different idea or when idea was modified
+  useEffect(() => {
+    if (idea) {
+      let shouldClearPreview = false;
+
+      // Case 1: Idea changed (different ID)
+      if (selectedIdea && idea.id !== selectedIdea.id) {
+        shouldClearPreview = true;
+      }
+      // Case 2: Same idea but might have been modified (has financialPreview but no full appraisal data)
+      // This happens when user goes back to ideation, modifies idea, and returns
+      else if (idea.financialPreview && !appraisalData) {
+        // Check if preview seems stale (generated for different idea content)
+        // Simple heuristic: if idea has financialPreview but no appraisal data, it might be stale
+        const ideaContentChanged = !idea.targetMarket || !idea.businessModel;
+        if (ideaContentChanged) {
+          shouldClearPreview = true;
+        }
+      }
+
+      if (shouldClearPreview && idea.financialPreview) {
+        // Clear financialPreview from the idea
+        const updatedIdeas = sessionData.ideas?.map((i: BusinessIdea) =>
+          i.id === idea.id ? { ...i, financialPreview: undefined } : i
+        );
+        if (updatedIdeas) {
+          saveIdeas(updatedIdeas);
+        }
+      }
+      setSelectedIdea(idea);
+    }
+  }, [idea?.id, idea?.financialPreview]);
 
   // Handle save appraisal
   const handleSaveAppraisal = (data: any) => {
@@ -69,7 +99,9 @@ export default function InvestmentAppraisalPage() {
 
   // Handle navigation
   const handleBack = () => {
-    setStep("investment-appraisal");
+    // Navigate back to ideation without clearing appraisal data
+    // Appraisal and conversation history are preserved
+    setStep("ideation");
     saveConversationHistory("investment-appraisal", messages);
     router.push("/ideation");
   };

@@ -1,15 +1,15 @@
 /**
  * Appraisal Section Cards Component
- * Displays appraisal sections in a 3-column grid (like ideate idea cards)
- * Click to expand/select a section for detail view
+ * Displays appraisal sections in a 3-column grid
+ * Click to view full detail
  */
 
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Circle, Loader2 } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, ArrowRight } from "lucide-react";
 import type { AppraisalProgressItem } from "@/lib/appraisal-utils";
 
 interface AppraisalSectionCardsProps {
@@ -26,40 +26,35 @@ export function AppraisalSectionCards({
   isLoading = false,
 }: AppraisalSectionCardsProps) {
   return (
-    <div className="grid md:grid-cols-3 gap-4">
+    <div className="grid md:grid-cols-3 gap-3">
       {sections.map((section) => {
-        const isSelected = selectedSectionId === section.id;
         const Icon = section.icon;
+        const isSelected = selectedSectionId === section.id;
 
         return (
           <Card
             key={section.id}
             className={cn(
-              "cursor-pointer transition-all overflow-hidden border-2",
+              "border-2 cursor-pointer transition-all hover:shadow-md",
               isSelected
                 ? "ring-2 ring-purple-500 ring-offset-2 border-purple-300"
-                : "border-neutral-200 hover:border-purple-300 hover:shadow-md"
+                : "border-neutral-200 hover:border-purple-200"
             )}
             onClick={() => onSelectSection(section.id)}
           >
-            <div
-              className={cn(
-                "px-4 py-3 border-b",
-                isSelected
-                  ? "bg-purple-50 dark:bg-purple-950/30"
-                  : "bg-neutral-50 dark:bg-neutral-900/30"
-              )}
-            >
-              <div className="flex items-start gap-2">
-                {section.status === "complete" ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
-                ) : section.status === "gathering" ? (
-                  <Loader2 className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5 animate-spin" />
-                ) : (
-                  <Circle className="h-4 w-4 text-neutral-300 flex-shrink-0 mt-0.5" />
-                )}
+            <div className="p-4">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="flex-shrink-0">
+                  {section.status === "complete" ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  ) : section.status === "gathering" ? (
+                    <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-neutral-300" />
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 mb-1">
                     <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
                       {section.label}
                     </h3>
@@ -74,33 +69,21 @@ export function AppraisalSectionCards({
                       </Badge>
                     )}
                   </div>
-                </div>
-              </div>
-            </div>
-            <CardContent className="p-4">
-              {section.status === "waiting" ? (
-                <div className="flex items-center gap-2 text-sm text-neutral-400">
-                  <Icon className="h-4 w-4" />
-                  <span>Waiting for data...</span>
-                </div>
-              ) : section.status === "gathering" ? (
-                <div className="flex items-center gap-2 text-sm text-blue-600">
-                  <Icon className="h-4 w-4" />
-                  <span>Gathering insights...</span>
-                </div>
-              ) : (
-                <div className="text-sm text-neutral-700 dark:text-neutral-300">
-                  {section.excerpt || (
-                    <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-green-600" />
-                      <span className="text-neutral-600 dark:text-neutral-400">
-                        {section.label.toLowerCase()} data available
-                      </span>
-                    </div>
+                  {section.excerpt && (
+                    <p className="text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2">
+                      {section.excerpt}
+                    </p>
                   )}
                 </div>
-              )}
-            </CardContent>
+              </div>
+              <div className="flex items-center justify-between pt-2 border-t">
+                <div className="flex items-center gap-1.5 text-xs text-neutral-500">
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>View details</span>
+                </div>
+                <ArrowRight className="h-4 w-4 text-neutral-400" />
+              </div>
+            </div>
           </Card>
         );
       })}

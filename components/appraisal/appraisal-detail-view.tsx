@@ -1,15 +1,14 @@
 /**
  * Appraisal Detail View Component
  * Shows full content for a selected appraisal section
- * With back button to return to grid
  */
 
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Briefcase, Award, DollarSign, TrendingUp, BarChart3, AlertTriangle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Users, Briefcase, Award, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
 import type { AppraisalProgressItem } from "@/lib/appraisal-utils";
 import type { BusinessIdea } from "@/types/innovation";
 
@@ -21,6 +20,7 @@ interface AppraisalDetailViewProps {
 }
 
 export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBack }: AppraisalDetailViewProps) {
+  const Icon = section.icon;
   const renderSectionContent = () => {
     switch (section.id) {
       case "target_market":
@@ -75,6 +75,7 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
       case "investment_costs":
         return (
           <div className="space-y-4">
+
             {/* Investment Summary */}
             {appraisalData?.estimatedInvestment && (
               <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800">
@@ -197,103 +198,6 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
           </div>
         );
 
-      case "financial_metrics":
-        return (
-          <div className="space-y-4">
-            {/* Key Metrics Grid */}
-            {appraisalData?.financialAnalysis ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="text-center p-3 rounded-lg bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800">
-                  <p className="text-[10px] text-neutral-600 dark:text-neutral-400">ROI</p>
-                  <p className="text-lg font-bold text-green-700 dark:text-green-300">{appraisalData.financialAnalysis.roi || "—"}</p>
-                </div>
-                <div className="text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800">
-                  <p className="text-[10px] text-neutral-600 dark:text-neutral-400">NPV</p>
-                  <p className="text-lg font-bold text-blue-700 dark:text-blue-300">{appraisalData.financialAnalysis.npv || "—"}</p>
-                </div>
-                <div className="text-center p-3 rounded-lg bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800">
-                  <p className="text-[10px] text-neutral-600 dark:text-neutral-400">IRR</p>
-                  <p className="text-lg font-bold text-purple-700 dark:text-purple-300">{appraisalData.financialAnalysis.irr || "—"}</p>
-                </div>
-                <div className="text-center p-3 rounded-lg bg-orange-50 dark:bg-orange-950/50 border border-orange-200 dark:border-orange-800">
-                  <p className="text-[10px] text-neutral-600 dark:text-neutral-400">Payback</p>
-                  <p className="text-lg font-bold text-orange-700 dark:text-orange-300">{appraisalData.financialAnalysis.paybackPeriod || "—"}</p>
-                </div>
-              </div>
-            ) : null}
-
-            {/* Scoring Metrics */}
-            {selectedIdea?.metrics && (
-              <div>
-                <h4 className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-3 uppercase flex items-center gap-1.5">
-                  <BarChart3 className="h-3.5 w-3.5" />
-                  Scoring Metrics
-                </h4>
-                <div className="space-y-3">
-                  {(selectedIdea.metrics as any).overallScore && (
-                    <div className="p-4 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30 border border-purple-200 dark:border-purple-800">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold text-purple-900 dark:text-purple-100">Overall Score</span>
-                        <span className="text-3xl font-bold text-purple-700 dark:text-purple-300">{(selectedIdea.metrics as any).overallScore}/100</span>
-                      </div>
-                      <div className="h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-purple-500 to-blue-500"
-                          style={{ width: `${(selectedIdea.metrics as any).overallScore}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {(selectedIdea.metrics as any).problemClarity && (
-                    <div className="p-3 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Problem Clarity</span>
-                        <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-                          {(selectedIdea.metrics as any).problemClarity.score}/100
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {(selectedIdea.metrics as any).marketSize && (
-                    <div className="p-3 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Market Size</span>
-                        <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-                          {(selectedIdea.metrics as any).marketSize.score}/100
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {(selectedIdea.metrics as any).innovation && (
-                    <div className="p-3 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Innovation</span>
-                        <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-                          {(selectedIdea.metrics as any).innovation.score}/100
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {(selectedIdea.metrics as any).financialViability && (
-                    <div className="p-3 rounded-lg bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Financial Viability</span>
-                        <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-                          {(selectedIdea.metrics as any).financialViability.score}/100
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
       case "risk_assessment":
         return (
           <div className="space-y-4">
@@ -319,6 +223,23 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
                   }>
                     {appraisalData.riskAssessment.riskLevel?.toUpperCase()}
                   </Badge>
+                </div>
+              </div>
+            )}
+
+            {/* Investment Recommendation (moved up for prominence) */}
+            {appraisalData?.riskAssessment?.recommendation && (
+              <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border-2 border-blue-200 dark:border-blue-800">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center flex-shrink-0">
+                    <Award className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-blue-900 dark:text-blue-100 mb-1">Investment Recommendation</h4>
+                    <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                      {appraisalData.riskAssessment.recommendation}
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -359,7 +280,7 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
               <div>
                 <h4 className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2 uppercase flex items-center gap-1.5">
                   <Award className="h-3.5 w-3.5" />
-                  Mitigations
+                  Mitigation Strategies
                 </h4>
                 <div className="space-y-2">
                   {appraisalData.riskAssessment.mitigations.map((mitigation: string, i: number) => (
@@ -369,16 +290,6 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* Recommendation */}
-            {appraisalData?.riskAssessment?.recommendation && (
-              <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800">
-                <h4 className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-2 uppercase">Investment Recommendation</h4>
-                <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed">
-                  {appraisalData.riskAssessment.recommendation}
-                </p>
               </div>
             )}
           </div>
@@ -394,32 +305,38 @@ export function AppraisalDetailView({ section, appraisalData, selectedIdea, onBa
   };
 
   return (
-    <div className="space-y-4">
-      {/* Back Button */}
-      <Button onClick={onBack} variant="ghost" size="sm" className="gap-2">
-        <ArrowLeft className="h-4 w-4" />
-        Back to overview
-      </Button>
-
-      {/* Section Card */}
-      <Card className="border-2">
-        <div className="px-5 py-4 border-b bg-purple-50 dark:bg-purple-950/30">
+    <Card className="border-2">
+      <CardHeader className="border-b bg-purple-50 dark:bg-purple-950/30">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
-              <section.icon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{section.label}</h2>
-              {section.status === "complete" && (
-                <Badge variant="default" className="text-xs mt-1">Complete</Badge>
-              )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              className="h-8 w-8 p-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
+                <Icon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-100">
+                  {section.label}
+                </h2>
+                <p className="text-xs text-muted-foreground">AI-generated analysis</p>
+              </div>
             </div>
           </div>
+          {section.status === "complete" && (
+            <Badge variant="default">Complete</Badge>
+          )}
         </div>
-        <CardContent className="p-6">
-          {renderSectionContent()}
-        </CardContent>
-      </Card>
-    </div>
+      </CardHeader>
+      <CardContent className="p-6">
+        {renderSectionContent()}
+      </CardContent>
+    </Card>
   );
 }

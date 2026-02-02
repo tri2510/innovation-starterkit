@@ -22,21 +22,22 @@ export interface ProgressTip {
   type: "success" | "normal" | "celebration";
 }
 
-// 7 appraisal sections (business idea fields + financial model merged)
+// 6 appraisal sections (business idea fields + financial model merged)
+// Note: financial_metrics removed - already shown in Financial Summary & Innovation Radar section
 export const defaultAppraisalProgress: AppraisalProgressItem[] = [
   { id: "target_market", label: "Target Market", icon: Users, status: "waiting" },
   { id: "business_model", label: "Business Model", icon: Briefcase, status: "waiting" },
   { id: "competitive_advantage", label: "Competitive Advantage", icon: Award, status: "waiting" },
   { id: "investment_costs", label: "Investment & Costs", icon: DollarSign, status: "waiting" },
   { id: "revenue_forecasts", label: "Revenue Forecasts", icon: TrendingUp, status: "waiting" },
-  { id: "financial_metrics", label: "Financial Metrics", icon: BarChart3, status: "waiting" },
   { id: "risk_assessment", label: "Risk & Timeline", icon: AlertTriangle, status: "waiting" },
 ];
 
 export function calculateAppraisalProgress(items: AppraisalProgressItem[]): number {
+  const totalItems = 6; // 6 appraisal sections (financial_metrics removed)
   const completedCount = items.filter(i => i.status === "complete").length;
   const gatheringCount = items.filter(i => i.status === "gathering").length;
-  return Math.round(((completedCount * 100 + gatheringCount * 50) / (items.length * 100)) * 100);
+  return Math.round(((completedCount * 100 + gatheringCount * 50) / (totalItems * 100)) * 100);
 }
 
 export function getAppraisalProgressTip(

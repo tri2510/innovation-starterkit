@@ -2,6 +2,7 @@
 
 import { Challenge, MarketAnalysis, BusinessIdea, InnovationSession } from "@/types/innovation";
 import { Target, TrendingUp, Lightbulb, DollarSign, Presentation, CheckCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface PhaseSummaryTooltipProps {
   phase: "challenge" | "market" | "ideation" | "investment-appraisal" | "pitch";
@@ -15,6 +16,15 @@ interface PhaseSummaryTooltipProps {
  * Displays key information from each completed phase in a clean, readable format.
  */
 export function PhaseSummaryTooltip({ phase, session, children }: PhaseSummaryTooltipProps) {
+  const [isClient, setIsClient] = useState(false);
+  const [summary, setSummary] = useState<ReturnType<typeof getChallengeSummary> | null>(null);
+
+  // Set isClient on mount and calculate summary
+  useEffect(() => {
+    setIsClient(true);
+    setSummary(getPhaseSummary());
+  }, [session, phase]);
+
   const getPhaseSummary = () => {
     if (!session) return null;
 
@@ -34,32 +44,29 @@ export function PhaseSummaryTooltip({ phase, session, children }: PhaseSummaryTo
     }
   };
 
-  const summary = getPhaseSummary();
-
-  if (!summary) {
-    return <>{children}</>;
-  }
-
+  // Always render the same structure - only show tooltip content when summary exists
   return (
     <div className="group relative inline-block w-full">
       {children}
       {/* Tooltip - positioned below to avoid overflow at top of page */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
-        <div className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg shadow-xl p-4 text-sm">
-          {/* Header */}
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-neutral-700 dark:border-neutral-300">
-            {summary.icon}
-            <span className="font-semibold">{summary.title}</span>
-            <CheckCircle2 className="h-4 w-4 text-green-400 dark:text-green-600 ml-auto" />
+      {summary && (
+        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
+          <div className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg shadow-xl p-4 text-sm">
+            {/* Header */}
+            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-neutral-700 dark:border-neutral-300">
+              {summary.icon}
+              <span className="font-semibold">{summary.title}</span>
+              <CheckCircle2 className="h-4 w-4 text-green-400 dark:text-green-600 ml-auto" />
+            </div>
+            {/* Content */}
+            <div className="space-y-2">
+              {summary.content}
+            </div>
           </div>
-          {/* Content */}
-          <div className="space-y-2">
-            {summary.content}
-          </div>
+          {/* Arrow - pointing up */}
+          <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-neutral-900 dark:border-b-neutral-100" />
         </div>
-        {/* Arrow - pointing up */}
-        <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-neutral-900 dark:border-b-neutral-100" />
-      </div>
+      )}
     </div>
   );
 }

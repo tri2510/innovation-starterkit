@@ -95,6 +95,8 @@ export default function IdeationPage() {
   };
 
   const handleBack = () => {
+    // Navigate back to market without clearing ideation data
+    // Ideas and conversation history are preserved
     setStep("market");
     saveConversationHistory("ideation", messages);
     router.push("/market");
