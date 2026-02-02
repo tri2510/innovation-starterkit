@@ -5,10 +5,10 @@
 
 // API Keys (Required - no defaults for security)
 export const config = {
-  // AI API Configuration (z.ai Anthropic-compatible endpoint)
-  anthropic: {
-    apiKey: process.env.OPENAI_API_KEY || '',
-    baseURL: process.env.OPENAI_BASE_URL || 'https://api.z.ai/api/anthropic',
+  // OpenAI API Configuration (using Z.AI OpenAI-compatible endpoint)
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY || '',
+    baseURL: process.env.OPENAI_BASE_URL || 'https://api.z.ai/api/paas/v4/',
     defaultModel: process.env.OPENAI_DEFAULT_MODEL || 'glm-4.7',
   },
 
@@ -34,7 +34,7 @@ export const config = {
 export function validateConfig(): { valid: boolean; missing: string[] } {
   const missing: string[] = [];
 
-  if (!config.anthropic.apiKey) {
+  if (!config.openai.apiKey) {
     missing.push('OPENAI_API_KEY');
   }
 

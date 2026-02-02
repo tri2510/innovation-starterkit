@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { z } from 'zod';
 import {
   ProgressUpdateSchema,
@@ -22,16 +22,33 @@ import type { MarketProgressUpdateChunk } from '@/hooks/use-chat-streaming';
 import { executeAPIRequest } from './api-client';
 import { config } from './config';
 
-// Initialize Anthropic client (compatible with existing setup)
-const anthropic = new Anthropic({
-  apiKey: config.anthropic.apiKey,
-  baseURL: config.anthropic.baseURL,
+// Initialize OpenAI client (Z.AI OpenAI-compatible endpoint)
+const openai = new OpenAI({
+  apiKey: config.openai.apiKey,
+  baseURL: config.openai.baseURL,
 });
 
 // Get model from config
 const getModel = () => {
-  return config.anthropic.defaultModel;
+  return config.openai.defaultModel;
 };
+
+/**
+ * Convert messages to OpenAI format (system message goes in messages array)
+ */
+function toOpenAIMessages(
+  messages: Array<{ role: string; content: string }>,
+  systemPrompt: string
+): Array<{ role: 'system' | 'user' | 'assistant'; content: string }> {
+  const openaiMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+    { role: 'system', content: systemPrompt },
+    ...messages.map(msg => ({
+      role: (msg.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+      content: msg.content
+    }))
+  ];
+  return openaiMessages;
+}
 
 /**
  * Stream chat response with progress updates
@@ -53,20 +70,31 @@ export async function streamChatResponseWithProgress(
   return executeAPIRequest(async () => {
     // SUB-CALL 1: Natural conversation with user
     let conversationalResponse = "";
-    
-    const stream = await anthropic.messages.create({
+
+    const openaiMessages = toOpenAIMessages(messages, systemPrompt);
+
+    const stream = await openai.chat.completions.create({
       model: getModel(),
-      max_tokens: 8192, // Increased from 4096 to prevent cutoff
-      system: systemPrompt,
-      messages: messages as any,
+      max_tokens: 4096,
+      messages: openaiMessages,
       stream: true,
     });
 
-    for await (const event of stream) {
-      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-        const text = event.delta.text;
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta;
+
+      // Check for reasoning_content (thinking) first
+      if ((delta as any)?.reasoning_content) {
+        const thinking = (delta as any).reasoning_content;
+        // Skip thinking content for now, or could handle differently
+        continue;
+      }
+
+      // Regular content
+      if (delta?.content) {
+        const text = delta.content;
         conversationalResponse += text;
-        
+
         if (callbacks.onProgress) {
           callbacks.onProgress(text);
         }
@@ -139,7 +167,7 @@ export async function streamChatResponseWithProgress(
 
 /**
  * Get structured AI response with guaranteed schema validation
- * Uses Anthropic SDK with manual parsing and Zod validation with retry logic
+ * Uses OpenAI SDK with manual parsing and Zod validation with retry logic
  */
 export async function getStructuredAIResponse<T>(
   prompt: string,
@@ -147,20 +175,22 @@ export async function getStructuredAIResponse<T>(
   schema: z.ZodSchema<T>
 ): Promise<T> {
   return executeAPIRequest(async () => {
-    const response = await anthropic.messages.create({
+    const response = await openai.chat.completions.create({
       model: getModel(),
-      max_tokens: 8192, // Increased from 4096 to prevent cutoff
-      system: systemPrompt,
-      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 4096,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt }
+      ],
     });
 
-    const content = response.content[0];
-    if (content.type !== 'text') {
-      throw new Error('Expected text response');
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No content in response');
     }
 
     // Extract JSON from response
-    let jsonStr = content.text;
+    let jsonStr = content;
     const codeBlockMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (codeBlockMatch) {
       jsonStr = codeBlockMatch[1];
@@ -201,7 +231,7 @@ Fill out the innovation form cards by extracting structured data in this exact J
 \`\`\`json
 {
   "field": "problem|targetAudience|currentSolutions|industry|context",
-  "status": "gathering|awaiting_confirmation|complete", 
+  "status": "gathering|awaiting_confirmation|complete",
   "excerpt": "Professional innovation form language based on user input"
 }
 \`\`\`
@@ -240,23 +270,26 @@ Example transformation:
 
 Return ONLY the JSON, no additional text`;
 
-    const response = await anthropic.messages.create({
+    const response = await openai.chat.completions.create({
       model: getModel(),
       max_tokens: 500,
-      system: extractionPrompt,
-      messages: [{ role: 'user', content: 'Extract the progress update from this conversation.' }]
+      messages: [
+        { role: 'system', content: extractionPrompt },
+        { role: 'user', content: 'Extract the progress update from this conversation.' }
+      ],
     });
 
-    const content = response.content[0];
-    if (content.type !== 'text') {
-      throw new Error('Expected text response');
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No content in response');
     }
-    const responseText = content.text;
+
+    const responseText = content;
 
     // Parse the extracted JSON
     let progressUpdate = null;
     const jsonMatch = responseText.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
-    
+
     if (jsonMatch) {
       try {
         const parsed = JSON.parse(jsonMatch[1]);
@@ -334,18 +367,20 @@ Rules:
 - For opportunities/challenges: extract each item mentioned as array items
 - Use null for fields not yet discussed`;
 
-    const response = await anthropic.messages.create({
+    const response = await openai.chat.completions.create({
       model: getModel(),
       max_tokens: 1000,
-      system: extractionPrompt,
-      messages: [{ role: 'user', content: 'Extract the market progress update from this conversation.' }]
+      messages: [
+        { role: 'system', content: extractionPrompt },
+        { role: 'user', content: 'Extract the market progress update from this conversation.' }
+      ],
     });
 
-    const content = response.content[0];
-    if (content.type !== 'text') {
-      throw new Error('Expected text response');
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No content in response');
     }
-    const responseText = content.text;
+    const responseText = content;
 
     // Parse the extracted JSON
     let marketProgressUpdate = null;
@@ -384,14 +419,14 @@ function formatConversationForExtraction(
   latestAIResponse: string
 ): string {
   let formatted = '';
-  
+
   conversationHistory.forEach((msg, index) => {
     const role = msg.role === 'user' ? 'User' : 'Assistant';
     formatted += `${index + 1}. ${role}: ${msg.content}\n`;
   });
-  
+
   formatted += `\nLatest AI Response: ${latestAIResponse}`;
-  
+
   return formatted;
 }
 
@@ -418,6 +453,7 @@ function checkForMarketFinalSummary(text: string): MarketAnalysis | null {
   }
   return null;
 }
+
 function parseStructuredJSONResponse(text: string): StructuredAIResponse | null {
   try {
     // Try direct JSON parse first (clean prompts should produce this)
@@ -454,10 +490,10 @@ function parseProgressUpdates(text: string): ProgressUpdate[] {
 
   // First, try to find complete structured responses with nested progress_update
   const structuredPattern = /```(?:json)?\s*(\{[\s\S]*?"message"[\s\S]*?"progress_update"[\s\S]*?\{[\s\S]*?\}[\s\S]*?\})\s*```/g;
-  
+
   let match;
   structuredPattern.lastIndex = 0;
-  
+
   while ((match = structuredPattern.exec(text)) !== null) {
     try {
       const fullResponse = JSON.parse(match[1]);
@@ -474,7 +510,7 @@ function parseProgressUpdates(text: string): ProgressUpdate[] {
   // Fallback: try direct progress_update objects (for backward compatibility)
   const directPattern = /```(?:json)?\s*(\{[\s\S]*?"field"[\s\S]*?"status"[\s\S]*?"excerpt"[\s\S]*?\})\s*```/g;
   directPattern.lastIndex = 0;
-  
+
   while ((match = directPattern.exec(text)) !== null) {
     try {
       const parsed = JSON.parse(match[1]);
@@ -489,11 +525,6 @@ function parseProgressUpdates(text: string): ProgressUpdate[] {
   console.log(`[parseProgressUpdates] Total updates found: ${updates.length}`);
   return updates;
 }
-
-/**
- * Removed - clean prompts should produce consistent format
- */
-
 
 /**
  * Parse FINAL_SUMMARY from AI response text
@@ -534,88 +565,6 @@ function parseMarketFinalSummary(text: string): MarketAnalysis | null {
     console.warn('Failed to parse market final summary:', jsonMatch[0], error);
     return null;
   }
-}
-
-/**
- * Context-aware inference for progress updates when JSON format breaks
- * Analyzes conversation flow to determine current field and status
- */
-function inferProgressFromContext(
-  aiResponse: string,
-  conversationHistory: Array<{ role: string; content: string }>
-): ProgressUpdate | null {
-  console.log('[inferProgressFromContext] Analyzing conversation context...');
-  
-  // Get the last user message to understand what was confirmed
-  const lastUserMessage = conversationHistory
-    .filter(msg => msg.role === 'user')
-    .pop()?.content?.toLowerCase() || '';
-  
-  // Get the previous AI response to understand what field we were working on
-  const previousAiResponse = conversationHistory
-    .filter(msg => msg.role === 'assistant')
-    .pop()?.content?.toLowerCase() || '';
-  
-  console.log('[inferProgressFromContext] Last user message:', lastUserMessage.substring(0, 50));
-  console.log('[inferProgressFromContext] Current AI response:', aiResponse.substring(0, 50));
-
-  // Check if user confirmed something (yes/correct/proceed/good)
-  const userConfirmed = /\b(yes|correct|proceed|good|great|perfect|sounds right|that's it)\b/i.test(lastUserMessage);
-  
-  // Determine current field based on AI response content
-  let currentField: 'problem' | 'targetAudience' | 'currentSolutions' | 'industry' | 'context' = 'problem';
-  
-  if (/who.*face|target|audience|specifically| designing.*for/i.test(aiResponse)) {
-    currentField = 'targetAudience';
-  } else if (/existing.*solution|current.*method|what.*use|gap|limitation/i.test(aiResponse)) {
-    currentField = 'currentSolutions';
-  } else if (/industry|sector|field|market/i.test(aiResponse)) {
-    currentField = 'industry';
-  } else if (/context|background|more.*detail|additional/i.test(aiResponse)) {
-    currentField = 'context';
-  }
-
-  // Determine status and excerpt based on confirmation
-  if (userConfirmed) {
-    // User confirmed previous field, so this is a transition to new field
-    return {
-      field: currentField,
-      status: 'gathering',
-      excerpt: 'Starting new field after confirmation'
-    };
-  } else {
-    // User provided new information
-    const excerpt = extractUserContent(aiResponse, conversationHistory);
-    return {
-      field: currentField,
-      status: 'awaiting_confirmation',
-      excerpt: excerpt || 'Waiting for confirmation'
-    };
-  }
-}
-
-/**
- * Extract user's content from AI response (remove AI questions)
- */
-function extractUserContent(
-  aiResponse: string,
-  conversationHistory: Array<{ role: string; content: string }>
-): string {
-  // Get the last user message
-  const lastUserMessage = conversationHistory
-    .filter(msg => msg.role === 'user')
-    .pop()?.content || '';
-  
-  if (lastUserMessage.length > 0) {
-    // Clean up the user message (remove confirmation phrases)
-    const cleaned = lastUserMessage
-      .replace(/^(yes|no|correct|right|proceed|okay|sure|thanks|please)\b[,.]?\s*/i, '')
-      .trim();
-    
-    return cleaned.length > 5 ? cleaned.substring(0, 200) : lastUserMessage.substring(0, 200);
-  }
-  
-  return 'Information provided';
 }
 
 /**
@@ -731,22 +680,27 @@ export async function getConversationalResponse(
   systemPrompt: string
 ): Promise<string> {
   return executeAPIRequest(async () => {
-    const response = await anthropic.messages.create({
+    const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+      { role: 'system', content: systemPrompt },
+      ...conversationHistory.map(msg => ({
+        role: (msg.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+        content: msg.content
+      })),
+      { role: 'user', content: userMessage }
+    ];
+
+    const response = await openai.chat.completions.create({
       model: getModel(),
-      max_tokens: 8192, // Increased from 4096 to prevent cutoff
-      system: systemPrompt,
-      messages: [
-        ...conversationHistory.map(msg => ({ role: msg.role as 'user' | 'assistant', content: msg.content })),
-        { role: 'user', content: userMessage }
-      ],
+      max_tokens: 4096,
+      messages: messages,
     });
 
-    const content = response.content[0];
-    if (content.type !== 'text') {
-      throw new Error('Expected text response');
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No content in response');
     }
 
-    return content.text;
+    return content;
   }, {
     context: {
       operation: 'conversational_response',
@@ -759,7 +713,7 @@ export async function getConversationalResponse(
 // Export types for use in components
 export type {
   ProgressUpdate,
-  ChallengeSummary, 
+  ChallengeSummary,
   MarketAnalysis,
   BusinessIdea,
   PitchDeck
