@@ -5,7 +5,7 @@
  * All Quick Fill buttons will be hidden when disabled.
  */
 
-import type { Challenge, MarketAnalysis, BusinessIdea } from "@/types/innovation";
+import type { Challenge, MarketAnalysis, BusinessIdea, PitchDeck } from "@/types/innovation";
 import { config } from './config';
 
 export const DEMO_CHALLENGE: Challenge = {
@@ -203,6 +203,176 @@ export const DEMO_APPRAISAL = {
     recommendation: "Recommended with conditions. Strong market opportunity and solid unit economics. Secure initial funding for 18-month runway and focus on product-market fit validation before aggressive scaling.",
   },
   completedSections: ["targetMarket", "businessModel", "competitiveAdvantage", "investmentCosts", "revenueForecasts", "financialMetrics", "riskAssessment"],
+};
+
+export const DEMO_PITCH_DECK: PitchDeck = {
+  title: "StockSmart AI",
+  tagline: "AI-Powered Inventory Management for Small Retail Businesses",
+  slides: [
+    {
+      id: "slide-1",
+      type: "title",
+      title: "StockSmart AI",
+      content: {
+        subtitle: "AI-Powered Inventory Management That Thinks Ahead",
+        tagline: "Eliminating stockouts and overstocking through predictive analytics",
+        presenter: "Your Name",
+        date: "2025"
+      }
+    },
+    {
+      id: "slide-2",
+      type: "problem",
+      title: "The Problem",
+      content: {
+        summary: "Small businesses lose 30% of revenue annually due to inefficient inventory management.",
+        points: [
+          "Stockouts result in lost sales and customer frustration",
+          "Overstocking ties up capital and leads to waste",
+          "Manual spreadsheets are error-prone and time-consuming",
+          "Enterprise solutions cost $10K+ and are too complex",
+          "73% of small businesses still use manual inventory methods"
+        ],
+        impact: "A $45B market pain point affecting millions of small retailers"
+      }
+    },
+    {
+      id: "slide-3",
+      type: "solution",
+      title: "Our Solution",
+      content: {
+        summary: "StockSmart AI is an intelligent inventory platform designed specifically for small retail businesses.",
+        features: [
+          "AI-powered demand forecasting with 95% accuracy",
+          "Automated reorder notifications to prevent stockouts",
+          "Real-time inventory tracking across all channels",
+          "Seamless POS and e-commerce integrations",
+          "Mobile-first design requiring minimal training",
+          "Affordable pricing starting at $49/month"
+        ],
+        differentiation: "Enterprise-grade intelligence with small-business-friendly UX and pricing"
+      }
+    },
+    {
+      id: "slide-4",
+      type: "market",
+      title: "Market Opportunity",
+      content: {
+        tam: "$45B - Total Addressable Market: US retail inventory software market",
+        sam: "$8.2B - Serviceable Addressable Market: Small retail businesses (1-50 employees)",
+        som: "$420M - Serviceable Obtainable Market: Early adopters in fashion and electronics",
+        trends: [
+          "Growing trend toward cloud-based solutions among SMBs",
+          "Post-COVID shift to omnichannel retail creating complexity",
+          "Mobile-first preferences among younger business owners",
+          "AI-powered demand forecasting becoming mainstream"
+        ]
+      }
+    },
+    {
+      id: "slide-5",
+      type: "business-model",
+      title: "Business Model",
+      content: {
+        summary: "B2B SaaS subscription with tiered pricing structure.",
+        tiers: [
+          "Basic Tier ($49/month): Essential inventory tracking and alerts",
+          "Professional Tier ($149/month): AI-powered forecasting and supplier integration",
+          "Enterprise Tier ($499/month): Multi-location management and custom integrations"
+        ],
+        revenueStreams: [
+          "Monthly subscription fees (primary revenue)",
+          "Transaction fees on supplier orders (1.5%)",
+          "Premium support packages ($99/month)",
+          "API access for third-party integrations"
+        ],
+        unitEconomics: "LTV:CAC ratio of 4.2:1 with 18-month payback period"
+      }
+    },
+    {
+      id: "slide-6",
+      type: "competition",
+      title: "Competitive Landscape",
+      content: {
+        summary: "We focus on the underserved micro-business segment with superior AI technology.",
+        competitors: [
+          "QuickBooks Commerce (25% market share): Expensive for small business, complex setup",
+          "TradeGecko (15% market share): Complex onboarding, higher cost",
+          "inFlow Inventory (10% market share): Limited integrations, basic reporting"
+        ],
+        advantages: [
+          "Industry-first AI predictive inventory analytics",
+          "Most affordable solution for micro-businesses",
+          "Fastest onboarding (< 15 minutes)",
+          "Best-in-class mobile experience"
+        ]
+      }
+    },
+    {
+      id: "slide-7",
+      type: "traction",
+      title: "Go-to-Market Strategy",
+      content: {
+        summary: "Focus on underserved micro-retail segment with direct-to-consumer approach.",
+        strategy: [
+          "Phase 1: Launch in fashion and electronics retail hubs",
+          "Phase 2: Expand through Shopify and POS platform partnerships",
+          "Phase 3: Scale through digital marketing and referral programs",
+          "Freemium model to reduce customer acquisition cost",
+          "Target 500 customers in Year 1, 10,000 by Year 5"
+        ],
+        milestones: [
+          "Q1: MVP launch with core features",
+          "Q2: Initial pilot with 50 beta customers",
+          "Q3: Public launch and marketing push",
+          "Q4: 500 paying customers milestone"
+        ]
+      }
+    },
+    {
+      id: "slide-8",
+      type: "team",
+      title: "Team",
+      content: {
+        summary: "Experienced team with deep expertise in retail technology, AI, and SMB solutions.",
+        members: [
+          "CEO/Founder: 10+ years in retail technology, former product lead at Shopify",
+          "CTO/Lead Developer: AI/ML specialist, former senior engineer at Amazon",
+          "Product Manager: Former inventory manager at major retailer, understands pain points firsthand",
+          "Sales/Marketing Lead: SMB sales expert, scaled 3 startups from 0 to 1000+ customers"
+        ],
+        advisors: [
+          "Retail industry veteran with 20+ years experience",
+          "AI/ML professor from top university"
+        ]
+      }
+    },
+    {
+      id: "slide-9",
+      type: "ask",
+      title: "The Ask",
+      content: {
+        summary: "Seeking $500K-$750K seed funding for 18-month runway to product-market fit.",
+        investment: "$500,000 - $750,000",
+        use: [
+          "$250K - Product development and MVP completion",
+          "$150K - Team expansion (engineering, sales)",
+          "$75K - Initial marketing campaign and customer acquisition",
+          "$50K - Legal, IP protection, and operations",
+          "$225K - Working capital reserve for 12-month buffer"
+        ],
+        financialHighlights: [
+          "Year 1 Revenue: $480K (500 customers @ $80/mo)",
+          "Year 3 Revenue: $3.36M (3,500 customers)",
+          "Year 5 Revenue: $9.6M (10,000 customers)",
+          "5-Year ROI: 628%",
+          "Break-even: Month 16",
+          "IRR: 68%"
+        ],
+        closing: "Join us in democratizing intelligent inventory management for millions of small businesses."
+      }
+    }
+  ]
 };
 
 // Helper to get demo mode status from config
