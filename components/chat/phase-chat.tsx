@@ -160,15 +160,27 @@ export function PhaseChat({
       <div ref={chatContainerRefToUse} className="flex-1 overflow-y-auto px-4 py-4 min-h-0">
         <div className="space-y-4">
           {messages
-            .filter((message) => {
-              // Filter out messages with no real content
-              const content = message.content.trim();
-              if (content === "") return false;
+            .map((message) => {
+              // Filter and clean message content
+              let content = message.content.trim();
 
-              // Filter out messages that only contain code block markers (e.g., ```, ```json)
-              const withoutCodeBlocks = content.replace(/```[\w]*\n?/g, "").trim();
-              return withoutCodeBlocks !== "";
+              // Remove empty messages
+              if (content === "") return null;
+
+              // Remove JSON code blocks (```json ... ``` or ``` ... ```)
+              // This filters out structured AI responses that should only go to progress tracker
+              content = content.replace(/```(?:json)?\s*[\s\S]*?```\s*/g, "").trim();
+
+              // Remove any remaining code block markers
+              content = content.replace(/```[\w]*\n?/g, "").trim();
+
+              // Filter out messages that are empty after cleaning
+              if (content === "") return null;
+
+              // Return cleaned message
+              return { ...message, content };
             })
+            .filter((msg): msg is ChatMessage => msg !== null)
             .map((message) => (
               <ChatMessageWithRetry
                 key={message.id}
