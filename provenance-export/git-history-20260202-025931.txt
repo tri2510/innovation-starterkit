@@ -1,0 +1,88 @@
+========================================
+INNOVATION STARTERKIT - GIT PROVENANCE
+========================================
+
+Export Date: Mon Feb  2 02:59:31 AM UTC 2026
+Repository: /home/htr1hc/01_PJNE/innovation-starterkit
+Git Origin: https://github.com/tri2510/innovation-starterkit.git
+
+========================================
+
+--- REPOSITORY INFO ---
+Current Branch: main
+Current Commit: 6206ea8dce68e6a23ee148e2e2b7c4d3c69b386d
+Total Commits: 8
+
+--- FIRST COMMIT ---
+Hash: d236a65a10596fa466eb38bf65130b35d02a426d
+Author: Hua Minh Tri (BGSV/PJ-NE) <htr1hc@HC-C-0057R.hc.apac.bosch.com>
+Date: 2026-01-23 15:28:23 +0700
+Message: first commit
+
+Hash: 362e31ea12ad702a332a706848fb9bcb6d405303
+Author: Hua Minh Tri (BGSV/PJ-NE) <htr1hc@HC-C-0057R.hc.apac.bosch.com>
+Date: 2026-01-23 15:30:10 +0700
+Message: Initial commit: Add Next.js innovation starterkit
+
+
+--- COMPLETE COMMIT HISTORY ---
+Commit: 6206ea8dce68e6a23ee148e2e2b7c4d3c69b386d
+Author: Anh Thu Be La <127480096+ankthuw@users.noreply.github.com>
+Date: 2026-01-26 15:33:31 +0700
+Message: Merge pull request #3 from ankthuw/feature/documentation-config
+
+Commit: fb303c73be0131fe4155c0e99347d82ce3d88826
+Author: atwo <blathu22@clc.fitus.edu.vn>
+Date: 2026-01-26 14:28:14 +0700
+Message: fix: refine anthropic url to z.ai
+
+Commit: 1028a6c1eeb48f21ea5d49091beb9cccc19a1850
+Author: atwo <blathu22@clc.fitus.edu.vn>
+Date: 2026-01-26 14:01:25 +0700
+Message: refactor: centralize config with sensible defaults
+
+Commit: 2f085a3a38bb73fecdbd829c8d1a578e65d43cdc
+Author: Anh Thu Be La <127480096+ankthuw@users.noreply.github.com>
+Date: 2026-01-26 13:44:04 +0700
+Message: Merge pull request #1 from tri2510/feature/documentation-config
+
+Commit: 354489b4f6d91eac5e16e31ad50eedbc71249a21
+Author: atwo <blathu22@clc.fitus.edu.vn>
+Date: 2026-01-26 13:16:12 +0700
+Message: docs: add comprehensive documentation and configuration
+
+Commit: d9fab2835bdee8e4a5f3a4c9f8757ab54ccd723d
+Author: tri2510 <tri2510@gmail.com>
+Date: 2026-01-23 15:34:31 +0700
+Message: Add CODEOWNERS file requiring @tri2510 approval
+
+Commit: 362e31ea12ad702a332a706848fb9bcb6d405303
+Author: Hua Minh Tri (BGSV/PJ-NE) <htr1hc@HC-C-0057R.hc.apac.bosch.com>
+Date: 2026-01-23 15:30:10 +0700
+Message: Initial commit: Add Next.js innovation starterkit
+
+Commit: d236a65a10596fa466eb38bf65130b35d02a426d
+Author: Hua Minh Tri (BGSV/PJ-NE) <htr1hc@HC-C-0057R.hc.apac.bosch.com>
+Date: 2026-01-23 15:28:23 +0700
+Message: first commit
+
+--- CONTRIBUTORS ---
+     3	atwo
+     2	Anh Thu Be La
+     2	Hua Minh Tri (BGSV/PJ-NE)
+     1	tri2510
+
+--- FILE HISTORY ---
+Total lines of code:
+ 22780 total
+
+--- TAGS ---
+v0.1.0-poc-original
+
+--- REMOTE ORIGIN ---
+origin	https://github.com/tri2510/innovation-starterkit.git (fetch)
+origin	https://github.com/tri2510/innovation-starterkit.git (push)
+
+========================================
+END OF PROVENANCE EXPORT
+========================================
