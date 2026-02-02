@@ -10,9 +10,22 @@ type EvaluatedIdea = {
   evaluation: BusinessIdea["evaluation"];
 };
 
+/**
+ * Shuffle array to prevent positional bias during evaluation
+ * Ideas in original order may receive biased scores due to position effects
+ */
+function shuffleIdeas<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { ideas, challenge, marketAnalysis, ideaIds } = await request.json();
+    const { ideas, challenge, marketAnalysis } = await request.json();
 
     if (!ideas || !Array.isArray(ideas) || ideas.length === 0) {
       return NextResponse.json(
@@ -21,19 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Filter ideas to score - either all ideas or specific ones
-    const ideasToScore = ideaIds
-      ? ideas.filter((idea: BusinessIdea) => ideaIds.includes(idea.id))
-      : ideas;
-
-    if (ideasToScore.length === 0) {
-      return NextResponse.json(
-        { error: "No matching ideas found to score" },
-        { status: 400 }
-      );
-    }
-
-    console.log(`[Score API] Scoring ${ideasToScore.length} ideas...`);
+    console.log(`[Score API] Scoring ${ideas.length} ideas...`);
 
     // Build full context using buildIdeationContext (same as original evaluation)
     const context = buildIdeationContext(
@@ -41,13 +42,20 @@ export async function POST(request: NextRequest) {
       marketAnalysis as MarketAnalysis
     );
 
+    // Shuffle ideas to prevent positional bias
+    // This ensures evaluation is independent of idea ordering
+    const shuffledIdeas = shuffleIdeas(ideas);
+    console.log(`[Score API] Shuffled ${shuffledIdeas.length} ideas for bias reduction`);
+
     // Build evaluation context with full challenge, market, and generated ideas
     const evaluationContext = `## Challenge Context
 ${context}
 
 ## Ideas to Evaluate
 
-${ideasToScore
+**NOTE**: These ideas are presented in RANDOM ORDER. Evaluate each idea independently based on its merits, not its position in this list.
+
+${shuffledIdeas
   .map(
     (idea: BusinessIdea, index: number) => `
 ### Idea ${index + 1}: ${idea.name}
@@ -67,6 +75,22 @@ ${idea.brief || "No brief provided"}
   .join("\n---\n")}
 
 ---
+
+## Critical Evaluation Instructions
+
+**IMPORTANT**: You are acting as an INDEPENDENT, CRITICAL evaluator. Your role is to:
+
+1. **Be objective and skeptical** - Look for flaws, assumptions, and risks
+2. **Compare ideas relative to each other** - Not all ideas deserve high scores
+3. **Use the full score range** - Don't cluster scores around 70-80; spread them based on real differences
+4. **Identify weaknesses first** - Before finding strengths, identify what could go wrong
+5. **Challenge assumptions** - What would need to be true for this to work?
+
+**Score Distribution Guidelines**:
+- 90-100: Exceptional, rare, breakthrough idea with minimal risks
+- 75-89: Strong idea with clear advantages but some limitations
+- 60-74: Viable idea with significant trade-offs or risks
+- Below 60: Major flaws or unrealistic assumptions
 
 Please evaluate these ideas critically and provide objective scores.`;
 

@@ -252,25 +252,23 @@ You can:
         ideasToScore = idea ? [idea] : [];
       }
 
-      // Score ideas in parallel for faster results
-      const scorePromises = ideasToScore.map(async (idea) => {
-        const response = await fetch("/api/ai/ideate/score", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ideas: ideas,
-            ideaIds: [idea.id],
-            challenge: challenge,
-            marketAnalysis: marketAnalysis,
-          }),
-        });
-        const data = await response.json();
-        if (!data.success) throw new Error(`Failed to score ${idea.name}`);
-        return data.data[0]; // Return the scored idea
+      // Score all ideas in a single batch API call
+      const response = await fetch("/api/ai/ideate/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ideas: ideasToScore,
+          challenge: challenge,
+          marketAnalysis: marketAnalysis,
+        }),
       });
 
-      // Wait for all scoring to complete in parallel
-      const scoredIdeas = await Promise.all(scorePromises);
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error("Failed to score ideas");
+      }
+
+      const scoredIdeas = data.data;
 
       // Update all ideas with their new scores
       const updatedIdeas = ideas.map((idea) => {
