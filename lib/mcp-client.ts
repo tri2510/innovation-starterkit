@@ -35,7 +35,7 @@ async function sendMCPRequest(
   apiKey?: string
 ): Promise<unknown> {
   const requestId = ++mcpRequestId;
-  const effectiveApiKey = apiKey || config.anthropic.apiKey;
+  const effectiveApiKey = apiKey || config.openai.apiKey;
 
   const message: Record<string, unknown> = {
     jsonrpc: "2.0" as const,

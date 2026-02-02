@@ -1,9 +1,10 @@
 import { NextRequest } from "next/server";
-import { anthropic, streamClaudeWithThinking, ClaudeMessageWithThinking } from "@/lib/claude";
+import { streamClaudeWithThinking, ClaudeMessageWithThinking } from "@/lib/claude";
 import { TEXT_ANALYSIS_PROMPT } from "@/lib/prompts-clean";
 import { getSession } from "@/lib/session";
 import { tavilySearch } from "@/lib/tavily-client";
 import { config } from "@/lib/config";
+import OpenAI from "openai";
 
 interface Message {
   role: "user" | "assistant";
@@ -187,8 +188,14 @@ CRITICAL RULES:
 
 Respond ONLY with the optimized search query (no explanation).`;
 
-            const queryResponse = await anthropic.messages.create({
-              model: config.anthropic.defaultModel,
+            // Create OpenAI client for query generation
+            const openai = new OpenAI({
+              apiKey: config.openai.apiKey,
+              baseURL: config.openai.baseURL,
+            });
+
+            const queryResponse = await openai.chat.completions.create({
+              model: config.openai.defaultModel,
               max_tokens: 100,
               messages: [{
                 role: "user",
@@ -196,9 +203,7 @@ Respond ONLY with the optimized search query (no explanation).`;
               }]
             });
 
-            const aiGeneratedQuery = queryResponse.content[0].type === 'text' 
-              ? queryResponse.content[0].text.trim() 
-              : selectedText.trim();
+            const aiGeneratedQuery = queryResponse.choices[0]?.message?.content?.trim() || selectedText.trim();
 
             searchQueryUsed = aiGeneratedQuery.slice(0, 70);
             console.log(`[AI Insight] Pre-thinking: AI generated query = "${searchQueryUsed}"`);

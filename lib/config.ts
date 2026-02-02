@@ -5,11 +5,11 @@
 
 // API Keys (Required - no defaults for security)
 export const config = {
-  // Anthropic API Configuration
-  anthropic: {
-    apiKey: process.env.ANTHROPIC_API_KEY || '',
-    baseURL: process.env.ANTHROPIC_BASE_URL || 'https://api.z.ai/api/anthropic',
-    defaultModel: process.env.ANTHROPIC_DEFAULT_SONNET_MODEL || 'glm-4.7',
+  // OpenAI API Configuration (using Z.AI OpenAI-compatible endpoint)
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY || '',
+    baseURL: process.env.OPENAI_BASE_URL || 'https://api.z.ai/api/paas/v4/',
+    defaultModel: process.env.OPENAI_DEFAULT_MODEL || 'glm-4.7',
   },
 
   // Tavily Search API (Optional - for web search features)
@@ -34,8 +34,8 @@ export const config = {
 export function validateConfig(): { valid: boolean; missing: string[] } {
   const missing: string[] = [];
 
-  if (!config.anthropic.apiKey) {
-    missing.push('ANTHROPIC_API_KEY');
+  if (!config.openai.apiKey) {
+    missing.push('OPENAI_API_KEY');
   }
 
   return {
