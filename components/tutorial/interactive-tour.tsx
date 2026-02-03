@@ -97,33 +97,52 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
         // Try multiple selectors for case studies button
         let targetElement = document.querySelector(step.target) as HTMLElement;
 
+        // Debug: log what we're looking for
+        console.log("Tour step:", step.id, "Looking for:", step.target);
+
         // Fallback: try finding button with specific class or text
         if (!targetElement && step.target === "#case-studies-button") {
+          console.log("ID selector failed, trying fallbacks...");
           targetElement = document.querySelector("button[title='View Case Studies']") as HTMLElement;
           if (!targetElement) {
-            // Another fallback: find button containing the BookOpen icon
+            // Another fallback: find button containing the BookOpen icon or Case Studies text
             const buttons = document.querySelectorAll("button");
+            console.log("Found", buttons.length, "buttons total");
             for (const btn of buttons) {
+              console.log("Button text:", btn.textContent?.trim());
               if (btn.textContent?.includes("Case Studies")) {
                 targetElement = btn as HTMLElement;
+                console.log("Found Case Studies button by text!");
                 break;
               }
             }
+          } else {
+            console.log("Found by title attribute");
           }
         }
 
-        if (targetElement && targetElement.offsetParent !== null) {
-          const rect = targetElement.getBoundingClientRect();
-          setHighlightedRect(rect);
+        if (targetElement) {
+          console.log("Target element found:", targetElement);
+          console.log("Element visible?", targetElement.offsetParent !== null);
+          console.log("Element dimensions:", targetElement.getBoundingClientRect());
 
-          // Scroll target into view
-          targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          const rect = targetElement.getBoundingClientRect();
+
+          // Check if element has actual dimensions
+          if (rect.width > 0 && rect.height > 0) {
+            setHighlightedRect(rect);
+            // Scroll target into view
+            targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else {
+            console.log("Element has 0 dimensions, showing centered tooltip");
+            setHighlightedRect(null);
+          }
         } else {
           // Element not found or not visible, show centered tooltip
-          console.log("Tour element not found or hidden:", step.target);
+          console.log("Tour element not found:", step.target);
           setHighlightedRect(null);
         }
-      }, 150);
+      }, 200);
     };
 
     updateHighlight();
