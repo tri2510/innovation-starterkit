@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { X, ChevronRight, ChevronLeft, MessageSquare, Layout, Target, Sparkles, Check, BookOpen, Home } from "lucide-react";
-import { useCaseStudy } from "@/contexts/case-study-context";
+import { X, ChevronRight, ChevronLeft, MessageSquare, Layout, Target, Sparkles, Check, BookOpen } from "lucide-react";
 
 interface TourStep {
   id: string;
@@ -13,7 +12,6 @@ interface TourStep {
   icon: React.ReactNode;
   target: string; // CSS selector for the element to highlight
   position: "top" | "bottom" | "left" | "right" | "center";
-  mode?: "normal" | "case-study" | "both"; // When to show this step
 }
 
 const TOUR_STEPS: TourStep[] = [
@@ -24,16 +22,14 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Sparkles className="h-6 w-6" />,
     target: "body",
     position: "center",
-    mode: "both",
   },
   {
-    id: "case-study-mode",
-    title: "Explore Real Innovations",
-    description: "Click 'Browse Case Studies' to explore successful innovations from Tesla, DJI, Nest, and more. Learn from real-world examples across industrial IoT, robotics, and automotive.",
+    id: "case-studies",
+    title: "Learn from Real Innovations",
+    description: "Explore case studies from Tesla, DJI, Nest, Siemens MindSphere, and ABB YuMi. Learn from successful innovations in EVs, IoT, robotics, smart home, and industrial automation.",
     icon: <BookOpen className="h-6 w-6" />,
     target: "button:has([data-action='browse-case-studies'])",
     position: "bottom",
-    mode: "normal",
   },
   {
     id: "progress-bar",
@@ -42,16 +38,6 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Layout className="h-6 w-6" />,
     target: "[data-progress-bar]",
     position: "bottom",
-    mode: "normal",
-  },
-  {
-    id: "case-study-banner",
-    title: "Case Study Navigation",
-    description: "Browse through real innovation examples: Tesla (EVs), Siemens MindSphere (IIoT), Nest (Smart Home), DJI (Drones), ABB YuMi (Cobots). Navigate between phases using the buttons.",
-    icon: <BookOpen className="h-6 w-6" />,
-    target: "[data-case-study-banner]",
-    position: "bottom",
-    mode: "case-study",
   },
   {
     id: "chat",
@@ -60,16 +46,6 @@ const TOUR_STEPS: TourStep[] = [
     icon: <MessageSquare className="h-6 w-6" />,
     target: "[data-chat-area]",
     position: "left",
-    mode: "normal",
-  },
-  {
-    id: "case-study-content",
-    title: "Learn from Success",
-    description: "Explore how successful innovations tackled each phase. Compare your approach with real-world examples from industry leaders in manufacturing, IoT, and automation.",
-    icon: <BookOpen className="h-6 w-6" />,
-    target: "[data-progress-area]",
-    position: "right",
-    mode: "case-study",
   },
   {
     id: "input",
@@ -78,7 +54,6 @@ const TOUR_STEPS: TourStep[] = [
     icon: <MessageSquare className="h-6 w-6" />,
     target: "textarea[placeholder*='Type your response']",
     position: "top",
-    mode: "normal",
   },
   {
     id: "progress",
@@ -87,16 +62,6 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Target className="h-6 w-6" />,
     target: "[data-progress-area]",
     position: "right",
-    mode: "normal",
-  },
-  {
-    id: "case-study-exit",
-    title: "Start Your Innovation",
-    description: "Ready to work on your own idea? Click the Exit button to leave case study mode and start defining your innovation challenge.",
-    icon: <Home className="h-6 w-6" />,
-    target: "button:has([data-action='exit-case-study'])",
-    position: "bottom",
-    mode: "case-study",
   },
   {
     id: "complete",
@@ -105,7 +70,6 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Check className="h-6 w-6" />,
     target: "button:has([data-action='continue'])",
     position: "top",
-    mode: "normal",
   },
 ];
 
@@ -114,24 +78,15 @@ interface InteractiveTourProps {
 }
 
 export function InteractiveTour({ onComplete }: InteractiveTourProps) {
-  const { isActive: isCaseStudyActive } = useCaseStudy();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [highlightedRect, setHighlightedRect] = useState<DOMRect | null>(null);
-
-  // Filter tour steps based on current mode
-  const filteredSteps = TOUR_STEPS.filter(step => {
-    if (step.mode === "both") return true;
-    if (step.mode === "case-study") return isCaseStudyActive;
-    if (step.mode === "normal") return !isCaseStudyActive;
-    return true;
-  });
 
   useEffect(() => {
     if (!isVisible) return;
 
     const updateHighlight = () => {
-      const step = filteredSteps[currentStep];
+      const step = TOUR_STEPS[currentStep];
       if (step.target === "body") {
         setHighlightedRect(null);
         return;
@@ -152,10 +107,10 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
     // Recalculate on window resize
     window.addEventListener("resize", updateHighlight);
     return () => window.removeEventListener("resize", updateHighlight);
-  }, [isVisible, currentStep, isCaseStudyActive]);
+  }, [isVisible, currentStep]);
 
   const handleNext = () => {
-    if (currentStep < filteredSteps.length - 1) {
+    if (currentStep < TOUR_STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleComplete();
@@ -180,8 +135,8 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
 
   if (!isVisible) return null;
 
-  const step = filteredSteps[currentStep];
-  const isLastStep = currentStep === filteredSteps.length - 1;
+  const step = TOUR_STEPS[currentStep];
+  const isLastStep = currentStep === TOUR_STEPS.length - 1;
   const isFirstStep = currentStep === 0;
 
   // Calculate tooltip position with boundary checking
@@ -353,7 +308,7 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
 
             {/* Progress Dots */}
             <div className="flex gap-2 mb-6">
-              {filteredSteps.map((_, index) => (
+              {TOUR_STEPS.map((_, index) => (
                 <div
                   key={index}
                   className={`h-1.5 flex-1 rounded-full transition-all ${
@@ -370,7 +325,7 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
             {/* Navigation */}
             <div className="flex items-center justify-between">
               <div className="text-xs text-slate-500 font-medium">
-                Step {currentStep + 1} of {filteredSteps.length}
+                Step {currentStep + 1} of {TOUR_STEPS.length}
               </div>
               <div className="flex gap-2">
                 {!isFirstStep && (
@@ -417,54 +372,5 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
         </Card>
       </div>
     </>
-  );
-}
-
-// Compact welcome tooltip for returning users
-export function WelcomeTooltip() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const hasSeenTour = localStorage.getItem("innovation-kit-interactive-tour-completed");
-    const hasSeenWelcome = localStorage.getItem("innovation-kit-welcome-seen");
-
-    if (hasSeenTour && !hasSeenWelcome) {
-      // Show brief welcome after a short delay
-      const timer = setTimeout(() => setIsVisible(true), 1500);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  const handleDismiss = () => {
-    localStorage.setItem("innovation-kit-welcome-seen", "true");
-    setIsVisible(false);
-  };
-
-  if (!isVisible) return null;
-
-  return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 animate-in slide-in-from-bottom-4 duration-500">
-      <Card className="shadow-xl border-slate-200 bg-white">
-        <div className="p-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="h-6 w-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-slate-900">Welcome back to your innovation journey!</p>
-              <p className="text-xs text-slate-500 mt-1">Continue where you left off</p>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDismiss}
-              className="h-8 w-8 text-slate-500 hover:text-slate-700 flex-shrink-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </Card>
-    </div>
   );
 }
