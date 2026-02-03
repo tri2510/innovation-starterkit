@@ -20,6 +20,14 @@
         "market": {
           "marketSize": "$150B+ global accommodation market, with $30B+ alternative lodging segment",
           "targetSegment": "1.5M+ travelers seeking alternatives to traditional hotels, willing to trade some amenities for authenticity and local experience",
+          "initialTargetMarket": "San Francisco conference attendees (2008) - highly targeted, motivated users with urgent accommodation needs",
+          "trends": [
+            "Sharing economy revolution",
+            "Experience over possessions movement",
+            "Millennial travel preferences shifting",
+            "Mobile-first booking behavior",
+            "Trust in peer-to-peer platforms growing"
+          ],
           "competitors": [
             "Hotels (Marriott, Hilton) - established, trusted but expensive",
             "VRBO - vacation rentals focused on whole homes",
@@ -52,19 +60,46 @@
             "Instant book for last-minute travelers",
             "Experiences (local activities hosted by locals)"
           ],
+          "mvpFeatures": [
+            "Online listing creation with photos",
+            "Search and filter by location/dates",
+            "Guest booking request system",
+            "Basic payment processing",
+            "Email notifications for hosts and guests"
+          ],
+          "uniqueSellingPoints": [
+            "Belong anywhere - not just stay, experience",
+            "Trust system through reviews and verifications",
+            "Professional photography ensuring quality",
+            "Local hosts providing authentic recommendations",
+            "Wider variety of accommodation types than hotels"
+          ],
           "keyInsight": "Design matters! The 'professional photography' pivot was crucial - listings with pro photos got 2-3x more bookings, proving that trust and quality presentation wins over quantity."
         },
         "investment-appraisal": {
+          "fundingNeeded": "$20,000 initial seed, eventually raised $3.4B before IPO",
+          "useOfFunds": [
+            {"category": "Product Development", "amount": "40%", "description": "Engineering team, platform development, mobile apps"},
+            {"category": "Supply Acquisition", "amount": "30%", "description": "Professional photography, host recruitment, onboarding"},
+            {"category": "Marketing & Growth", "amount": "20%", "description": "User acquisition, referral programs, brand building"},
+            {"category": "Operations & Legal", "amount": "10%", "description": "Trust & safety, customer support, regulatory compliance"}
+          ],
+          "revenueModel": "Two-sided marketplace: 3% host fee + 6-12% guest fee per booking, plus Experiences commission (20%) and Plus/Airbnb for Business premiums",
+          "projections": {
+            "year1": {"revenue": "$50K", "bookings": "2,500 nights", "cities": "2"},
+            "year2": {"revenue": "$500K", "bookings": "25,000 nights", "cities": "10"},
+            "year3": {"revenue": "$5M", "bookings": "250,000 nights", "cities": "50"}
+          },
           "initialInvestment": "$20,000 - sold cereal boxes ('Obama O's' and 'Cap'n McCains') to fund early operations",
           "fundingRounds": [
-            "$20,000 seed - Y Combinator (2009)",
-            "$600,000 Series A - Sequoia Capital (2009)",
-            "$7.2M Series B (2010)",
-            "$112M Series C (2011)",
-            "$200M Series D at $1.3B valuation (2012)",
-            "$475M Series E at $10B valuation (2014)",
-            "$1.5B Series F at $25.5B valuation (2015)",
-            "IPO at $47/share valuing company at $47B (2020)"
+            {"round": "Seed", "amount": "$20K", "investors": ["Y Combinator"], "date": "2009"},
+            {"round": "Series A", "amount": "$600K", "investors": ["Sequoia Capital"], "date": "2009"},
+            {"round": "Series B", "amount": "$7.2M", "investors": ["Sequoia Capital", "Greylock"], "date": "2010"},
+            {"round": "Series C", "amount": "$112M", "investors": ["Andreessen Horowitz", "DST"], "date": "2011"},
+            {"round": "Series D", "amount": "$200M", "investors": ["Founders Fund", "T. Rowe Price"], "date": "2012"},
+            {"round": "Series E", "amount": "$475M", "investors": ["Sequoia", "TPG", "Institutional Venture Partners"], "date": "2014"},
+            {"round": "Series F", "amount": "$1.5B", "investors": ["Google Capital", "T. Rowe Price"], "date": "2015"},
+            {"round": "IPO", "amount": "N/A", "investors": ["Public"], "date": "2020"}
           ],
           "breakEvenTimeframe": "Took ~6 years to reach profitability (2014), but had $10B+ valuation before being profitable",
           "roi": "50,000x return from initial $20K seed to IPO",
@@ -73,6 +108,9 @@
         "pitch": {
           "title": "Belong Anywhere",
           "tagline": "Book unique homes and experiences all over the world",
+          "traction": "200 bookings in first year (2008-2009), grew to 10M nights booked by 2012, 100M nights by 2015. Now 4M+ hosts, 1B+ guest arrivals annually across 220+ countries.",
+          "team": "Brian Chesky (CEO, design background), Joe Gebbia (CPO, industrial designer), Nathan Blecharczyk (CTO, technical lead). Combined design and engineering expertise created user-focused platform.",
+          "ask": "$600K Series A to scale supply acquisition, improve platform, expand to new cities. Investment enabled professional photography program which drove 2-3x booking increase.",
           "keySlides": [
             "Problem: Hotels are expensive and lack soul. You don't feel like you live there.",
             "Solution: Live like a local. Stay in unique homes, experience cities like residents do.",
@@ -118,6 +156,14 @@
         "market": {
           "marketSize": "$100B+ taxi/limousine market in the US, $1T+ global transportation market",
           "targetSegment": "Urban millennials and professionals with smartphones, willing to pay for convenience, initially in major cities",
+          "initialTargetMarket": "San Francisco urban professionals (2009) - tech-savvy, time-conscious, frustrated with taxis",
+          "trends": [
+            "Smartphone proliferation with GPS capabilities",
+            "On-demand economy emergence",
+            "Cashless payment adoption",
+            "Sharing economy mindset shift",
+            "Urbanization and declining car ownership"
+          ],
           "competitors": [
             "Traditional taxis - regulated, entrenched, but poor user experience",
             "Lyft - founded 2012, friendlier brand, pink mustaches",
@@ -150,7 +196,57 @@
             "Split fare with friends",
             "Scheduled rides"
           ],
+          "mvpFeatures": [
+            "iPhone app to request rides",
+            "GPS-based driver matching",
+            "Estimated arrival time",
+            "Automatic credit card payment",
+            "Driver/passenger rating system"
+          ],
+          "uniqueSellingPoints": [
+            "Reliable pickup in under 5 minutes",
+            "No cash, no tipping required",
+            "Track your ride in real-time",
+            "Transparent pricing before you ride",
+            "Two-way accountability ratings"
+          ],
           "keyInsight": "Starting with luxury (Uber Black) built the brand and worked out kinks with professional drivers before scaling to mass market with UberX."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "$1.2M initial seed, eventually raised $24B+ before IPO",
+          "useOfFunds": [
+            {"category": "Driver Acquisition", "amount": "35%", "description": "Driver bonuses, incentives, referral programs"},
+            {"category": "User Acquisition", "amount": "30%", "description": "Marketing, promotions, first-ride credits"},
+            {"category": "Technology", "amount": "25%", "description": "App development, algorithms, infrastructure"},
+            {"category": "Regulatory & Legal", "amount": "10%", "description": "Legal battles, lobbying, compliance"}
+          ],
+          "revenueModel": "Commission per ride: 20-25% from drivers, plus booking fees, surge pricing multiplier during peak times",
+          "projections": {
+            "year1": {"revenue": "$10M", "rides": "1M", "cities": "5"},
+            "year2": {"revenue": "$200M", "rides": "20M", "cities": "30"},
+            "year3": {"revenue": "$1.5B", "rides": "150M", "cities": "100"}
+          },
+          "initialInvestment": "$1.2M from friends, family, and angels to launch in SF",
+          "fundingRounds": [
+            {"round": "Seed", "amount": "$1.2M", "investors": ["Founders Fund", "Lowercase Capital"], "date": "2009"},
+            {"round": "Series A", "amount": "$11M", "investors": ["Benchmark", "Lowercase"], "date": "2010"},
+            {"round": "Series B", "amount": "$37M", "investors": ["Menlo Ventures", "Goldman Sachs"], "date": "2011"},
+            {"round": "Series C", "amount": "$258M", "investors": ["Google Ventures", "TPG"], "date": "2013"},
+            {"round": "Series D", "amount": "$1.2B", "investors": ["Fidelity", "Wellington"], "date": "2014"},
+            {"round": "Series E", "amount": "$5.9B", "investors": ["Saudi Public Investment Fund"], "date": "2016"},
+            {"round": "IPO", "amount": "N/A", "investors": ["Public"], "date": "2019"}
+          ],
+          "breakEvenTimeframe": "Not yet profitable at IPO (2019), focused on growth and market share",
+          "roi": "70,000x+ return from early investment to IPO",
+          "keyInsight": "Growth over profits - Uber prioritized market share and network effects over near-term profitability, building global scale before optimizing unit economics."
+        },
+        "pitch": {
+          "title": "Move Forward",
+          "tagline": "Reliable ride in minutes. Tap a button, get picked up by a nearby driver, and go.",
+          "traction": "Launched in SF (2009), expanded to 50 cities by 2012, 300+ cities by 2015. Now 110M+ monthly active users, 5M+ drivers globally.",
+          "team": "Travis Kalanick (CEO), Garrett Camp (co-founder), Ryan Graves (first CEO, then VP of Strategy). Technical and operations expertise.",
+          "ask": "$11M Series A to expand to new cities, improve technology, build driver network. Investment enabled rapid US and global expansion.",
+          "keyInsight": "Simple value proposition communicated clearly: 'Push a button, get a ride.' The pitch focused on the user experience pain points with taxis that Uber solved."
         }
       },
       "metrics": {
@@ -192,6 +288,14 @@
         "market": {
           "marketSize": "$50B+ enterprise collaboration software market",
           "targetSegment": "Technology companies, startups, and modern teams adopting cloud tools",
+          "initialTargetMarket": "Software development teams and startups (2013) - underserved by enterprise tools, willing to adopt new solutions",
+          "trends": [
+            "Remote work becoming normal",
+            "Distributed team collaboration needs",
+            "API-first platform approach",
+            "Bottom-up software adoption",
+            "Integration ecosystem development"
+          ],
           "competitors": [
             "Microsoft Teams - bundled with Office 365",
             "Google Chat - part of Workspace",
@@ -224,7 +328,58 @@
             "Rich integrations with 2000+ apps",
             "Threads to organize side conversations"
           ],
+          "mvpFeatures": [
+            "Persistent chat rooms (channels)",
+            "Direct messaging",
+            "File sharing",
+            "Search history",
+            "Basic integrations (Google Drive, GitHub)",
+            "Desktop notifications"
+          ],
+          "uniqueSellingPoints": [
+            "Searchable message history - never lose information",
+            "Integrations with tools you already use",
+            "Freemium model for viral adoption",
+            "Beautiful, intuitive interface",
+            "Third-party app ecosystem"
+          ],
           "keyInsight": "Integration was the moat - by connecting with all the tools teams already use (GitHub, Jira, Google Drive), Slack became the 'operating system for work'."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "$1.5M seed, eventually raised $1.2B before acquisition",
+          "useOfFunds": [
+            {"category": "Engineering", "amount": "40%", "description": "Platform development, infrastructure scaling"},
+            {"category": "Sales & Marketing", "amount": "30%", "description": "Enterprise sales, brand building, events"},
+            {"category": "Customer Success", "amount": "20%", "description": "Support, onboarding, account management"},
+            {"category": "Operations", "amount": "10%", "description": "Office, legal, HR, finance"}
+          ],
+          "revenueModel": "Freemium SaaS: Free tier limited to 10K messages, then $6.67-$15/user/month for paid tiers with unlimited history and advanced features",
+          "projections": {
+            "year1": {"revenue": "$10M", "users": "500K daily active", "teams": "50K"},
+            "year2": {"revenue": "$100M", "users": "3M daily active", "teams": "300K"},
+            "year3": {"revenue": "$400M", "users": "10M daily active", "teams": "750K"}
+          },
+          "initialInvestment": "Bootstrapped from game company revenues, then $1.5M seed from Tiny Speck investors",
+          "fundingRounds": [
+            {"round": "Seed", "amount": "$1.5M", "investors": ["Accel", "Andreessen Horowitz"], "date": "2014"},
+            {"round": "Series B", "amount": "$43M", "investors": ["KPCB", "Google Ventures"], "date": "2014"},
+            {"round": "Series C", "amount": "$120M", "investors": ["Horizons Ventures", "Digital Sky"], "date": "2015"},
+            {"round": "Series D", "amount": "$200M", "investors": ["Thrive Capital"], "date": "2016"},
+            {"round": "Series E", "amount": "$250M", "investors": ["SoftBank"], "date": "2017"},
+            {"round": "Series F", "amount": "$427M", "investors": ["Dragoneer"], "date": "2018"},
+            {"round": "Acquisition", "amount": "$27.7B", "investors": ["Salesforce"], "date": "2020"}
+          ],
+          "breakEvenTimeframe": "Achieved $400M ARR before acquisition, profitable in core markets",
+          "roi": "200x+ return from VC investment to $27.7B acquisition by Salesforce",
+          "keyInsight": "Freemium with high conversion - teams organically adopted Slack, then companies paid for enterprise features. Bottom-up sales beat traditional enterprise software sales."
+        },
+        "pitch": {
+          "title": "Where Work Happens",
+          "tagline": "Slack brings all your communication together in one place",
+          "traction": "15K daily active users within 6 months of launch (2014), grew to 12M+ daily active users, 750K+ organizations by acquisition (2020)",
+          "team": "Stewart Butterfield (CEO, Flickr co-founder), Cal Henderson (CTO), Eric Costello, Serguei Mourachov - team that built Flickr together",
+          "ask": "$43M Series B to scale infrastructure, build enterprise features, expand sales team. Investment fueled hypergrowth to 3M daily active users.",
+          "keyInsight": "The pitch emphasized the pain of fragmented communication (email, chat, file sharing) and showed how Slack centralizes everything. Demo of the product was more powerful than slides."
         }
       },
       "metrics": {
@@ -264,6 +419,14 @@
         "market": {
           "marketSize": "$50B+ video rental market (1997), expanding to $200B+ streaming and content market",
           "targetSegment": "Movie lovers with DVD players, later expanded to anyone with internet connection",
+          "initialTargetMarket": "Movie enthusiasts in San Francisco Bay Area who hated Blockbuster's late fees (1997)",
+          "trends": [
+            "DVD format enabling light, durable shipping",
+            "Broadband internet expansion",
+            "Cord-cutting movement",
+            "Binge-watching behavior",
+            "Mobile device viewing growth"
+          ],
           "competitors": [
             "Blockbuster - 9000+ stores, $6B revenue, but slow to adapt",
             "Redbox - DVD kiosks, $1/night, limited selection",
@@ -296,7 +459,56 @@
             "Multiple user profiles per account",
             "4K HDR quality"
           ],
+          "mvpFeatures": [
+            "DVD rental by mail website",
+            "Prepaid return envelopes",
+            "Queue management system",
+            "No late fees policy",
+            "Recommendation algorithm",
+            "Subscription billing"
+          ],
+          "uniqueSellingPoints": [
+            "No late fees - keep DVDs as long as you want",
+            "Personalized recommendations",
+            "Binge-watch entire seasons",
+            "Exclusive original content",
+            "Watch anywhere on any device",
+            "Multiple profiles for family members"
+          ],
           "keyInsight": "The shift to original content (House of Cards for $100M) was the pivot from content distributor to content studio - making Netflix indispensable, not just another streaming option."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "$2.5M initial seed, eventually raised $500M+ before IPO",
+          "useOfFunds": [
+            {"category": "Content Licensing", "amount": "50%", "description": "Movie and TV show licenses from studios"},
+            {"category": "Technology", "amount": "25%", "description": "Streaming platform, recommendation engine, infrastructure"},
+            {"category": "Marketing", "amount": "15%", "description": "Brand building, subscriber acquisition"},
+            {"category": "Operations", "amount": "10%", "description": "DVD distribution centers, customer support"}
+          ],
+          "revenueModel": "Subscription SaaS: $8.99-$19.99/month for unlimited streaming, ad-free viewing, multiple simultaneous streams",
+          "projections": {
+            "year1": {"revenue": "$5M", "subscribers": "500K", "markets": "US only"},
+            "year2": {"revenue": "$50M", "subscribers": "3M", "markets": "US only"},
+            "year3": {"revenue": "$200M", "subscribers": "10M", "markets": "US + Canada"}
+          },
+          "initialInvestment": "$2.5M from friends, family, and angel investors to launch DVD-by-mail service",
+          "fundingRounds": [
+            {"round": "Seed", "amount": "$2.5M", "investors": ["Angel investors"], "date": "1997"},
+            {"round": "Venture", "amount": "$30M", "investors": ["Matrix Partners", "Technology Crossover Ventures"], "date": "1999"},
+            {"round": "IPO", "amount": "$82M", "investors": ["Public"], "date": "2002"},
+            {"round": "Debt", "amount": "$500M", "investors": ["Junk bonds"], "date": "2011"}
+          ],
+          "breakEvenTimeframe": "Profitable from 2003 onwards, reinvested profits into streaming and original content",
+          "roi": "1000x+ return from IPO to peak (2002-2021)",
+          "keyInsight": "Disrupt yourself before someone else does - Netflix killed its profitable DVD business to pursue streaming, sacrificing short-term profits for long-term survival."
+        },
+        "pitch": {
+          "title": "See What's Next",
+          "tagline": "Watch TV shows and movies anytime, anywhere - personalized for you",
+          "traction": "1M subscribers by 2003, 10M by 2009, 100M by 2017. Now 270M+ paid subscribers worldwide",
+          "team": "Reed Hastings (CEO, serial entrepreneur), Marc Randolph (co-founder, marketing), technology team focused on recommendation algorithms",
+          "ask": "$30M venture capital to expand DVD distribution centers, build online presence, invest in technology. Investment enabled scaling to national footprint.",
+          "keyInsight": "Early pitch focused on pain of late fees - Blockbuster's $500M/year in late fees was Netflix's opportunity. Emphasized customer obsession: 'We start with the customer and work backward.'"
         }
       },
       "metrics": {
@@ -337,6 +549,14 @@
         "market": {
           "marketSize": "$20B+ global music industry (recorded music)",
           "targetSegment": "Digital natives, smartphone users, music enthusiasts",
+          "initialTargetMarket": "European tech-savvy music fans (2006-2008) - hit hard by piracy, wanted legal alternative",
+          "trends": [
+            "Mobile device proliferation",
+            "4G/5G bandwidth expansion",
+            "Streaming over ownership",
+            "Playlist culture",
+            "Podcast boom"
+          ],
           "competitors": [
             "Apple Music - bundled with Apple devices",
             "Amazon Music - bundled with Prime",
@@ -369,7 +589,59 @@
             "Podcasts integration",
             "Spotify Connect (play across devices)"
           ],
+          "mvpFeatures": [
+            "Desktop streaming app",
+            "On-demand playback",
+            "Searchable music library",
+            "Playlist creation",
+            "Social sharing",
+            "Basic recommendation engine"
+          ],
+          "uniqueSellingPoints": [
+            "Freemium access to all music",
+            "Personalized playlists updated daily",
+            "Collaborative playlists with friends",
+            "Cross-device listening continuity",
+            "Largest music catalog",
+            "Algorithmic discovery"
+          ],
           "keyInsight": "Freemium model worked because free users converted to premium at 2-3% rate, but free users also generated data for recommendations and social sharing, creating network effects."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "€5M initial seed, eventually raised €2.1B before IPO",
+          "useOfFunds": [
+            {"category": "Content Costs", "amount": "70%", "description": "Royalties to labels and artists, minimum guarantees"},
+            {"category": "Product & Tech", "amount": "15%", "description": "App development, recommendation algorithms, infrastructure"},
+            {"category": "Marketing", "amount": "10%", "description": "User acquisition, brand campaigns, partnerships"},
+            {"category": "Operations", "amount": "5%", "description": "Label negotiations, legal, support, operations"}
+          ],
+          "revenueModel": "Freemium: Free tier with ads, Premium tier $9.99/month ad-free with offline. Also ad-supported free tier generates revenue.",
+          "projections": {
+            "year1": {"revenue": "€10M", "users": "5M monthly", "premium": "500K"},
+            "year2": {"revenue": "€100M", "users": "25M monthly", "premium": "5M"},
+            "year3": {"revenue": "€500M", "users": "75M monthly", "premium": "20M"}
+          },
+          "initialInvestment": "€5M from founders and Nordic investors to launch in Sweden",
+          "fundingRounds": [
+            {"round": "Seed", "amount": "€5M", "investors": ["Nordic Venture Partners"], "date": "2006"},
+            {"round": "Venture", "amount": "€50M", "investors": ["Creandum", "Northzone"], "date": "2008"},
+            {"round": "Series B", "amount": "€100M", "investors": ["KPCB", "Accel"], "date": "2011"},
+            {"round": "Series C", "amount": "€250M", "investors": ["Goldman Sachs", "CTI"], "date": "2013"},
+            {"round": "Series D", "amount": "€500M", "investors": ["Sony", "Telia"], "date": "2015"},
+            {"round": "Series E", "amount": "€1B", "investors": ["Tencent", "Goldman Sachs"], "date": "2017"},
+            {"round": "IPO", "amount": "N/A", "investors": ["Public"], "date": "2018"}
+          ],
+          "breakEvenTimeframe": "Not yet profitable at IPO (2018), investing in growth and podcast content",
+          "roi": "100x+ return from early investment to IPO (2008-2018)",
+          "keyInsight": "Freemium requires discipline - free tier must be valuable but not cannibalize premium. 2-3% conversion rate is sustainable when you have hundreds of millions of users."
+        },
+        "pitch": {
+          "title": "Music for Everyone",
+          "tagline": "Millions of songs. No credit card needed. Free on mobile, tablet, and computer.",
+          "traction": "1M users in first year (2008), 10M by 2011, 100M by 2015. Now 574M+ monthly active users, 226M+ paid subscribers",
+          "team": "Daniel Ek (CEO, tech entrepreneur), Martin Lorentzon (co-founder, entrepreneur). Technology and music industry background.",
+          "ask": "€50M Series B to expand to US market (label negotiations costly), improve product, scale infrastructure. US launch was critical milestone.",
+          "keyInsight": "The pitch emphasized solving piracy through better user experience than illegal downloading. Showed labels data on how Spotify reduced piracy in Sweden, winning their support."
         }
       },
       "metrics": {

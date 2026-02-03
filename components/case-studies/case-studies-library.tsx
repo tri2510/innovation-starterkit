@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { CaseStudyCard } from "./case-study-card";
-import { CaseStudyWalkthrough } from "./case-study-walkthrough";
 import { getCaseStudies, getFeaturedCaseStudies, filterCaseStudies, getRecommendedCaseStudies } from "@/lib/case-studies";
+import { useCaseStudy } from "@/contexts/case-study-context";
 import type { CaseStudy, BusinessModelType } from "@/types/innovation";
 
 interface CaseStudiesLibraryProps {
@@ -42,12 +42,11 @@ export function CaseStudiesLibrary({
 }: CaseStudiesLibraryProps) {
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
   const [filteredStudies, setFilteredStudies] = useState<CaseStudy[]>([]);
-  const [selectedStudy, setSelectedStudy] = useState<CaseStudy | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedModel, setSelectedModel] = useState<BusinessModelType | "all">("all");
-  const [showRecommended, setShowRecommended] = useState(true);
   const [recommendedStudies, setRecommendedStudies] = useState<CaseStudy[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { enterCaseStudyMode } = useCaseStudy();
 
   // Load case studies on mount
   useEffect(() => {
@@ -107,137 +106,104 @@ export function CaseStudiesLibrary({
   }, [searchQuery, selectedModel, caseStudies]);
 
   const handleSelectStudy = (study: CaseStudy) => {
-    setSelectedStudy(study);
-  };
+    // Close the library
+    onClose();
 
-  const handleCloseWalkthrough = () => {
-    setSelectedStudy(null);
+    // Enter case study mode starting at challenge phase
+    enterCaseStudyMode(study, "challenge");
   };
 
   return (
-    <>
-      {/* Library Dialog */}
-      <Dialog open={isOpen && !selectedStudy} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-0">
-          <DialogHeader className="px-6 pt-6 pb-4 border-b">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <DialogTitle className="text-xl font-semibold">
-                    Case Studies Library
-                  </DialogTitle>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    Learn from real-world success stories
-                  </p>
-                </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                <Sparkles className="h-5 w-5 text-primary" />
               </div>
-              <button
-                onClick={onClose}
-                className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              >
-                <X className="h-4 w-4" />
-                <span className="sr-only">Close</span>
-              </button>
+              <div>
+                <DialogTitle className="text-xl font-semibold">
+                  Case Studies Library
+                </DialogTitle>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Learn from real-world success stories
+                </p>
+              </div>
             </div>
-          </DialogHeader>
+            <button
+              onClick={onClose}
+              className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </button>
+          </div>
+        </DialogHeader>
 
-          {/* Search and Filters */}
-          <div className="px-6 py-4 border-b bg-muted/20">
-            {/* Search */}
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by company, industry, or keywords..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            {/* Business Model Filters */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-              <Button
-                variant={selectedModel === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedModel("all")}
-                className="flex-shrink-0"
-              >
-                All Models
-              </Button>
-              {BUSINESS_MODELS.map((model) => (
-                <Button
-                  key={model.value}
-                  variant={selectedModel === model.value ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedModel(model.value)}
-                  className="flex-shrink-0"
-                >
-                  <span className="mr-1">{model.icon}</span>
-                  {model.label}
-                </Button>
-              ))}
-            </div>
+        {/* Search and Filters */}
+        <div className="px-6 py-4 border-b bg-muted/20">
+          {/* Search */}
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by company, industry, or keywords..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
           </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">Loading case studies...</p>
-                </div>
+          {/* Business Model Filters */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <Button
+              variant={selectedModel === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedModel("all")}
+              className="flex-shrink-0"
+            >
+              All Models
+            </Button>
+            {BUSINESS_MODELS.map((model) => (
+              <Button
+                key={model.value}
+                variant={selectedModel === model.value ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedModel(model.value)}
+                className="flex-shrink-0"
+              >
+                <span className="mr-1">{model.icon}</span>
+                {model.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Loading case studies...</p>
               </div>
-            ) : (
-              <>
-                {/* Recommended Section */}
-                {!searchQuery &&
-                  selectedModel === "all" &&
-                  recommendedStudies.length > 0 && (
-                    <div className="mb-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <TrendingUp className="h-4 w-4 text-primary" />
-                        <h3 className="text-sm font-semibold text-primary">
-                          Recommended for You
-                        </h3>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {recommendedStudies.map((study) => (
-                          <CaseStudyCard
-                            key={study.id}
-                            caseStudy={study}
-                            onSelect={handleSelectStudy}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                {/* All Case Studies */}
-                <div>
-                  {searchQuery || selectedModel !== "all" ? (
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-sm font-semibold">
-                        {filteredStudies.length}{" "}
-                        {filteredStudies.length === 1 ? "Result" : "Results"}
-                      </h3>
-                    </div>
-                  ) : (
+            </div>
+          ) : (
+            <>
+              {/* Recommended Section */}
+              {!searchQuery &&
+                selectedModel === "all" &&
+                recommendedStudies.length > 0 && (
+                  <div className="mb-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      <h3 className="text-sm font-semibold">
-                        All Case Studies
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      <h3 className="text-sm font-semibold text-primary">
+                        Recommended for You
                       </h3>
                     </div>
-                  )}
-
-                  {filteredStudies.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {filteredStudies.map((study) => (
+                      {recommendedStudies.map((study) => (
                         <CaseStudyCard
                           key={study.id}
                           caseStudy={study}
@@ -245,43 +211,65 @@ export function CaseStudiesLibrary({
                         />
                       ))}
                     </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Building2 className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-                      <p className="text-muted-foreground">
-                        No case studies found matching your criteria.
-                      </p>
-                      <Button
-                        variant="link"
-                        onClick={() => {
-                          setSearchQuery("");
-                          setSelectedModel("all");
-                        }}
-                        className="mt-2"
-                      >
-                        Clear filters
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+                  </div>
+                )}
 
-          {/* Footer */}
-          <div className="px-6 py-3 border-t bg-muted/20 text-xs text-muted-foreground">
-            Click on any case study to explore its full innovation journey through all 5 phases.
-          </div>
-        </DialogContent>
-      </Dialog>
+              {/* All Case Studies */}
+              <div>
+                {searchQuery || selectedModel !== "all" ? (
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold">
+                      {filteredStudies.length}{" "}
+                      {filteredStudies.length === 1 ? "Result" : "Results"}
+                    </h3>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 mb-3">
+                    <Building2 className="h-4 w-4 text-muted-foreground" />
+                    <h3 className="text-sm font-semibold">
+                      All Case Studies
+                    </h3>
+                  </div>
+                )}
 
-      {/* Walkthrough Dialog */}
-      {selectedStudy && (
-        <CaseStudyWalkthrough
-          caseStudy={selectedStudy}
-          onClose={handleCloseWalkthrough}
-        />
-      )}
-    </>
+                {filteredStudies.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {filteredStudies.map((study) => (
+                      <CaseStudyCard
+                        key={study.id}
+                        caseStudy={study}
+                        onSelect={handleSelectStudy}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Building2 className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                    <p className="text-muted-foreground">
+                      No case studies found matching your criteria.
+                    </p>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setSelectedModel("all");
+                      }}
+                      className="mt-2"
+                    >
+                      Clear filters
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-3 border-t bg-muted/20 text-xs text-muted-foreground">
+          Click on any case study to explore its full innovation journey through all 5 phases.
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

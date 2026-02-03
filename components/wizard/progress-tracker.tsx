@@ -60,7 +60,7 @@ const getStatusText = (item: ProgressItem, hasExcerpt: boolean) => {
 };
 
 const getQualityIndicator = (excerpt: string | undefined) => {
-  if (!excerpt) return null;
+  if (!excerpt || typeof excerpt !== "string") return null;
   const wordCount = excerpt.split(/\s+/).length;
   const charCount = excerpt.length;
   // Very short responses are "Too brief"
@@ -518,7 +518,7 @@ export function ProgressTracker({
   currentQuestionNumber,
   totalExpectedQuestions,
   celebrationMessage,
-  onContinue
+  onContinue,
 }: ProgressTrackerProps) {
   const progressTip = getProgressTip(overallProgress, isReviewMode, celebrationMessage);
 
