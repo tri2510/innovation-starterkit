@@ -109,6 +109,11 @@ export function EnhancedAnalysisPanel({
     icon: string
     publish_date: string
   }>>([])
+  const streamingDebugEventsRef = useRef<Array<{
+    step: string
+    timestamp: number
+    data: any
+  }>>([])
   const streamingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isSearchingRef = useRef(false)
   const hasShownFirstThinkingRef = useRef(false)
@@ -197,6 +202,9 @@ export function EnhancedAnalysisPanel({
       if (streamingSourcesRef.current.length > 0) {
         last.sources = [...streamingSourcesRef.current]
         last.isSearching = false
+      }
+      if (streamingDebugEventsRef.current.length > 0) {
+        last.debugEvents = [...streamingDebugEventsRef.current]
       }
       last.isSearching = isSearchingRef.current
 
@@ -342,6 +350,9 @@ export function EnhancedAnalysisPanel({
               } else if (parsed.type === "sources") {
                 streamingSourcesRef.current = parsed.data
                 isSearchingRef.current = false
+                scheduleUpdate("content")
+              } else if (parsed.type === "debug") {
+                streamingDebugEventsRef.current = parsed.data
                 scheduleUpdate("content")
               } else if (parsed.type === "done") {
                 isSearchingRef.current = false
@@ -591,6 +602,47 @@ export function EnhancedAnalysisPanel({
                             {msg.searchQuery}
                           </p>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Debug Events Section - Process Transparency */}
+                    {msg.debugEvents && msg.debugEvents.length > 0 && (
+                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 overflow-hidden">
+                        <details className="group">
+                          <summary className="flex items-center justify-between cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors">
+                            <div className="flex items-center gap-1.5">
+                              <Search className="h-3.5 w-3.5 text-slate-600 dark:text-slate-400" />
+                              <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">
+                                Process Steps ({msg.debugEvents.length})
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-slate-500 group-open:rotate-180 transition-transform">
+                              ▼
+                            </span>
+                          </summary>
+                          <div className="p-2 pt-0 space-y-1.5">
+                            {msg.debugEvents.map((event, i) => (
+                              <div key={i} className="text-[10px] font-mono bg-white dark:bg-slate-950 rounded p-1.5 border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-1.5 mb-1">
+                                  <span className={cn(
+                                    "px-1.5 py-0.5 rounded font-semibold",
+                                    event.step === "context_built" && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+                                    event.step === "query_generation_start" && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+                                    event.step === "query_generated" && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+                                    event.step === "query_generation_failed" && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+                                    event.step === "search_starting" && "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
+                                    event.step === "search_completed" && "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300"
+                                  )}>
+                                    {event.step.replace(/_/g, " ")}
+                                  </span>
+                                </div>
+                                <pre className="text-[9px] text-slate-600 dark:text-slate-400 overflow-auto whitespace-pre-wrap break-words">
+                                  {JSON.stringify(event.data, null, 2)}
+                                </pre>
+                              </div>
+                            ))}
+                          </div>
+                        </details>
                       </div>
                     )}
 

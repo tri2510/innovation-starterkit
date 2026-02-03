@@ -160,6 +160,11 @@ export interface CrackItMessage {
     icon: string;
     publish_date: string;
   }>;
+  debugEvents?: Array<{
+    step: string;
+    timestamp: number;
+    data: any;
+  }>;
   timestamp: number;
   // UI streaming state (not persisted, only used during active streaming)
   isSearching?: boolean;
