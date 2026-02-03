@@ -138,11 +138,11 @@ export function PhaseChat({
   const getChipClassName = (variant: SuggestionChip["variant"]) => {
     switch (variant) {
       case "primary":
-        return "border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:border-green-300";
+        return "border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:border-green-300 dark:border-green-600 dark:bg-green-950 dark:text-green-300 dark:hover:bg-green-900";
       case "secondary":
-        return "border-border bg-background text-foreground hover:bg-muted";
+        return "border-border bg-white text-foreground hover:bg-muted dark:border-blue-700 dark:bg-blue-950 dark:text-blue-300 dark:hover:bg-blue-900";
       default:
-        return "border-border bg-background text-muted-foreground hover:bg-muted";
+        return "border-border bg-white text-muted-foreground hover:bg-muted dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700";
     }
   };
 
