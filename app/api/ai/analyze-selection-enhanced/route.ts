@@ -293,14 +293,28 @@ If this is a follow-up, answer the user's question based on the conversation his
             controller.enqueue(encoder.encode(formatted));
           };
 
+          // UX: Send immediate status so UI shows something right away
+          sendEvent({
+            type: "status",
+            data: { stage: "starting", message: "Preparing analysis..." }
+          });
+
           // Send search query first if web search was performed
           if (searchQueryUsed) {
             sendEvent({ type: "searchQuery", data: searchQueryUsed });
+            sendEvent({
+              type: "status",
+              data: { stage: "searching", message: "Searching the web..." }
+            });
           }
 
           // Send web search sources if available (use raw results with full metadata)
           if (rawSearchResults.length > 0) {
             sendEvent({ type: "sources", data: rawSearchResults });
+            sendEvent({
+              type: "status",
+              data: { stage: "analyzing", message: "Analyzing with AI..." }
+            });
           }
 
           // Stream with thinking enabled

@@ -237,6 +237,17 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
                 streamingSourcesRef.current = parsed.data
                 isSearchingRef.current = false
                 scheduleUpdate("content")
+              } else if (parsed.type === "status") {
+                // Update message with current status
+                setMessages(prev => {
+                  if (prev.length === 0 || prev[prev.length - 1].role !== "assistant") return prev
+                  const updated = [...prev]
+                  const last = { ...updated[updated.length - 1] }
+                  last.statusMessage = parsed.data.message
+                  last.statusStage = parsed.data.stage
+                  updated[updated.length - 1] = last
+                  return updated
+                })
               } else if (parsed.type === "done") {
                 isSearchingRef.current = false
                 updateStreamingMessage("done")
@@ -495,18 +506,23 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
                   <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                 ) : (
                   <>
-                    {/* Status Badge */}
-                    {(msg.isSearching || msg.sources) && (
+                    {/* Status Badge - shows real-time progress */}
+                    {(msg.isSearching || msg.sources || msg.statusMessage) && (
                       <div className="flex items-center gap-2">
-                        {msg.isSearching ? (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-medium">
-                            <Globe className="h-3 w-3 animate-pulse" />
-                            Searching...
+                        {msg.isSearching || msg.statusStage === "searching" ? (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-medium animate-pulse">
+                            <Globe className="h-3 w-3 animate-spin" />
+                            {msg.statusMessage || "Searching..."}
                           </div>
                         ) : msg.sources && msg.sources.length > 0 ? (
                           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-medium">
                             <CheckCircle2 className="h-3 w-3" />
                             {msg.sources.length} sources found
+                          </div>
+                        ) : msg.statusMessage ? (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-xs font-medium">
+                            <Brain className="h-3 w-3 animate-pulse" />
+                            {msg.statusMessage}
                           </div>
                         ) : null}
                       </div>

@@ -165,6 +165,8 @@ export interface CrackItMessage {
   isSearching?: boolean;
   isStreaming?: boolean;
   streamPhase?: "thinking" | "content" | "done";
+  statusMessage?: string; // Current status message to display
+  statusStage?: "starting" | "searching" | "analyzing" | "done";
 }
 
 export interface IdeationPhase {
