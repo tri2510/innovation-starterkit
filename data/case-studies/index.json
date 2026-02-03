@@ -1,660 +1,655 @@
 {
   "caseStudies": [
     {
-      "id": "airbnb",
-      "title": "Airbnb",
-      "tagline": "Belong Anywhere",
-      "company": "Airbnb, Inc.",
-      "yearFounded": 2008,
-      "industry": "Hospitality & Travel",
-      "businessModel": "marketplace",
+      "id": "tesla",
+      "title": "Tesla",
+      "tagline": "Accelerating the World's Transition to Sustainable Energy",
+      "company": "Tesla, Inc.",
+      "yearFounded": 2003,
+      "industry": "Automotive & Energy",
+      "businessModel": "direct-to-consumer",
       "featured": true,
-      "tags": ["marketplace", "trust", "network-effects", "design", "pivoting"],
+      "tags": ["electric-vehicles", "battery-technology", "autonomous-driving", "software-defined", "manufacturing"],
       "phases": {
         "challenge": {
-          "problem": "Travelers couldn't find affordable, authentic local accommodations. Hotels were expensive and lacked local character, while existing options like Craigslist had trust and safety issues.",
-          "targetAudience": "Initially: Conference attendees in San Francisco looking for affordable lodging. Expanded to: Budget travelers, experience seekers, and people seeking authentic local stays.",
-          "currentSolutions": "Hotels (expensive, impersonal), hostels (basic, shared), Craigslist (unsafe, no reviews), couch surfing (free but inconsistent quality)",
-          "keyInsight": "Start with a tiny, specific niche (SF conference attendees) rather than trying to solve travel accommodation for everyone from day one."
+          "problem": "Electric vehicles were perceived as slow, ugly, impractical, and unappealing. The auto industry was entrenched in internal combustion engine (ICE) technology with little innovation in decades.",
+          "targetAudience": "Initially: Wealthy eco-conscious early adopters and tech enthusiasts. Expanded to: Mass market seeking sustainable transportation without compromising performance.",
+          "currentSolutions": "Traditional ICE vehicles (gasoline, polluting), hybrids (Toyota Prius - still uses gas), early EVs (Nissan Leaf - limited range, slow charging)",
+          "keyInsight": "Start with a high-end sports car to prove EVs can be exciting and desirable, then work down-market. Build from the top to change perceptions."
         },
         "market": {
-          "marketSize": "$150B+ global accommodation market, with $30B+ alternative lodging segment",
-          "targetSegment": "1.5M+ travelers seeking alternatives to traditional hotels, willing to trade some amenities for authenticity and local experience",
-          "initialTargetMarket": "San Francisco conference attendees (2008) - highly targeted, motivated users with urgent accommodation needs",
+          "marketSize": "$2.8T global automotive market, with EV segment growing from <1% (2012) to 15%+ (2024)",
+          "targetSegment": "Affluent tech enthusiasts and eco-conscious buyers, expanding to mainstream vehicle buyers, plus energy storage customers",
+          "initialTargetMarket": "Silicon Valley wealthy tech workers (2008-2012) - high income, environmental values, early technology adopters",
           "trends": [
-            "Sharing economy revolution",
-            "Experience over possessions movement",
-            "Millennial travel preferences shifting",
-            "Mobile-first booking behavior",
-            "Trust in peer-to-peer platforms growing"
+            "Climate change awareness driving EV adoption",
+            "Battery technology improvements (costs down 87% from 2010-2020)",
+            "Autonomous driving technology advancement",
+            "Government incentives for EVs",
+            "Software-defined vehicles becoming expectation"
           ],
           "competitors": [
-            "Hotels (Marriott, Hilton) - established, trusted but expensive",
-            "VRBO - vacation rentals focused on whole homes",
-            "Craigslist - free but no trust system",
-            "CouchSurfing - free but not sustainable business model"
+            "Traditional automakers (BMW, Mercedes) - slow to EV transition",
+            "BYD - Chinese EV giant with cost advantage",
+            "Rivian - EV pickup and delivery van focus",
+            "Lucid Motors - luxury EV with longer range"
           ],
           "opportunities": [
-            "Growing sharing economy trend",
-            "Millennials preferring experiences over things",
-            "Economic recession driving cost-conscious travel",
-            "Professional photography as a quality differentiator",
-            "Review system to build trust"
+            "First-mover advantage in premium EV segment",
+            "Vertical integration (battery manufacturing, software)",
+            "Supercharger network as competitive moat",
+            "Energy storage market (Powerwall, grid-scale)",
+            "Autonomous driving as subscription revenue"
           ],
-          "keyInsight": "The real opportunity wasn't just finding places to stay - it was building trust between strangers through reviews, verified photos, and secure payments."
+          "keyInsight": "The competitive advantage isn't just the car - it's the ecosystem: Supercharger network, over-the-air updates, and vertical integration of battery technology."
         },
         "ideation": {
-          "initialIdea": "AirBed & Breakfast - rent out air mattresses in their apartment during a design conference, including breakfast and local hosting",
+          "initialIdea": "Build an electric sports car that would be faster and more exciting than gasoline cars, proving EVs could be desirable, not just practical.",
           "pivots": [
-            "From just air mattresses to any type of accommodation (couches, spare rooms, entire homes)",
-            "From SF-only to global expansion city by city",
-            "Added professional photography service to improve listing quality",
-            "Shifted from 'cheap accommodation' to 'belong anywhere' - authentic experiences"
+            "From licensing Lotus chassis → building complete vehicles from scratch (Model S)",
+            "From sports car only → sedan, SUV, truck, semi-truck",
+            "From selling patents → opening patents to accelerate industry EV adoption",
+            "From car company → energy company (solar, storage)"
           ],
-          "finalValueProp": "Book unique homes and experiences all over the world, live like a local, and belong anywhere.",
+          "finalValueProp": "Build the best car, and make it electric. Accelerate the world's transition to sustainable energy.",
           "keyFeatures": [
-            "Host profiles with reviews and verifications",
-            "Guest reviews and ratings",
-            "Secure payment processing (hold funds until stay is complete)",
-            "Professional photography service",
-            "Instant book for last-minute travelers",
-            "Experiences (local activities hosted by locals)"
+            "Long-range battery (300-500+ miles)",
+            "Supercharger network (fast charging)",
+            "Over-the-air software updates",
+            "Autopilot / Full Self-Driving capability",
+            "Minimalist interior with large touchscreen",
+            "Frunk (front trunk) thanks to no engine"
           ],
           "mvpFeatures": [
-            "Online listing creation with photos",
-            "Search and filter by location/dates",
-            "Guest booking request system",
-            "Basic payment processing",
-            "Email notifications for hosts and guests"
+            "Electric Roadster based on Lotus chassis",
+            "Lithium-ion battery pack",
+            "Basic charging infrastructure",
+            "Performance specs (0-60 in 3.7 seconds)",
+            "Premium interior and design"
           ],
           "uniqueSellingPoints": [
-            "Belong anywhere - not just stay, experience",
-            "Trust system through reviews and verifications",
-            "Professional photography ensuring quality",
-            "Local hosts providing authentic recommendations",
-            "Wider variety of accommodation types than hotels"
+            "Best-in-class acceleration and performance",
+            "Largest fast-charging network",
+            "Continuous improvement via OTA updates",
+            "Industry-leading battery technology",
+            "Integrated ecosystem (cars + solar + storage)"
           ],
-          "keyInsight": "Design matters! The 'professional photography' pivot was crucial - listings with pro photos got 2-3x more bookings, proving that trust and quality presentation wins over quantity."
+          "keyInsight": "Over-the-air updates transform cars from static products into continuously improving platforms, adding features and fixing bugs without dealership visits."
         },
         "investment-appraisal": {
-          "fundingNeeded": "$20,000 initial seed, eventually raised $3.4B before IPO",
+          "fundingNeeded": "$7.5M initial Series A, eventually raised $20B+ before profitable",
           "useOfFunds": [
-            {"category": "Product Development", "amount": "40%", "description": "Engineering team, platform development, mobile apps"},
-            {"category": "Supply Acquisition", "amount": "30%", "description": "Professional photography, host recruitment, onboarding"},
-            {"category": "Marketing & Growth", "amount": "20%", "description": "User acquisition, referral programs, brand building"},
-            {"category": "Operations & Legal", "amount": "10%", "description": "Trust & safety, customer support, regulatory compliance"}
+            {"category": "R&D", "amount": "35%", "description": "Battery technology, Autopilot, vehicle design"},
+            {"category": "Manufacturing", "amount": "30%", "description": "Gigafactories, production lines, tooling"},
+            {"category": "Supercharger Network", "amount": "15%", "description": "Charging infrastructure deployment globally"},
+            {"category": "Sales & Service", "amount": "20%", "description": "Direct sales, service centers, showrooms"}
           ],
-          "revenueModel": "Two-sided marketplace: 3% host fee + 6-12% guest fee per booking, plus Experiences commission (20%) and Plus/Airbnb for Business premiums",
+          "revenueModel": "Direct vehicle sales (avg $50K per car), plus energy products (Powerwall, Solar), software revenue (FSD subscription $12K or $199/month)",
           "projections": {
-            "year1": {"revenue": "$50K", "bookings": "2,500 nights", "cities": "2"},
-            "year2": {"revenue": "$500K", "bookings": "25,000 nights", "cities": "10"},
-            "year3": {"revenue": "$5M", "bookings": "250,000 nights", "cities": "50"}
+            "year1": {"revenue": "$15M", "vehicles": "100", "markets": "US only"},
+            "year2": {"revenue": "$200M", "vehicles": "2,500", "markets": "US + Europe"},
+            "year3": {"revenue": "$2B", "vehicles": "25K", "markets": "North America, Europe, Asia"}
           },
-          "initialInvestment": "$20,000 - sold cereal boxes ('Obama O's' and 'Cap'n McCains') to fund early operations",
+          "initialInvestment": "$7.5M Series A led by Valor Equity Partners (2006), including Elon Musk's $6.5M",
           "fundingRounds": [
-            {"round": "Seed", "amount": "$20K", "investors": ["Y Combinator"], "date": "2009"},
-            {"round": "Series A", "amount": "$600K", "investors": ["Sequoia Capital"], "date": "2009"},
-            {"round": "Series B", "amount": "$7.2M", "investors": ["Sequoia Capital", "Greylock"], "date": "2010"},
-            {"round": "Series C", "amount": "$112M", "investors": ["Andreessen Horowitz", "DST"], "date": "2011"},
-            {"round": "Series D", "amount": "$200M", "investors": ["Founders Fund", "T. Rowe Price"], "date": "2012"},
-            {"round": "Series E", "amount": "$475M", "investors": ["Sequoia", "TPG", "Institutional Venture Partners"], "date": "2014"},
-            {"round": "Series F", "amount": "$1.5B", "investors": ["Google Capital", "T. Rowe Price"], "date": "2015"},
-            {"round": "IPO", "amount": "N/A", "investors": ["Public"], "date": "2020"}
+            {"round": "Series A", "amount": "$7.5M", "investors": ["Valor Equity Partners", "Capricorn Investment Group"], "date": "2006"},
+            {"round": "Series B", "amount": "$40M", "investors": ["Technology Partners"], "date": "2007"},
+            {"round": "Series C", "amount": "$45M", "investors": ["VantagePoint Capital Partners"], "date": "2008"},
+            {"round": "Series D", "amount": "$50M", "investors": ["Daimler", "Fidelity"], "date": "2009"},
+            {"round": "IPO", "amount": "$226M", "investors": ["Public"], "date": "2010"},
+            {"round": "Secondary", "amount": "$2B", "investors": ["Public markets"], "date": "2020"}
           ],
-          "breakEvenTimeframe": "Took ~6 years to reach profitability (2014), but had $10B+ valuation before being profitable",
-          "roi": "50,000x return from initial $20K seed to IPO",
-          "keyInsight": "Marketplaces lose money at first due to supply-side acquisition costs. The key is scaling supply to create network effects - once critical mass is reached, margins expand dramatically."
+          "breakEvenTimeframe": "First annual profit in 2020 (17 years after founding), after delivering 500K vehicles",
+          "roi": "2000x+ return from early investment to peak (2021)",
+          "keyInsight": "Vertical integration was expensive but necessary - owning battery production, software, and manufacturing gave Tesla cost advantages and control that competitors couldn't match."
         },
         "pitch": {
-          "title": "Belong Anywhere",
-          "tagline": "Book unique homes and experiences all over the world",
-          "traction": "200 bookings in first year (2008-2009), grew to 10M nights booked by 2012, 100M nights by 2015. Now 4M+ hosts, 1B+ guest arrivals annually across 220+ countries.",
-          "team": "Brian Chesky (CEO, design background), Joe Gebbia (CPO, industrial designer), Nathan Blecharczyk (CTO, technical lead). Combined design and engineering expertise created user-focused platform.",
-          "ask": "$600K Series A to scale supply acquisition, improve platform, expand to new cities. Investment enabled professional photography program which drove 2-3x booking increase.",
+          "title": "Accelerating Sustainable Energy",
+          "tagline": "Build the best car, then make it electric",
+          "traction": "500 Roadsters produced (2008-2012), 2,500 Model S in first year (2012). Now 1.8M+ vehicles delivered annually, leading EV market share.",
+          "team": "Elon Musk (CEO, product visionary), JB Straubel (CTO, battery technology), Franz von Holzhausen (Chief Designer). Engineering and design excellence.",
+          "ask": "$40M Series B to fund Model S development, build manufacturing capability. Critical funding for scaling from niche Roadster to mass-market sedan.",
           "keySlides": [
-            "Problem: Hotels are expensive and lack soul. You don't feel like you live there.",
-            "Solution: Live like a local. Stay in unique homes, experience cities like residents do.",
-            "Market: $150B accommodation market, rapidly growing alternative lodging segment",
-            "Traction: 200 bookings in first year, growing to millions of stays globally",
-            "Business Model: 3% host fee + 6-12% guest fee per booking",
-            "Vision: Universal access to spaces - anyone can belong anywhere"
+            "Problem: Cars are polluting, dependent on oil, and not improving",
+            "Solution: Electric vehicles are better - faster, safer, cheaper to operate",
+            "Product: Model S - premium sedan, 300-mile range, 0-60 in 4.4 seconds",
+            "Technology: Proprietary battery packs, over-the-air updates",
+            "Market: $2.8T auto market, early in EV transition",
+            "Team: Silicon Valley approach to auto manufacturing"
           ],
-          "keyInsight": "Great pitch decks tell a story, not just list facts. Airbnb's early decks focused on the emotional value of 'belonging' rather than just transaction value."
+          "keyInsight": "The pitch reframed Tesla as a technology company, not just a car company. Silicon Valley talent and methods applied to manufacturing was the core narrative."
         }
       },
       "metrics": {
-        "roi": "50,000x return from seed to IPO",
-        "timeframe": "12 years from founding to IPO (2008-2020)",
-        "marketImpact": "4M+ hosts, 1.4B+ guest arrivals, 220+ countries, disrupted $150B hotel industry"
+        "roi": "2000x+ return from early investment to peak (2021)",
+        "timeframe": "17 years to first profit (2003-2020)",
+        "marketImpact": "Forced entire auto industry to accelerate EV plans, 1.8M+ vehicles annually, $800B+ market cap at peak"
       },
       "keyLearnings": [
-        "Start SMALL and niche (SF conference attendees) before expanding",
-        "Design and presentation matters - professional photos drove 2-3x more bookings",
-        "Build trust through reviews, verifications, and secure payments",
-        "Network effects are powerful but take time to build",
-        "Pivoting is normal - air mattresses → any accommodation was crucial",
-        "Regulatory navigation is part of the business (cities banning short-term rentals)"
+        "Start high-end to build brand perception, then go mass market",
+        "Vertical integration is hard but creates competitive advantages",
+        "Software-defined products enable continuous improvement after sale",
+        "First-mover advantage in major transitions (ICE to EV) is massive",
+        "Direct-to-consumer sales bypasses dealer resistance to EVs"
       ]
     },
     {
-      "id": "uber",
-      "title": "Uber",
-      "tagline": "Move Forward",
-      "company": "Uber Technologies, Inc.",
-      "yearFounded": 2009,
-      "industry": "Transportation",
-      "businessModel": "on-demand",
+      "id": "siemens-mindphere",
+      "title": "Siemens MindSphere",
+      "tagline": "The IoT Operating System for Industry",
+      "company": "Siemens AG",
+      "yearFounded": 2016,
+      "industry": "Industrial IoT & Software",
+      "businessModel": "platform",
       "featured": true,
-      "tags": ["on-demand", "network-effects", "disruption", "regulation", "mobile-first"],
+      "tags": ["iot", "industrial", "platform", "data-analytics", "manufacturing"],
       "phases": {
         "challenge": {
-          "problem": "Getting a taxi in San Francisco was frustrating - long wait times, uncertain arrival, cash-only payments, rude drivers, and no way to track your ride.",
-          "targetAudience": "Urban professionals in SF who value convenience and time over cost, expanded to anyone needing reliable transportation",
-          "currentSolutions": "Traditional taxis (call ahead, street hail), limo services (expensive, require advance booking), public transit (fixed routes, crowded)",
-          "keyInsight": "The problem wasn't just transportation - it was the entire experience of booking, tracking, paying, and rating your ride."
+          "problem": "Industrial companies had massive amounts of machine data but no way to collect, analyze, or act on it in real-time. Equipment failures were reactive rather than predictive, causing unplanned downtime and lost productivity.",
+          "targetAudience": "Manufacturing companies, energy producers, and industrial enterprises with connected equipment seeking digital transformation",
+          "currentSolutions": "On-premise SCADA systems (siloed, expensive), legacy monitoring (limited analytics), manual inspections (reactive, inefficient)",
+          "keyInsight": "Industrial data was trapped in silos. The opportunity wasn't just collecting data - it was creating a platform that could analyze data across equipment types and manufacturers."
         },
         "market": {
-          "marketSize": "$100B+ taxi/limousine market in the US, $1T+ global transportation market",
-          "targetSegment": "Urban millennials and professionals with smartphones, willing to pay for convenience, initially in major cities",
-          "initialTargetMarket": "San Francisco urban professionals (2009) - tech-savvy, time-conscious, frustrated with taxis",
+          "marketSize": "$263B global IoT market in industrial applications by 2024, growing at 20% CAGR",
+          "targetSegment": "Fortune 1000 industrial manufacturers, energy companies, and building automation seeking operational efficiency",
+          "initialTargetMarket": "Siemens' existing industrial customer base (2016) - manufacturing plants with Siemens automation equipment already installed",
           "trends": [
-            "Smartphone proliferation with GPS capabilities",
-            "On-demand economy emergence",
-            "Cashless payment adoption",
-            "Sharing economy mindset shift",
-            "Urbanization and declining car ownership"
+            "Industry 4.0 and digital transformation",
+            "Predictive maintenance adoption",
+            "Edge computing capabilities",
+            "Cloud-based analytics for industrial",
+            "Sustainability and energy optimization requirements"
           ],
           "competitors": [
-            "Traditional taxis - regulated, entrenched, but poor user experience",
-            "Lyft - founded 2012, friendlier brand, pink mustaches",
-            "Sidecar - peer-to-peer ridesharing (failed, shut down 2015)",
-            "Public transit - cheaper but less convenient"
+            "GE Predix - similar industrial IoT platform",
+            "AWS IoT SiteWise - cloud provider solution",
+            "Microsoft Azure IoT - generalist cloud platform",
+            "ABB Ability - industrial automation with analytics"
           ],
           "opportunities": [
-            "Smartphone penetration enabling real-time location tracking",
-            "Cashless payment systems",
-            "Rating systems for accountability",
-            "Underutilized personal vehicles as supply",
-            "Urbanization and declining car ownership among millennials"
+            "Base of 2.5M+ Siemens-installed devices to connect",
+            "Predictive maintenance market ($4B+)",
+            "Energy efficiency regulations driving data needs",
+            "Manufacturing skill shortage requiring automation",
+            "Digital transformation budgets in industrial companies"
           ],
-          "keyInsight": "By making drivers supply more responsive through dynamic pricing (surge pricing), Uber could match supply with demand in real-time - something taxis couldn't do."
+          "keyInsight": "Siemens' installed base of equipment was the unfair advantage - MindSphere could connect to existing Siemens devices better than any competitor's platform."
         },
         "ideation": {
-          "initialIdea": "UberCab - luxury black car service for SF elites, book via app, track in real-time, automatic payment",
+          "initialIdea": "Create a cloud-based IoT platform to collect data from Siemens industrial equipment, analyze it for insights, and enable applications to improve operations",
           "pivots": [
-            "From luxury black cars only → UberX (regular drivers with personal cars)",
-            "From cash-only → automatic cashless payment",
-            "From scheduled rides → on-demand with real-time tracking",
-            "From ride-sharing → food delivery (Uber Eats), freight, delivery"
+            "From proprietary-only → open platform supporting multiple equipment vendors",
+            "From manufacturing focus → energy, buildings, transportation",
+            "From PaaS only → Marketplace for industrial apps",
+            "From cloud-only → hybrid (edge + cloud) architecture"
           ],
-          "finalValueProp": "Reliable ride in minutes. Tap a button, get picked up by a nearby driver, and go.",
+          "finalValueProp": "MindSphere is the IoT operating system that connects your products, plants, systems, and machines to reveal actionable insights.",
           "keyFeatures": [
-            "Real-time GPS tracking of driver",
-            "Automatic cashless payment",
-            "Driver and passenger ratings for accountability",
-            "Surge pricing to balance supply/demand",
-            "Split fare with friends",
-            "Scheduled rides"
+            "Connect to any industrial equipment (protocols: OPC UA, MQTT)",
+            "Time-series data storage and management",
+            "Analytics and machine learning capabilities",
+            "Fleet management across multiple sites",
+            "App marketplace for industrial applications",
+            "Edge computing for low-latency processing"
           ],
           "mvpFeatures": [
-            "iPhone app to request rides",
-            "GPS-based driver matching",
-            "Estimated arrival time",
-            "Automatic credit card payment",
-            "Driver/passenger rating system"
+            "Data connectivity from Siemens devices",
+            "Cloud storage for time-series data",
+            "Basic analytics dashboards",
+            "Alert and notification system",
+            "API for third-party developers"
           ],
           "uniqueSellingPoints": [
-            "Reliable pickup in under 5 minutes",
-            "No cash, no tipping required",
-            "Track your ride in real-time",
-            "Transparent pricing before you ride",
-            "Two-way accountability ratings"
+            "Deep integration with Siemens automation equipment",
+            "Industry-specific analytics templates",
+            "Hybrid edge-cloud architecture",
+            "App store model for industrial solutions",
+            "Enterprise-grade security and compliance"
           ],
-          "keyInsight": "Starting with luxury (Uber Black) built the brand and worked out kinks with professional drivers before scaling to mass market with UberX."
+          "keyInsight": "Platform strategy: Don't build all applications yourself. Create APIs and let partners and customers build industry-specific solutions on top of your infrastructure."
         },
         "investment-appraisal": {
-          "fundingNeeded": "$1.2M initial seed, eventually raised $24B+ before IPO",
+          "fundingNeeded": "Internal Siemens investment of €500M+ for platform development and go-to-market",
           "useOfFunds": [
-            {"category": "Driver Acquisition", "amount": "35%", "description": "Driver bonuses, incentives, referral programs"},
-            {"category": "User Acquisition", "amount": "30%", "description": "Marketing, promotions, first-ride credits"},
-            {"category": "Technology", "amount": "25%", "description": "App development, algorithms, infrastructure"},
-            {"category": "Regulatory & Legal", "amount": "10%", "description": "Legal battles, lobbying, compliance"}
+            {"category": "Platform Development", "amount": "40%", "description": "Cloud infrastructure, data platform, APIs"},
+            {"category": "Partner Ecosystem", "amount": "25%", "description": "App marketplace, developer tools, partner programs"},
+            {"category": "Sales & Marketing", "amount": "20%", "description": "Enterprise sales, industry marketing, customer success"},
+            {"category": "Support & Services", "amount": "15%", "description": "Implementation, onboarding, technical support"}
           ],
-          "revenueModel": "Commission per ride: 20-25% from drivers, plus booking fees, surge pricing multiplier during peak times",
+          "revenueModel": "SaaS platform subscription: monthly fees based on data volume ($0.50/GB) + device count + app marketplace revenue share (30%)",
           "projections": {
-            "year1": {"revenue": "$10M", "rides": "1M", "cities": "5"},
-            "year2": {"revenue": "$200M", "rides": "20M", "cities": "30"},
-            "year3": {"revenue": "$1.5B", "rides": "150M", "cities": "100"}
+            "year1": {"revenue": "€20M", "connected_devices": "100K", "customers": "50"},
+            "year2": {"revenue": "€100M", "connected_devices": "500K", "customers": "300"},
+            "year3": {"revenue": "€400M", "connected_devices": "2M", "customers": "1000"}
           },
-          "initialInvestment": "$1.2M from friends, family, and angels to launch in SF",
+          "initialInvestment": "€500M internal investment from Siemens Digital Industries division",
           "fundingRounds": [
-            {"round": "Seed", "amount": "$1.2M", "investors": ["Founders Fund", "Lowercase Capital"], "date": "2009"},
-            {"round": "Series A", "amount": "$11M", "investors": ["Benchmark", "Lowercase"], "date": "2010"},
-            {"round": "Series B", "amount": "$37M", "investors": ["Menlo Ventures", "Goldman Sachs"], "date": "2011"},
-            {"round": "Series C", "amount": "$258M", "investors": ["Google Ventures", "TPG"], "date": "2013"},
-            {"round": "Series D", "amount": "$1.2B", "investors": ["Fidelity", "Wellington"], "date": "2014"},
-            {"round": "Series E", "amount": "$5.9B", "investors": ["Saudi Public Investment Fund"], "date": "2016"},
-            {"round": "IPO", "amount": "N/A", "investors": ["Public"], "date": "2019"}
+            {"round": "Internal Investment", "amount": "€500M+", "investors": ["Siemens AG"], "date": "2016-2020"}
           ],
-          "breakEvenTimeframe": "Not yet profitable at IPO (2019), focused on growth and market share",
-          "roi": "70,000x+ return from early investment to IPO",
-          "keyInsight": "Growth over profits - Uber prioritized market share and network effects over near-term profitability, building global scale before optimizing unit economics."
+          "breakEvenTimeframe": "Expected 5-7 years to profitability due to heavy platform investment, but cross-sells to Siemens automation products improve overall economics",
+          "roi": "Platform enables $10B+ in Siemens automation product sales through digital differentiation",
+          "keyInsight": "For an industrial incumbent, platform ROI isn't just direct revenue - it's about protecting and growing core product sales by adding digital capabilities."
         },
         "pitch": {
-          "title": "Move Forward",
-          "tagline": "Reliable ride in minutes. Tap a button, get picked up by a nearby driver, and go.",
-          "traction": "Launched in SF (2009), expanded to 50 cities by 2012, 300+ cities by 2015. Now 110M+ monthly active users, 5M+ drivers globally.",
-          "team": "Travis Kalanick (CEO), Garrett Camp (co-founder), Ryan Graves (first CEO, then VP of Strategy). Technical and operations expertise.",
-          "ask": "$11M Series A to expand to new cities, improve technology, build driver network. Investment enabled rapid US and global expansion.",
-          "keyInsight": "Simple value proposition communicated clearly: 'Push a button, get a ride.' The pitch focused on the user experience pain points with taxis that Uber solved."
+          "title": "Industrial IoT Platform",
+          "tagline": "Connect your machines. Unlock your data. Transform your business.",
+          "traction": "Launched in 2016, scaled to 2M+ connected devices by 2021. Now 1000+ enterprise customers across manufacturing, energy, and buildings.",
+          "team": "Siemens Digital Industries leadership, combining industrial automation expertise with cloud software talent from acquisitions",
+          "ask": "Internal investment to build platform and partner ecosystem before competitors could establish dominance",
+          "keySlides": [
+            "Problem: Industrial data is trapped in equipment silos, unused for optimization",
+            "Solution: Cloud-based IoT platform connecting all equipment, regardless of vendor",
+            "Market: $263B industrial IoT market, 20% annual growth",
+            "Advantage: 2.5M+ Siemens-installed devices as base, deep domain expertise",
+            "Business Model: Platform subscription + app marketplace revenue share",
+            "Vision: Operating system for Industry 4.0 - the backbone of digital transformation"
+          ],
+          "keyInsight": "The pitch to industrial customers focused on protecting existing CAPEX investments by adding digital capabilities without replacing equipment - a key concern for conservative industrial buyers."
         }
       },
       "metrics": {
-        "roi": "70,000x+ return from early investment to IPO",
-        "timeframe": "10 years from founding to IPO (2009-2019)",
-        "marketImpact": "110M+ monthly active users, 5M+ drivers globally, disrupted taxi industry worldwide"
+        "roi": "Platform enables $10B+ in Siemens automation product sales",
+        "timeframe": "Ongoing since 2016",
+        "marketImpact": "2M+ connected devices, 1000+ enterprise customers, established Siemens as IoT platform leader"
       },
       "keyLearnings": [
-        "Regulation is part of the business model - operate first, ask forgiveness later",
-        "Start high-end to build brand, then go mass market",
-        "Network effects work both ways - more riders attracts more drivers, which reduces wait times attracting more riders",
-        "Unit economics matter - each ride must be profitable or have a clear path to profitability",
-        "Expansion into adjacent markets (food, freight) leverages same driver network"
+        "Installed base is an unfair advantage - leverage existing customer relationships",
+        "Platform strategy beats building everything - enable partners and customers",
+        "Industrial customers need hybrid (edge + cloud) for latency and reliability",
+        "Domain expertise matters more than generic cloud capabilities",
+        "Digital transformation requires patience - enterprises move slowly"
       ]
     },
     {
-      "id": "slack",
-      "title": "Slack",
-      "tagline": "Where Work Happens",
-      "company": "Slack Technologies, Inc.",
-      "yearFounded": 2013,
-      "industry": "Software / B2B SaaS",
-      "businessModel": "saas",
+      "id": "nest",
+      "title": "Nest",
+      "tagline": "The Learning Thermostat",
+      "company": "Nest Labs, Inc. (acquired by Google)",
+      "yearFounded": 2010,
+      "industry": "Smart Home / IoT",
+      "businessModel": "hardware-plus-software",
       "featured": true,
-      "tags": ["saas", "b2b", "product-led-growth", "viral-loop", " pivoting"],
+      "tags": ["smart-home", "iot", "energy-efficiency", "design", "machine-learning"],
       "phases": {
         "challenge": {
-          "problem": "Teams struggled with fragmented communication - email threads, chat apps, file sharing, and project management tools were all separate, creating chaos and lost information.",
-          "targetAudience": "Software teams and startups who need real-time collaboration, expanded to all knowledge workers",
-          "currentSolutions": [
-            "Email (threads, CC hell, slow)",
-            "IRC (technical, no file sharing)",
-            "HipChat (Atlassian, clunky UI)",
-            "Skype (not team-focused)",
-            "Google Talk (discontinued)"
-          ],
-          "keyInsight": "The problem wasn't just messaging - it was making work visible, searchable, and integratable with other tools teams already use."
+          "problem": "Thermostats were ugly, confusing, and programmable features were too complex for most users. 90% of people never programmed their thermostats, wasting energy and money.",
+          "targetAudience": "Homeowners with central heating/cooling, particularly tech-savvy and design-conscious consumers wanting energy savings without complexity",
+          "currentSolutions": "Traditional programmable thermostats (complex interfaces), manual thermostats (no programming), smart thermostats from utilities (ugly, limited features)",
+          "keyInsight": "The problem wasn't functionality - it was usability. Great design and machine learning could make energy savings effortless instead of requiring programming."
         },
         "market": {
-          "marketSize": "$50B+ enterprise collaboration software market",
-          "targetSegment": "Technology companies, startups, and modern teams adopting cloud tools",
-          "initialTargetMarket": "Software development teams and startups (2013) - underserved by enterprise tools, willing to adopt new solutions",
+          "marketSize": "$3B smart thermostat market, part of $80B smart home market",
+          "targetSegment": "Homeowners aged 30-55 with tech interest, design appreciation, and environmental awareness. Strong initial adoption in coastal urban areas.",
+          "initialTargetMarket": "Silicon Valley and San Francisco tech workers (2011) - high income, environmental values, early technology adopters",
           "trends": [
-            "Remote work becoming normal",
-            "Distributed team collaboration needs",
-            "API-first platform approach",
-            "Bottom-up software adoption",
-            "Integration ecosystem development"
+            "Smart home device proliferation",
+            "Energy costs rising globally",
+            "Consumer demand for design aesthetics",
+            "Smartphone adoption enabling remote control",
+            "Machine learning becoming practical for consumer devices"
           ],
           "competitors": [
-            "Microsoft Teams - bundled with Office 365",
-            "Google Chat - part of Workspace",
-            "HipChat - acquired by Atlassian, later shut down",
-            "Discord - started as gaming chat, expanding to work"
+            "Honeywell/Resideo - traditional thermostats, industrial design",
+            "Ecobee - smart thermostat with room sensors",
+            "Honeywell Lyric - reactive smart thermostat product",
+            "Utility-provided programmable thermostats (ugly, basic)"
           ],
           "opportunities": [
-            "Rise of remote and distributed teams",
-            "Mobile workforce needing real-time sync",
-            "API-first approach to integrate with tools teams already use",
-            "Free tier for viral adoption within organizations",
-            "Bottom-up adoption (employees choose tools, not IT departments)"
+            "No thermostat had focused on design as differentiator",
+            "Energy rebate programs from utilities",
+            "Smartphone as control interface (no need for complex on-device UI)",
+            "Machine learning could automate scheduling instead of requiring manual programming",
+            "Platform expansion (smoke detectors, cameras, doorbells)"
           ],
-          "keyInsight": "Sell to individuals, not companies. Let teams adopt it organically (freemium), then upsell the organization later. This 'product-led growth' was revolutionary."
+          "keyInsight": "First smart home device that consumers actually wanted to display in their home. Design wasn't just aesthetic - it was a feature that drove adoption and word-of-mouth."
         },
         "ideation": {
-          "initialIdea": "Built as internal chat tool for a failing game company (Glitch). The game failed, but the chat tool was amazing.",
+          "initialIdea": "Build a beautiful, simple thermostat that learns your schedule automatically, programs itself, and can be controlled from your phone",
           "pivots": [
-            "From internal tool → commercial product",
-            "From gaming chat → business communication",
-            "From desktop-only → mobile apps",
-            "From siloed app → integration platform (connect with GitHub, Google Drive, etc.)"
+            "From thermostat only → platform of smart home devices",
+            "From consumer direct → partnerships with energy utilities",
+            "From selling devices → energy services (Rush Hour Rewards)",
+            "From standalone → integration with broader smart home ecosystems"
           ],
-          "finalValueProp": "Slack brings all your communication together in one place, making it searchable and accessible.",
+          "finalValueProp": "The Nest Learning Thermostat programs itself in a week and turns itself down when you're away to help save energy.",
           "keyFeatures": [
-            "Channels (organized by topic/team)",
-            "Direct messages",
-            "File sharing and integration with cloud storage",
-            "Searchable message history",
-            "Rich integrations with 2000+ apps",
-            "Threads to organize side conversations"
+            "Auto-schedule - learns your preferences in a week",
+            "Auto-away - detects when you leave, turns down HVAC",
+            "Remote control via smartphone apps",
+            "Energy history and reports",
+            "Airwave feature for AC efficiency",
+            "Farsight - shows target temperature or time, wakes on approach"
           ],
           "mvpFeatures": [
-            "Persistent chat rooms (channels)",
-            "Direct messaging",
-            "File sharing",
-            "Search history",
-            "Basic integrations (Google Drive, GitHub)",
-            "Desktop notifications"
+            "Beautiful circular design with metal dial",
+            "Learning algorithms for schedule",
+            "Motion sensors to detect occupancy",
+            "Wi-Fi connectivity for remote control",
+            "iPhone and Android apps",
+            "Basic energy usage reporting"
           ],
           "uniqueSellingPoints": [
-            "Searchable message history - never lose information",
-            "Integrations with tools you already use",
-            "Freemium model for viral adoption",
-            "Beautiful, intuitive interface",
-            "Third-party app ecosystem"
+            "Design trophy - looks like premium Apple product",
+            "Learns automatically, no programming required",
+            "Saves average 10-12% on heating, 15% on cooling",
+            "Half of installation done by users (DIY)",
+            "Integrates with utilities for rebates and demand response"
           ],
-          "keyInsight": "Integration was the moat - by connecting with all the tools teams already use (GitHub, Jira, Google Drive), Slack became the 'operating system for work'."
+          "keyInsight": "Motion sensors were the breakthrough feature - they enabled 'auto-away' which delivered energy savings without user intervention, proving the value proposition immediately."
         },
         "investment-appraisal": {
-          "fundingNeeded": "$1.5M seed, eventually raised $1.2B before acquisition",
+          "fundingNeeded": "$20M initial VC funding, eventually raised $80M before acquisition",
           "useOfFunds": [
-            {"category": "Engineering", "amount": "40%", "description": "Platform development, infrastructure scaling"},
-            {"category": "Sales & Marketing", "amount": "30%", "description": "Enterprise sales, brand building, events"},
-            {"category": "Customer Success", "amount": "20%", "description": "Support, onboarding, account management"},
-            {"category": "Operations", "amount": "10%", "description": "Office, legal, HR, finance"}
+            {"category": "Hardware Development", "amount": "40%", "description": "Industrial design, engineering, certification"},
+            {"category": "Software & Cloud", "amount": "25%", "description": "Apps, cloud services, machine learning algorithms"},
+            {"category": "Manufacturing", "amount": "20%", "description": "Tooling, inventory, supply chain"},
+            {"category": "Sales & Marketing", "amount": "15%", "description": "Retail partnerships, brand building, installers"}
           ],
-          "revenueModel": "Freemium SaaS: Free tier limited to 10K messages, then $6.67-$15/user/month for paid tiers with unlimited history and advanced features",
+          "revenueModel": "Hardware sales ($249 MSRP per unit) + installation services + utility partnership revenue (Rush Hour Rewards program)",
           "projections": {
-            "year1": {"revenue": "$10M", "users": "500K daily active", "teams": "50K"},
-            "year2": {"revenue": "$100M", "users": "3M daily active", "teams": "300K"},
-            "year3": {"revenue": "$400M", "users": "10M daily active", "teams": "750K"}
+            "year1": {"revenue": "$10M", "units": "40K", "markets": "US only"},
+            "year2": {"revenue": "$100M", "units": "400K", "markets": "US + Canada + Europe"},
+            "year3": {"revenue": "$300M", "units": "1.2M", "markets": "North America, Europe, Asia"}
           },
-          "initialInvestment": "Bootstrapped from game company revenues, then $1.5M seed from Tiny Speck investors",
+          "initialInvestment": "$20M Series A from Kleiner Perkins, Shasta Ventures, and Google Ventures to fund initial development and launch",
           "fundingRounds": [
-            {"round": "Seed", "amount": "$1.5M", "investors": ["Accel", "Andreessen Horowitz"], "date": "2014"},
-            {"round": "Series B", "amount": "$43M", "investors": ["KPCB", "Google Ventures"], "date": "2014"},
-            {"round": "Series C", "amount": "$120M", "investors": ["Horizons Ventures", "Digital Sky"], "date": "2015"},
-            {"round": "Series D", "amount": "$200M", "investors": ["Thrive Capital"], "date": "2016"},
-            {"round": "Series E", "amount": "$250M", "investors": ["SoftBank"], "date": "2017"},
-            {"round": "Series F", "amount": "$427M", "investors": ["Dragoneer"], "date": "2018"},
-            {"round": "Acquisition", "amount": "$27.7B", "investors": ["Salesforce"], "date": "2020"}
+            {"round": "Series A", "amount": "$20M", "investors": ["Kleiner Perkins", "Shasta Ventures", "Google Ventures"], "date": "2010"},
+            {"round": "Series B", "amount": "$20M", "investors": ["Venrock", "Generation Investment"], "date": "2011"},
+            {"round": "Series C", "amount": "$40M", "investors": ["KPCB", "Google Ventures"], "date": "2012"},
+            {"round": "Acquisition", "amount": "$3.2B", "investors": ["Google"], "date": "2014"}
           ],
-          "breakEvenTimeframe": "Achieved $400M ARR before acquisition, profitable in core markets",
-          "roi": "200x+ return from VC investment to $27.7B acquisition by Salesforce",
-          "keyInsight": "Freemium with high conversion - teams organically adopted Slack, then companies paid for enterprise features. Bottom-up sales beat traditional enterprise software sales."
+          "breakEvenTimeframe": "Profitable before acquisition in 2014, with $300M+ annual revenue run rate",
+          "roi": "40x return from total VC investment to $3.2B acquisition by Google",
+          "keyInsight": "Hardware startups are capital-intensive, but premium pricing and high gross margins (70%+) made Nest attractive. Platform potential expanded the valuation significantly."
         },
         "pitch": {
-          "title": "Where Work Happens",
-          "tagline": "Slack brings all your communication together in one place",
-          "traction": "15K daily active users within 6 months of launch (2014), grew to 12M+ daily active users, 750K+ organizations by acquisition (2020)",
-          "team": "Stewart Butterfield (CEO, Flickr co-founder), Cal Henderson (CTO), Eric Costello, Serguei Mourachov - team that built Flickr together",
-          "ask": "$43M Series B to scale infrastructure, build enterprise features, expand sales team. Investment fueled hypergrowth to 3M daily active users.",
-          "keyInsight": "The pitch emphasized the pain of fragmented communication (email, chat, file sharing) and showed how Slack centralizes everything. Demo of the product was more powerful than slides."
+          "title": "The Learning Thermostat",
+          "tagline": "Programs itself. Pays for itself.",
+          "traction": "Sold 40K units in first month (2011), 1M units by 2013. Controlled by 1% of US thermostats within 3 years despite $249 price.",
+          "team": "Tony Fadell (CEO, 'father of the iPod'), Matt Rogers (co-founder, former Apple engineer). Hardware and design excellence from Apple alumni.",
+          "ask": "$20M Series A to fund product development, manufacturing tooling, and go-to-market for first product launch",
+          "keySlides": [
+            "Problem: 90% of people don't program their thermostats, wasting energy",
+            "Solution: Beautiful thermostat that learns your schedule automatically",
+            "Market: 250M US thermostats, most outdated, $80B smart home opportunity",
+            "Product: Apple-quality design, machine learning algorithms, smartphone control",
+            "Business: Premium hardware, high margins, platform potential",
+            "Team: Apple alumni who built iPod, understanding of consumer hardware"
+          ],
+          "keyInsight": "The pitch combined Apple-quality design credentials with massive energy savings data. Investors bought into the 'thermostat as the first smart home device' vision."
         }
       },
       "metrics": {
-        "roi": "200x+ return from VC investment to $27.7B acquisition by Salesforce",
-        "timeframe": "7 years from founding to acquisition (2013-2020)",
-        "marketImpact": "12M+ daily active users, 750,000+ organizations, defined the team collaboration category"
+        "roi": "40x return from VC investment to $3.2B acquisition",
+        "timeframe": "4 years from founding to acquisition (2010-2014)",
+        "marketImpact": "1M+ thermostats sold, defined smart home design standards, launched the modern IoT market"
       },
       "keyLearnings": [
-        "Build dogfooding - build something you need yourself",
-        "Product-led growth (freemium) beats traditional enterprise sales",
-        "Integrations create lock-in - the more tools you connect, the harder it is to leave",
-        "Fast following works - IRC wasn't new, but Slack made it beautiful and easy",
-        "Sell to users, not buyers - bottom-up adoption in enterprises"
+        "Design is a feature, not just aesthetics - beautiful products sell themselves",
+        "Machine learning can solve usability problems (auto-programming vs manual)",
+        "Premium pricing works when product quality and user experience justify it",
+        "Partner with utilities for rebates - they benefit from energy savings too",
+        "Start with one category-defining product, then expand platform"
       ]
     },
     {
-      "id": "netflix",
-      "title": "Netflix",
-      "tagline": "See What's Next",
-      "company": "Netflix, Inc.",
-      "yearFounded": 1997,
-      "industry": "Media & Entertainment",
-      "businessModel": "subscription",
-      "featured": true,
-      "tags": ["subscription", "disruption", "original-content", "data-driven", "pivoting"],
-      "phases": {
-        "challenge": {
-          "problem": "Video rental stores had late fees, limited selection, and required customers to physically visit stores. People hated late fees ($500M/year industry in late fees alone).",
-          "targetAudience": "Movie enthusiasts who hated late fees and wanted better selection, initially DVD-by-mail",
-          "currentSolutions": [
-            "Blockbuster - dominant chain, high late fees, limited selection per store",
-            "Local video stores - limited inventory",
-            "Cable TV - scheduled programming, not on-demand"
-          ],
-          "keyInsight": "Late fees weren't a revenue source for Blockbuster - they were the source of customer hatred. Eliminating them was a competitive advantage."
-        },
-        "market": {
-          "marketSize": "$50B+ video rental market (1997), expanding to $200B+ streaming and content market",
-          "targetSegment": "Movie lovers with DVD players, later expanded to anyone with internet connection",
-          "initialTargetMarket": "Movie enthusiasts in San Francisco Bay Area who hated Blockbuster's late fees (1997)",
-          "trends": [
-            "DVD format enabling light, durable shipping",
-            "Broadband internet expansion",
-            "Cord-cutting movement",
-            "Binge-watching behavior",
-            "Mobile device viewing growth"
-          ],
-          "competitors": [
-            "Blockbuster - 9000+ stores, $6B revenue, but slow to adapt",
-            "Redbox - DVD kiosks, $1/night, limited selection",
-            "Hulu - joint venture of networks, ad-supported",
-            "Amazon Prime Video - bundled with Prime shipping"
-          ],
-          "opportunities": [
-            "DVD format allowed mailing (lightweight, durable)",
-            "Internet bandwidth improving for streaming",
-            "Data on user preferences could inform content recommendations",
-            "Original content could differentiate from competitors",
-            "Global expansion without physical infrastructure"
-          ],
-          "keyInsight": "Data was the secret weapon - Netflix knew what users watched, when they stopped watching, what they liked, enabling personalized recommendations and smart content decisions."
-        },
-        "ideation": {
-          "initialIdea": "Rent DVDs by mail - no late fees, keep as long as you want, prepaid return envelopes",
-          "pivots": [
-            "From pay-per-rental → subscription model (unlimited rentals)",
-            "From DVD-by-mail → streaming video (2007)",
-            "From licensed content → original programming (House of Cards, 2013)",
-            "From domestic → global expansion (190+ countries)"
-          ],
-          "finalValueProp": "Watch TV shows and movies anytime, anywhere - personalized for you.",
-          "keyFeatures": [
-            "Unlimited streaming for flat monthly fee",
-            "Personalized recommendations based on viewing history",
-            "Original programming you can't watch anywhere else",
-            "Offline downloads for mobile",
-            "Multiple user profiles per account",
-            "4K HDR quality"
-          ],
-          "mvpFeatures": [
-            "DVD rental by mail website",
-            "Prepaid return envelopes",
-            "Queue management system",
-            "No late fees policy",
-            "Recommendation algorithm",
-            "Subscription billing"
-          ],
-          "uniqueSellingPoints": [
-            "No late fees - keep DVDs as long as you want",
-            "Personalized recommendations",
-            "Binge-watch entire seasons",
-            "Exclusive original content",
-            "Watch anywhere on any device",
-            "Multiple profiles for family members"
-          ],
-          "keyInsight": "The shift to original content (House of Cards for $100M) was the pivot from content distributor to content studio - making Netflix indispensable, not just another streaming option."
-        },
-        "investment-appraisal": {
-          "fundingNeeded": "$2.5M initial seed, eventually raised $500M+ before IPO",
-          "useOfFunds": [
-            {"category": "Content Licensing", "amount": "50%", "description": "Movie and TV show licenses from studios"},
-            {"category": "Technology", "amount": "25%", "description": "Streaming platform, recommendation engine, infrastructure"},
-            {"category": "Marketing", "amount": "15%", "description": "Brand building, subscriber acquisition"},
-            {"category": "Operations", "amount": "10%", "description": "DVD distribution centers, customer support"}
-          ],
-          "revenueModel": "Subscription SaaS: $8.99-$19.99/month for unlimited streaming, ad-free viewing, multiple simultaneous streams",
-          "projections": {
-            "year1": {"revenue": "$5M", "subscribers": "500K", "markets": "US only"},
-            "year2": {"revenue": "$50M", "subscribers": "3M", "markets": "US only"},
-            "year3": {"revenue": "$200M", "subscribers": "10M", "markets": "US + Canada"}
-          },
-          "initialInvestment": "$2.5M from friends, family, and angel investors to launch DVD-by-mail service",
-          "fundingRounds": [
-            {"round": "Seed", "amount": "$2.5M", "investors": ["Angel investors"], "date": "1997"},
-            {"round": "Venture", "amount": "$30M", "investors": ["Matrix Partners", "Technology Crossover Ventures"], "date": "1999"},
-            {"round": "IPO", "amount": "$82M", "investors": ["Public"], "date": "2002"},
-            {"round": "Debt", "amount": "$500M", "investors": ["Junk bonds"], "date": "2011"}
-          ],
-          "breakEvenTimeframe": "Profitable from 2003 onwards, reinvested profits into streaming and original content",
-          "roi": "1000x+ return from IPO to peak (2002-2021)",
-          "keyInsight": "Disrupt yourself before someone else does - Netflix killed its profitable DVD business to pursue streaming, sacrificing short-term profits for long-term survival."
-        },
-        "pitch": {
-          "title": "See What's Next",
-          "tagline": "Watch TV shows and movies anytime, anywhere - personalized for you",
-          "traction": "1M subscribers by 2003, 10M by 2009, 100M by 2017. Now 270M+ paid subscribers worldwide",
-          "team": "Reed Hastings (CEO, serial entrepreneur), Marc Randolph (co-founder, marketing), technology team focused on recommendation algorithms",
-          "ask": "$30M venture capital to expand DVD distribution centers, build online presence, invest in technology. Investment enabled scaling to national footprint.",
-          "keyInsight": "Early pitch focused on pain of late fees - Blockbuster's $500M/year in late fees was Netflix's opportunity. Emphasized customer obsession: 'We start with the customer and work backward.'"
-        }
-      },
-      "metrics": {
-        "roi": "1000x+ return from IPO to peak (2002-2021)",
-        "timeframe": "24 years and ongoing - continuous evolution",
-        "marketImpact": "270M+ paid subscribers worldwide, destroyed Blockbuster, defined streaming era, $20B+ annual revenue"
-      },
-      "keyLearnings": [
-        "Disrupt yourself before someone else does - Netflix killed its profitable DVD business to pursue streaming",
-        "Original content creates moats - Netflix originals can't be licensed to competitors",
-        "Data-driven decisions - House of Cards greenlit based on user data, not gut instinct",
-        "Global mindset - expand worldwide, not just US-first",
-        "Focus on user experience - no ads (originally), binge-worthy content, personalized recommendations"
-      ]
-    },
-    {
-      "id": "spotify",
-      "title": "Spotify",
-      "tagline": "Music for Everyone",
-      "company": "Spotify Technology S.A.",
+      "id": "dji",
+      "title": "DJI",
+      "tagline": "The Future of Possible",
+      "company": "DJI Technology Co.",
       "yearFounded": 2006,
-      "industry": "Music & Audio",
-      "businessModel": "freemium",
+      "industry": "Robotics & Drones",
+      "businessModel": "hardware-plus-software",
       "featured": true,
-      "tags": ["freemium", "subscription", "data-driven", "playlists", "mobile-first"],
+      "tags": ["robotics", "drones", "camera-technology", "manufacturing", "dual-use"],
       "phases": {
         "challenge": {
-          "problem": "Music piracy (Napster, Limewire) was rampant. Buying music on iTunes was expensive per song. People wanted access to all music, not ownership of individual songs.",
-          "targetAudience": "Music lovers who wanted legal access to millions of songs without paying per track",
-          "currentSolutions": [
-            "Piracy (Napster, Limewire) - free but illegal, poor quality",
-            "iTunes - pay per song/$1.29, expensive for large libraries",
-            "Pandora - radio-style, can't pick specific songs",
-            "Radio - ads, limited selection, no control"
-          ],
-          "keyInsight": "Access beats ownership. People would rather pay $10/month for unlimited access than buy songs individually."
+          "problem": "Drones were expensive, difficult to fly, and unstable. Industrial and commercial applications were limited by unreliable technology, while consumer market was virtually non-existent due to poor user experience.",
+          "targetAudience": "Initially: Hobbyists and RC enthusiasts. Expanded to: Photographers, filmmakers, agriculture, construction, inspection, enterprise/industrial users",
+          "currentSolutions": "Custom-built DIY drones (unreliable), military drones (expensive, restricted), RC helicopters (hard to fly, limited payload)",
+          "keyInsight": "Flight stability and intelligent flight modes would unlock the market. Making drones easy to fly through software and sensors was the breakthrough needed."
         },
         "market": {
-          "marketSize": "$20B+ global music industry (recorded music)",
-          "targetSegment": "Digital natives, smartphone users, music enthusiasts",
-          "initialTargetMarket": "European tech-savvy music fans (2006-2008) - hit hard by piracy, wanted legal alternative",
+          "marketSize": "$30B+ global drone market by 2024, with consumer drones at $5B+ and commercial/industrial at $25B+",
+          "targetSegment": "Photographers and videographers seeking aerial shots, agricultural enterprises for crop monitoring, construction for site surveying, industrial inspection",
+          "initialTargetMarket": "RC hobbyists and photography enthusiasts in China and US (2008-2012) - willing to pay for premium, early adopters of new technology",
           "trends": [
-            "Mobile device proliferation",
-            "4G/5G bandwidth expansion",
-            "Streaming over ownership",
-            "Playlist culture",
-            "Podcast boom"
+            "Camera sensor miniaturization",
+            "Battery technology improvements (lithium-polymer)",
+            "MEMS sensors becoming affordable",
+            "Smartphone processing power enabling on-board computing",
+            "Commercial drone regulations being established"
           ],
           "competitors": [
-            "Apple Music - bundled with Apple devices",
-            "Amazon Music - bundled with Prime",
-            "Pandora - internet radio",
-            "YouTube Music - video-focused"
+            "3D Robotics - open source approach, failed to scale manufacturing",
+            "Parrot - AR Drone for consumers, limited enterprise focus",
+            "Autel Robotics - Chinese competitor, lower price",
+            "Skydio - US-based, focused on autonomous flight"
           ],
           "opportunities": [
-            "Smartphone penetration enabling on-the-go listening",
-            "Social sharing of music",
-            "Playlist curation as discovery mechanism",
-            "Data on listening habits for artist recommendations",
-            "Podcasts as growth area"
+            "No dominant player in consumer drone space",
+            "Film and photography industry ready for aerial capabilities",
+            "Agriculture needs crop monitoring at scale",
+            "Construction and infrastructure inspection markets underserved",
+            "Gimbal technology could stabilize any camera, not just on drones"
           ],
-          "keyInsight": "Playlists were the killer feature - user-created and Spotify-curated playlists became how people discovered music, creating daily engagement habits."
+          "keyInsight": "Vertical integration - controlling both hardware and software - allowed DJI to deliver integrated experience that competitors couldn't match with piecemeal solutions."
         },
         "ideation": {
-          "initialIdea": "Legal streaming music service - faster than piracy (instant playback vs download), better quality, pays artists",
+          "initialIdea": "Build flight controller systems for RC helicopters, evolving to complete drone systems with stabilized camera gimbals",
           "pivots": [
-            "From desktop-only → mobile apps",
-            "From Europe-only → US launch (after label negotiations)",
-            "From music only → podcasts and audiobooks",
-            "From playlists → personalized daily mixes (Discover Weekly)"
+            "From flight controllers only → complete drone systems",
+            "From hobbyist components → prosumer photography drones",
+            "From consumer only → enterprise/industrial applications",
+            "From drones only → camera stabilizers (Ronin series), handheld gimbals"
           ],
-          "finalValueProp": "Millions of songs. No credit card needed. Free on mobile, tablet, and computer.",
+          "finalValueProp": "DJI drones give anyone the ability to capture stunning aerial imagery easily and safely. Professional tools now accessible to everyone.",
           "keyFeatures": [
-            "On-demand streaming of 100M+ songs",
-            "Personalized playlists (Discover Weekly, Daily Mix)",
-            "Offline mode for premium subscribers",
-            "Social sharing and collaborative playlists",
-            "Podcasts integration",
-            "Spotify Connect (play across devices)"
+            "GPS-assisted flight stabilization",
+            "Intelligent flight modes (follow me, waypoint navigation)",
+            "Integrated 3-axis gimbal for stable footage",
+            "Obstacle avoidance sensors",
+            "Return-to-home on low battery or signal loss",
+            "Mobile app control with live HD video feed"
           ],
           "mvpFeatures": [
-            "Desktop streaming app",
-            "On-demand playback",
-            "Searchable music library",
-            "Playlist creation",
-            "Social sharing",
-            "Basic recommendation engine"
+            "Flamewheel flight controller for DIY builders",
+            "Phantom 1 - ready-to-fly quadcopter with GoPro mount",
+            "Basic GPS stabilization",
+            "Remote controller with smartphone mount",
+            "Flight time of 10-15 minutes"
           ],
           "uniqueSellingPoints": [
-            "Freemium access to all music",
-            "Personalized playlists updated daily",
-            "Collaborative playlists with friends",
-            "Cross-device listening continuity",
-            "Largest music catalog",
-            "Algorithmic discovery"
+            "Out-of-the-box experience - no assembly required",
+            "Professional quality footage at consumer prices",
+            "Intelligent flight modes make flying easy",
+            "Camera integration is seamless - not an add-on",
+            "Modular design with accessory ecosystem"
           ],
-          "keyInsight": "Freemium model worked because free users converted to premium at 2-3% rate, but free users also generated data for recommendations and social sharing, creating network effects."
+          "keyInsight": "The Phantom series was the breakthrough - ready-to-fly with integrated camera. Prior drones required assembly and separate camera purchases, limiting market to hobbyists."
         },
         "investment-appraisal": {
-          "fundingNeeded": "€5M initial seed, eventually raised €2.1B before IPO",
+          "fundingNeeded": "$500K initial seed from founder's savings, bootstrapped to profitability",
           "useOfFunds": [
-            {"category": "Content Costs", "amount": "70%", "description": "Royalties to labels and artists, minimum guarantees"},
-            {"category": "Product & Tech", "amount": "15%", "description": "App development, recommendation algorithms, infrastructure"},
-            {"category": "Marketing", "amount": "10%", "description": "User acquisition, brand campaigns, partnerships"},
-            {"category": "Operations", "amount": "5%", "description": "Label negotiations, legal, support, operations"}
+            {"category": "R&D", "amount": "35%", "description": "Flight control algorithms, gimbal design, camera development"},
+            {"category": "Manufacturing", "amount": "30%", "description": "Tooling, supply chain, quality control"},
+            {"category": "Software & Cloud", "amount": "20%", "description": "Mobile apps, flight control software, cloud services"},
+            {"category": "Marketing & Sales", "amount": "15%", "description": "Brand building, retail partnerships, enterprise sales"}
           ],
-          "revenueModel": "Freemium: Free tier with ads, Premium tier $9.99/month ad-free with offline. Also ad-supported free tier generates revenue.",
+          "revenueModel": "Hardware sales (drones $500-$15K+, cameras $1K-$5K, gimbals $200-$3K) + software services (enterprise cloud, data analysis)",
           "projections": {
-            "year1": {"revenue": "€10M", "users": "5M monthly", "premium": "500K"},
-            "year2": {"revenue": "€100M", "users": "25M monthly", "premium": "5M"},
-            "year3": {"revenue": "€500M", "users": "75M monthly", "premium": "20M"}
+            "year1": {"revenue": "$5M", "units": "5K", "markets": "China hobbyist"},
+            "year2": {"revenue": "$50M", "units": "50K", "markets": "China + US consumer"},
+            "year3": {"revenue": "$300M", "units": "300K", "markets": "Global consumer + enterprise"}
           },
-          "initialInvestment": "€5M from founders and Nordic investors to launch in Sweden",
+          "initialInvestment": "$500K from founder Frank Wang's university savings and early revenue from flight controller sales",
           "fundingRounds": [
-            {"round": "Seed", "amount": "€5M", "investors": ["Nordic Venture Partners"], "date": "2006"},
-            {"round": "Venture", "amount": "€50M", "investors": ["Creandum", "Northzone"], "date": "2008"},
-            {"round": "Series B", "amount": "€100M", "investors": ["KPCB", "Accel"], "date": "2011"},
-            {"round": "Series C", "amount": "€250M", "investors": ["Goldman Sachs", "CTI"], "date": "2013"},
-            {"round": "Series D", "amount": "€500M", "investors": ["Sony", "Telia"], "date": "2015"},
-            {"round": "Series E", "amount": "€1B", "investors": ["Tencent", "Goldman Sachs"], "date": "2017"},
-            {"round": "IPO", "amount": "N/A", "investors": ["Public"], "date": "2018"}
+            {"round": "Bootstrapped", "amount": "Self-funded", "investors": ["Founder's savings"], "date": "2006"},
+            {"round": "Venture", "amount": "$10M+", "investors": ["Sequoia Capital China", "Green Pine Capital"], "date": "2015"}
           ],
-          "breakEvenTimeframe": "Not yet profitable at IPO (2018), investing in growth and podcast content",
-          "roi": "100x+ return from early investment to IPO (2008-2018)",
-          "keyInsight": "Freemium requires discipline - free tier must be valuable but not cannibalize premium. 2-3% conversion rate is sustainable when you have hundreds of millions of users."
+          "breakEvenTimeframe": "Profitable within 3 years of founding, achieved through rapid growth and market dominance",
+          "roi": "Estimated 1000x+ return from early investment to $15B+ valuation",
+          "keyInsight": "Bootstrapping to profitability maintained control and allowed long-term R&D investment. Venture capital came later for scaling, not survival."
         },
         "pitch": {
-          "title": "Music for Everyone",
-          "tagline": "Millions of songs. No credit card needed. Free on mobile, tablet, and computer.",
-          "traction": "1M users in first year (2008), 10M by 2011, 100M by 2015. Now 574M+ monthly active users, 226M+ paid subscribers",
-          "team": "Daniel Ek (CEO, tech entrepreneur), Martin Lorentzon (co-founder, entrepreneur). Technology and music industry background.",
-          "ask": "€50M Series B to expand to US market (label negotiations costly), improve product, scale infrastructure. US launch was critical milestone.",
-          "keyInsight": "The pitch emphasized solving piracy through better user experience than illegal downloading. Showed labels data on how Spotify reduced piracy in Sweden, winning their support."
+          "title": "The Future of Possible",
+          "tagline": "Professional aerial photography, accessible to everyone",
+          "traction": "2008: Started with flight controllers. 2013: Phantom launched, sold 1M units by 2015. Now holds 70%+ global drone market share across consumer and enterprise.",
+          "team": "Frank Wang (CEO, engineer), founded in dorm room at Hong Kong University of Science and Technology. Engineering-focused culture.",
+          "ask": "Initial funding from personal savings, later $10M+ VC to scale manufacturing and expand globally",
+          "keySlides": [
+            "Problem: Drones are hard to fly, unreliable, and limited to hobbyists",
+            "Solution: Integrated drone systems that anyone can fly, with professional results",
+            "Market: $30B drone market, consumer photography just the beginning",
+            "Technology: Proprietary flight control, gimbal stabilization, intelligent flight",
+            "Advantage: Vertical integration - hardware, software, manufacturing all in-house",
+            "Vision: Drones as tool for photography, agriculture, inspection, rescue operations"
+          ],
+          "keyInsight": "DJI focused on making professional-quality aerial photography accessible to anyone, not just professional filmmakers. This democratization created mass market."
         }
       },
       "metrics": {
-        "roi": "100x+ return from early investment to IPO (2008-2018)",
-        "timeframe": "12 years from founding to IPO (2006-2018)",
-        "marketImpact": "574M+ monthly active users, 226M+ paid subscribers, reduced piracy, transformed music industry economics"
+        "roi": "Estimated 1000x+ return from early investment to $15B+ valuation",
+        "timeframe": "18 years to market leadership (2006-2024)",
+        "marketImpact": "70%+ global drone market share, defined consumer drone category, expanded to enterprise/industrial applications"
       },
       "keyLearnings": [
-        "Freemium requires discipline - free tier must be valuable but not cannibalize premium",
-        "Personalization at scale - algorithmic playlists (Discover Weekly) created daily habits",
-        "Labels are partners, not enemies - negotiated fair deals to get licenses",
-        "Mobile was critical - people listen on phones, not desktops",
-        "First-mover advantage in streaming mattered - established before Apple Music and others"
+        "Vertical integration is competitive advantage - control hardware, software, and manufacturing",
+        "Make professional quality accessible to mass market - democratization creates larger opportunity",
+        "China manufacturing advantage - proximity to supply chain enables rapid iteration",
+        "Dual-use strategy: consumer for scale, enterprise for margin expansion",
+        "Integration matters: camera built into drone beats add-on camera solution"
+      ]
+    },
+    {
+      "id": "abb-yumi",
+      "title": "ABB YuMi",
+      "tagline": "You and Me Working Together",
+      "company": "ABB Ltd.",
+      "yearFounded": 2015,
+      "industry": "Industrial Robotics & Automation",
+      "businessModel": "industrial-product",
+      "featured": true,
+      "tags": ["collaborative-robots", "manufacturing", "human-robot-collaboration", "automation", "safety"],
+      "phases": {
+        "challenge": {
+          "problem": "Industrial robots were expensive, dangerous, and required safety cages. They couldn't work alongside humans, limiting automation to large-scale production. Small and medium manufacturers couldn't justify traditional robot investments.",
+          "targetAudience": "Electronics assembly, small parts assembly, and light manufacturing where human dexterity was still needed. Expanded to: automotive, food & beverage, pharmaceuticals",
+          "currentSolutions": "Traditional industrial robots (fast but dangerous, require caging), manual assembly (slow, inconsistent quality, expensive labor), hard automation (inflexible)",
+          "keyInsight": "Making robots safe enough to work directly with humans would unlock automation for millions of tasks that previously required manual labor."
+        },
+        "market": {
+          "marketSize": "$14B collaborative robot (cobot) market within $50B+ industrial robotics market, growing at 20%+ CAGR",
+          "targetSegment": "Manufacturers seeking automation for high-mix, low-volume production where traditional robots aren't cost-effective",
+          "initialTargetMarket": "Electronics assembly manufacturers (2015-2017) - high precision requirements, repetitive tasks, labor cost pressures",
+          "trends": [
+            "Labor shortages in manufacturing",
+            "Need for flexible automation (high-mix production)",
+            "Rising labor costs in developed markets",
+            "Quality consistency requirements",
+            "Sensor technology enabling safe human-robot collaboration"
+          ],
+          "competitors": [
+            "Universal Robots - first cobot to market (2008), Denmark-based",
+            "Rethink Robotics (Baxter) - failed, shut down 2018",
+            "Fanuc CRX series - industrial giant entering cobots",
+            "KUKA LBR iisy - German cobot competitor"
+          ],
+          "opportunities": [
+            "Only 3% of potential tasks are automated today - massive expansion opportunity",
+            "Small/medium manufacturers can now afford automation",
+            "Cobots can redeploy workers to higher-value tasks",
+            "Shorter ROI than traditional robots (1-2 years vs 3-5 years)",
+            "Dual-arm robots can do two-handed assembly tasks"
+          ],
+          "keyInsight": "The market wasn't just replacing humans - it was augmenting human capabilities. Cobots handle repetitive tasks while humans handle judgment and decision-making."
+        },
+        "ideation": {
+          "initialIdea": "Build a dual-arm collaborative robot that could safely work alongside humans, performing small parts assembly tasks with human-like dexterity",
+          "pivots": [
+            "From research prototype → commercial product",
+            "From single-arm only → dual-arm for two-handed tasks",
+            "From general purpose → pre-engineered application solutions",
+            "From sales only → Robot Studio simulation software for deployment"
+          ],
+          "finalValueProp": "YuMi is a collaborative dual-arm robot designed to handle small parts assembly with human-level precision while working safely alongside people.",
+          "keyFeatures": [
+            "Dual 7-axis arms with human-like range of motion",
+            "Soft, padded surfaces for safe human contact",
+            "Force-sensing technology for gentle handling",
+            "Vision system for part recognition",
+            "Flexible grippers (suction, parallel jaw)",
+            "Intuitive programming - teach by demonstration"
+          ],
+          "mvpFeatures": [
+            "Dual-arm configuration with 7 DOF each",
+            "Force limiting sensors for safety",
+            "Soft, padded robot body",
+            "Vision-guided part recognition",
+            "Hand-guiding programming mode",
+            "Safety-rated stop on human contact"
+          ],
+          "uniqueSellingPoints": [
+            "First dual-arm cobot for two-handed assembly",
+            "Certified safe for human collaboration (ISO standard)",
+            "Compact design fits into existing workcells",
+            "Can handle parts as small as 1mm",
+            "ABB's global service and support network",
+            "Integration with ABB's broader automation portfolio"
+          ],
+          "keyInsight": "Two-handed dexterity was the breakthrough - single-arm robots couldn't handle assembly tasks that humans did easily (holding component while inserting). YuMi's dual arms solved this."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "Internal R&D investment of $50M+ over 5 years, plus go-to-market investment",
+          "useOfFunds": [
+            {"category": "R&D", "amount": "40%", "description": "Robot design, safety certification, vision system development"},
+            {"category": "Manufacturing", "amount": "25%", "description": "Production setup, supply chain, quality systems"},
+            {"category": "Sales & Marketing", "amount": "20%", "description": "Application engineering, customer demonstrations, training"},
+            {"category": "Service & Support", "amount": "15%", "description": "Installation, programming support, maintenance network"}
+          ],
+          "revenueModel": "Hardware sales ($40K-$60K per unit) + software (Robot Studio) + annual service contracts (10-15% of hardware price) + application engineering services",
+          "projections": {
+            "year1": {"revenue": "$10M", "units": "250", "markets": "Europe electronics"},
+            "year2": {"revenue": "$50M", "units": "1,250", "markets": "Europe + North America"},
+            "year3": {"revenue": "$150M", "units": "3,750", "markets": "Global"}
+          },
+          "initialInvestment": "$50M+ internal R&D investment from ABB's robotics division, leveraging 40+ years of robotics expertise",
+          "fundingRounds": [
+            {"round": "Internal Investment", "amount": "$50M+", "investors": ["ABB Ltd."], "date": "2010-2015"}
+          ],
+          "breakEvenTimeframe": "3-5 years to ROI for customers, ABB's payback on R&D investment through 10+ year product lifecycle and recurring service revenue",
+          "roi": "Enables ABB's position in fast-growing cobot segment, protecting $5B+ robotics business from disruption by cobot specialists",
+          "keyInsight": "For industrial companies, product innovation ROI isn't just direct product margin - it's about protecting core business from disruption and opening new market segments."
+        },
+        "pitch": {
+          "title": "You and Me Working Together",
+          "tagline": "The world's first truly collaborative dual-arm robot",
+          "traction": "Launched at Hannover Messe 2015, global rollout 2016-2017. Now deployed across electronics, automotive, food & beverage, and pharmaceuticals worldwide.",
+          "team": "ABB robotics division with 40+ years industrial automation experience, combining Swiss precision engineering with global manufacturing expertise",
+          "ask": "Internal investment to pioneer collaborative robotics category, positioning ABB as leader in next-generation manufacturing automation",
+          "keySlides": [
+            "Problem: 97% of manufacturing tasks are manual - traditional robots can't handle them",
+            "Solution: Collaborative robots that work safely alongside humans, unlocking new automation opportunities",
+            "Product: Dual-arm robot with human-like dexterity, vision-guided, force-sensing for safety",
+            "Market: $14B cobot market growing 20%+ annually, only 3% of tasks automated",
+            "Advantage: ABB's robotics heritage + global service network + safety certification",
+            "Vision: Future of manufacturing is human-robot collaboration, not replacement"
+          ],
+          "keyInsight": "ABB positioned YuMi not as replacing human workers, but as addressing labor shortages and enabling workers to focus on higher-value tasks while cobots handle repetitive work."
+        }
+      },
+      "metrics": {
+        "roi": "Protects ABB's $5B+ robotics business, positions in $14B cobot market",
+        "timeframe": "5 years development, ongoing since 2015",
+        "marketImpact": "Pioneered dual-arm collaborative robotics, established safety standards for human-robot collaboration, expanded automation to small/medium manufacturers"
+      },
+      "keyLearnings": [
+        "Safety certification is critical for human-robot collaboration - established new standards",
+        "Two-handed dexterity unlocked automation tasks single-arm robots couldn't handle",
+        "Ease of programming (teach by demonstration) is as important as robot capabilities",
+        "Service and support network is competitive advantage vs. startup cobot companies",
+        "Position cobots as augmenting human workers, not replacing them - better adoption"
       ]
     }
   ]
