@@ -252,37 +252,87 @@ You can:
         ideasToScore = idea ? [idea] : [];
       }
 
-      // Score all ideas in a single batch API call
-      const response = await fetch("/api/ai/ideate/score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ideas: ideasToScore,
-          challenge: challenge,
-          marketAnalysis: marketAnalysis,
-        }),
-      });
+      const BATCH_SIZE = 3; // Score in batches of 3 to avoid timeout
+      let allScoredIdeas: any[] = [];
+      let currentIdeas = ideas;
 
-      const data = await response.json();
-      if (!data.success) {
-        throw new Error("Failed to score ideas");
+      // Helper function to score a batch
+      const scoreBatch = async (batch: any[]) => {
+        const response = await fetch("/api/ai/ideate/score", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ideas: batch,
+            challenge: challenge,
+            marketAnalysis: marketAnalysis,
+          }),
+        });
+
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error("Failed to score ideas");
+        }
+
+        return data.data;
+      };
+
+      if (ideasToScore.length <= BATCH_SIZE) {
+        // Single batch - no progress messages needed
+        allScoredIdeas = await scoreBatch(ideasToScore);
+      } else {
+        // Multiple batches - show progress
+        const totalBatches = Math.ceil(ideasToScore.length / BATCH_SIZE);
+
+        for (let i = 0; i < ideasToScore.length; i += BATCH_SIZE) {
+          const batch = ideasToScore.slice(i, i + BATCH_SIZE);
+          const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+          const startIdx = i + 1;
+          const endIdx = Math.min(i + BATCH_SIZE, ideasToScore.length);
+
+          // Show progress message
+          const progressMsg: ChatMessage = {
+            id: `progress-${Date.now()}`,
+            role: "assistant",
+            content: `Scoring ideas ${startIdx}-${endIdx} of ${ideasToScore.length}...`,
+            timestamp: Date.now(),
+          };
+          setMessages((prev) => [...prev, progressMsg]);
+
+          // Score this batch
+          const batchScores = await scoreBatch(batch);
+          allScoredIdeas = [...allScoredIdeas, ...batchScores];
+
+          // Update ideas with scores from this batch
+          currentIdeas = currentIdeas.map((idea) => {
+            const scored = batchScores.find((s: any) => s.id === idea.id);
+            return scored
+              ? { ...idea, metrics: scored.metrics, evaluation: scored.evaluation }
+              : idea;
+          });
+
+          setIdeas(currentIdeas);
+          saveIdeas(currentIdeas);
+        }
       }
 
-      const scoredIdeas = data.data;
+      const scoredIdeas = allScoredIdeas;
 
-      // Update all ideas with their new scores
-      const updatedIdeas = ideas.map((idea) => {
-        const scored = scoredIdeas.find((s: any) => s.id === idea.id);
-        return scored
-          ? { ...idea, metrics: scored.metrics, evaluation: scored.evaluation }
-          : idea;
-      });
+      // Update all ideas with their new scores (for single batch case)
+      if (ideasToScore.length <= BATCH_SIZE) {
+        const updatedIdeas = ideas.map((idea) => {
+          const scored = scoredIdeas.find((s: any) => s.id === idea.id);
+          return scored
+            ? { ...idea, metrics: scored.metrics, evaluation: scored.evaluation }
+            : idea;
+        });
 
-      setIdeas(updatedIdeas);
-      saveIdeas(updatedIdeas);
+        setIdeas(updatedIdeas);
+        saveIdeas(updatedIdeas);
+        currentIdeas = updatedIdeas;
+      }
 
       // Update the selected idea for view
-      setSelectedIdeaForView(updatedIdeas.find((i) => i.id === ideaId) || null);
+      setSelectedIdeaForView(currentIdeas.find((i) => i.id === ideaId) || null);
 
       const msg: ChatMessage = {
         id: Date.now().toString(),
@@ -291,12 +341,12 @@ You can:
           ? `Generated scores for ${scoredIdeas.length} idea${scoredIdeas.length > 1 ? 's' : ''}!
 
 ${scoredIdeas.map((scored: any) => {
-  const idea = updatedIdeas.find((i) => i.id === scored.id);
+  const idea = currentIdeas.find((i) => i.id === scored.id);
   return `• "${idea?.name}": ${Math.round(scored.metrics.uniqueness)}% unique, ${Math.round(scored.metrics.feasibility)}% feasible`;
 }).join('\n')}
 
 You can ask me to explain these metrics or suggest improvements to increase the scores.`
-          : `Generated scores for "${updatedIdeas.find((i) => i.id === ideaId)?.name}"!
+          : `Generated scores for "${currentIdeas.find((i) => i.id === ideaId)?.name}"!
 
 - Uniqueness: ${Math.round(scoredIdeas[0].metrics.uniqueness)}%
 - Feasibility: ${Math.round(scoredIdeas[0].metrics.feasibility)}%
