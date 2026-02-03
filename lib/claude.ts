@@ -109,7 +109,8 @@ export async function sendClaudeMessage<T = unknown>(
  */
 export async function* streamClaudeMessage(
   messages: ClaudeMessage[],
-  systemPrompt: string
+  systemPrompt: string,
+  maxTokens: number = 8192
 ): AsyncGenerator<string, void, unknown> {
   if (!config.openai.apiKey) {
     throw new Error("OPENAI_API_KEY is not configured");
@@ -125,7 +126,7 @@ export async function* streamClaudeMessage(
 
   const stream = await openai.chat.completions.create({
     model: config.openai.defaultModel,
-    max_tokens: 4096,
+    max_tokens: maxTokens,
     messages: openaiMessages,
     stream: true,
   });
