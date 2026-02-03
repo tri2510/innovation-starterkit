@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2, Tag } from "lucide-react"
+import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2, Tag, ExternalLink } from "lucide-react"
 import { CrackItIcon } from "./crack-it-icon"
 import { cn } from "@/lib/utils"
 import {
@@ -45,54 +45,32 @@ const STREAM_UPDATE_INTERVAL = 10
 // Helper to transform content with clickable citations (like ChatGPT)
 function transformContentWithCitations(content: string, sources: Array<{ refer: string; link: string; title: string }>): string {
   if (!sources || sources.length === 0) {
-    console.log('[transformContentWithCitations] No sources, returning original content')
     return content
   }
 
-  console.log('[transformContentWithCitations] Sources:', sources.map((s, i) => `${i}: ${s.refer}`))
-  console.log('[transformContentWithCitations] Content preview (first 200 chars):', content.substring(0, 200))
-
-  // Check what citation patterns are in the content
-  const citationPatterns = content.match(/\[Source:[^\]]+\]/gi)
-  console.log('[transformContentWithCitations] Found citation patterns:', citationPatterns)
-
   let transformed = content
-  let replacedCount = 0
 
   // Replace [Source: ref_X] patterns with markdown links [X](url)
-  // Case insensitive, handles various spacing
   transformed = transformed.replace(/\[Source:\s*ref[_\s]*(\d+)\]/gi, (match, refNum) => {
     const index = parseInt(refNum) - 1
-    console.log(`[transformContentWithCitations] Trying to replace ref_${refNum} with index ${index}`)
     if (index >= 0 && index < sources.length) {
-      replacedCount++
-      const result = `[${index + 1}](${sources[index].link})`
-      console.log(`[transformContentWithCitations] ✓ Replaced with:`, result)
-      return result
+      return `[${index + 1}](${sources[index].link})`
     }
-    console.warn(`[transformContentWithCitations] ✗ Invalid ref number: ${refNum} (sources length: ${sources.length})`)
-    return match // Keep original if invalid
+    return match
   })
-
-  console.log(`[transformContentWithCitations] Replaced ${replacedCount} citations total`)
-  console.log('[transformContentWithCitations] Output preview (first 200 chars):', transformed.substring(0, 200))
 
   return transformed
 }
 
-export function EnhancedAnalysisPanel({
-  isOpen,
-  onClose,
-  selectedText,
-  phaseContext
-}: EnhancedAnalysisPanelProps) {
+export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseContext }: EnhancedAnalysisPanelProps) {
   const [messages, setMessages] = useState<CrackItMessage[]>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [showThinking, setShowThinking] = useState(false)
-  const [useWebSearch, setUseWebSearch] = useState(true)
   const [showHistory, setShowHistory] = useState(false)
   const [history, setHistory] = useState<AnalysisHistory[]>([])
+  const [useWebSearch, setUseWebSearch] = useState(true)
+  const [expandedSources, setExpandedSources] = useState<Set<number>>(new Set())
 
   const currentAnalysisRef = useRef<string>("")
 
@@ -121,105 +99,19 @@ export function EnhancedAnalysisPanel({
       setInput("")
       setShowThinking(false)
       setShowHistory(false)
+      setUseWebSearch(true)
     }
   }, [isOpen])
 
-  // Load history from sessionStorage
+  // Auto-expand first 3 sources by default
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        const parsed = JSON.parse(stored) as AnalysisHistory[]
-        const hasOldFormat = parsed.some(item =>
-          item.id.startsWith('analysis-') && item.id.match(/^analysis-\d+$/)
-        )
-        if (hasOldFormat) {
-          sessionStorage.removeItem(STORAGE_KEY)
-          setHistory([])
-        } else {
-          setHistory(parsed)
-        }
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage?.sources && lastMessage.sources.length > 0) {
+        setExpandedSources(new Set([0, 1, 2]))
       }
-    } catch (e) {
-      console.error("Failed to load history:", e)
     }
-  }, [])
-
-  // Save to history
-  const saveToHistory = useCallback((msgs: CrackItMessage[]) => {
-    const now = Date.now()
-    const uniqueId = typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : `analysis-${now}-${Math.random().toString(36).slice(2, 11)}`
-    const newHistory: AnalysisHistory = {
-      id: uniqueId,
-      selectedText,
-      messages: msgs,
-      timestamp: now
-    }
-
-    setHistory(prev => {
-      const updated = [newHistory, ...prev].slice(0, MAX_HISTORY)
-      try {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-      } catch (e) {
-        console.error("Failed to save history:", e)
-      }
-      return updated
-    })
-  }, [selectedText])
-
-  // Throttled UI update for streaming
-  const updateStreamingMessage = useCallback((phase?: "thinking" | "content" | "done") => {
-    setMessages(prev => {
-      if (prev.length === 0 || prev[prev.length - 1].role !== "assistant") {
-        return prev
-      }
-
-      const updated = [...prev]
-      const last = { ...updated[updated.length - 1] }
-
-      const hasThinkingNow = streamingThinkingRef.current && streamingThinkingRef.current.length > 0
-      const hadThinkingBefore = last.thinking && last.thinking.length > 0
-
-      if (hasThinkingNow && last.thinking !== streamingThinkingRef.current) {
-        last.thinking = streamingThinkingRef.current
-        if (!hadThinkingBefore && hasThinkingNow) {
-          setShowThinking(true)
-        }
-      }
-      if (streamingContentRef.current && last.content !== streamingContentRef.current) {
-        last.content = streamingContentRef.current
-      }
-      if (streamingSearchQueryRef.current && last.searchQuery !== streamingSearchQueryRef.current) {
-        last.searchQuery = streamingSearchQueryRef.current
-      }
-      if (streamingSourcesRef.current.length > 0) {
-        last.sources = [...streamingSourcesRef.current]
-        last.isSearching = false
-      }
-      last.isSearching = isSearchingRef.current
-
-      if (phase) {
-        last.streamPhase = phase
-        last.isStreaming = phase !== "done"
-      }
-
-      updated[updated.length - 1] = last
-      return updated
-    })
-  }, [])
-
-  const scheduleUpdate = useCallback((phase?: "thinking" | "content" | "done") => {
-    if (streamingTimeoutRef.current) {
-      return
-    }
-
-    streamingTimeoutRef.current = setTimeout(() => {
-      updateStreamingMessage(phase)
-      streamingTimeoutRef.current = null
-    }, STREAM_UPDATE_INTERVAL)
-  }, [updateStreamingMessage])
+  }, [messages])
 
   // Auto-save messages to session storage
   useEffect(() => {
@@ -250,35 +142,35 @@ export function EnhancedAnalysisPanel({
       streamingTimeoutRef.current = null
     }
 
+    // Reset streaming refs
     streamingThinkingRef.current = ""
     streamingContentRef.current = ""
     streamingSearchQueryRef.current = ""
     streamingSourcesRef.current = []
+    isSearchingRef.current = false
     hasShownFirstThinkingRef.current = false
 
+    // Add user message
     const userMessage: CrackItMessage = {
       id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}`,
       role: "user",
       content: prompt,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
 
-    setMessages(prev => [...prev, userMessage])
-
-    const assistantPlaceholder: CrackItMessage = {
-      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}`,
+    // Add empty assistant message that will be streamed into
+    const assistantMessage: CrackItMessage = {
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg-${Date.now() + 1}`,
       role: "assistant",
       content: "",
-      thinking: "",
-      sources: [],
       timestamp: Date.now(),
-      isSearching: useWebSearch,
       isStreaming: true,
-      streamPhase: "thinking"
+      streamPhase: "thinking",
+      isSearching: useWebSearch,
     }
 
-    isSearchingRef.current = useWebSearch
-    setMessages(prev => [...prev, assistantPlaceholder])
+    setMessages(prev => [...prev, userMessage, assistantMessage])
+    currentAnalysisRef.current = selectedText
 
     try {
       const sessionData = getSession()
@@ -292,10 +184,12 @@ export function EnhancedAnalysisPanel({
           useWebSearch,
           phaseContext,
           sessionData
-        })
+        }),
       })
 
-      if (!response.ok) throw new Error("Analysis failed")
+      if (!response.ok) {
+        throw new Error("Failed to analyze selection")
+      }
 
       const reader = response.body?.getReader()
       if (!reader) throw new Error("No response")
@@ -382,6 +276,79 @@ export function EnhancedAnalysisPanel({
     }
   }
 
+  const updateStreamingMessage = useCallback((phase?: "thinking" | "content" | "done") => {
+    setMessages(prev => {
+      if (prev.length === 0 || prev[prev.length - 1].role !== "assistant") {
+        return prev
+      }
+
+      const updated = [...prev]
+      const last = { ...updated[updated.length - 1] }
+
+      const hasThinkingNow = streamingThinkingRef.current && streamingThinkingRef.current.length > 0
+      const hadThinkingBefore = last.thinking && last.thinking.length > 0
+
+      if (hasThinkingNow && last.thinking !== streamingThinkingRef.current) {
+        last.thinking = streamingThinkingRef.current
+        if (!hadThinkingBefore && hasThinkingNow) {
+          setShowThinking(true)
+        }
+      }
+      if (streamingContentRef.current && last.content !== streamingContentRef.current) {
+        last.content = streamingContentRef.current
+      }
+      if (streamingSearchQueryRef.current && last.searchQuery !== streamingSearchQueryRef.current) {
+        last.searchQuery = streamingSearchQueryRef.current
+      }
+      if (streamingSourcesRef.current.length > 0) {
+        last.sources = [...streamingSourcesRef.current]
+        last.isSearching = false
+      }
+      last.isSearching = isSearchingRef.current
+
+      if (phase) {
+        last.streamPhase = phase
+        last.isStreaming = phase !== "done"
+      }
+
+      updated[updated.length - 1] = last
+      return updated
+    })
+  }, [])
+
+  const scheduleUpdate = useCallback((phase?: "thinking" | "content" | "done") => {
+    if (streamingTimeoutRef.current) {
+      return
+    }
+
+    streamingTimeoutRef.current = setTimeout(() => {
+      updateStreamingMessage(phase)
+      streamingTimeoutRef.current = null
+    }, STREAM_UPDATE_INTERVAL)
+  }, [updateStreamingMessage])
+
+  const saveToHistory = (currentMessages: CrackItMessage[]) => {
+    const item: AnalysisHistory = {
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `hist-${Date.now()}`,
+      selectedText: currentAnalysisRef.current,
+      messages: currentMessages,
+      timestamp: Date.now()
+    }
+
+    setHistory(prev => {
+      const filtered = prev.filter(h => h.selectedText !== currentAnalysisRef.current)
+      const updated = [item, ...filtered].slice(0, MAX_HISTORY)
+
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      } catch (e) {
+        console.error("Failed to save history:", e)
+      }
+
+      return updated
+    })
+  }
+
   const loadFromHistory = (item: AnalysisHistory) => {
     currentAnalysisRef.current = item.selectedText
     setMessages(item.messages)
@@ -393,201 +360,165 @@ export function EnhancedAnalysisPanel({
     sessionStorage.removeItem(STORAGE_KEY)
   }
 
+  // Load history on mount
   useEffect(() => {
-    return () => {
-      if (streamingTimeoutRef.current) {
-        clearTimeout(streamingTimeoutRef.current)
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY)
+      if (saved) {
+        setHistory(JSON.parse(saved))
       }
+    } catch (e) {
+      console.error("Failed to load history:", e)
     }
   }, [])
 
+  const toggleSource = (index: number) => {
+    setExpandedSources(prev => {
+      const next = new Set(prev)
+      if (next.has(index)) {
+        next.delete(index)
+      } else {
+        next.add(index)
+      }
+      return next
+    })
+  }
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent
-        side="right"
-        className="flex flex-col p-0 sm:max-w-[480px] w-full gap-0"
-        style={{ boxShadow: "-4px 0 24px -8px rgba(0,0,0,0.1)" }}
-      >
-        {/* Compact Header */}
-        <SheetHeader className="p-4 border-b bg-gradient-to-r from-background to-muted/20">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-primary/10">
-                <CrackItIcon size={18} />
-              </div>
-              <div>
-                <SheetTitle className="text-base font-semibold flex items-center gap-2">
-                  Crack It
-                  {useWebSearch && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
-                      <Globe className="h-2.5 w-2.5" />
-                      Search On
-                    </span>
-                  )}
-                </SheetTitle>
-                {selectedText && (
-                  <SheetDescription className="line-clamp-1 text-xs mt-0.5">
-                    {selectedText.slice(0, 60)}{selectedText.length > 60 ? "..." : ""}
-                  </SheetDescription>
-                )}
-              </div>
+      <SheetContent className="flex flex-col w-full sm:max-w-md p-0 gap-0 bg-slate-50 dark:bg-slate-950">
+        {/* Header with gradient */}
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+              <CrackItIcon size={20} />
             </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowHistory(!showHistory)}
-                className="h-8 px-2 text-xs"
-              >
-                <History className="h-3.5 w-3.5 mr-1" />
-                History
-                {history.length > 0 && (
-                  <span className="ml-1 px-1 py-0.5 rounded-full bg-primary/20 text-primary text-[10px]">
-                    {history.length}
-                  </span>
-                )}
-              </Button>
-              {messages.length > 0 && (
+            <div>
+              <SheetTitle className="text-lg font-semibold text-white m-0">Crack It</SheetTitle>
+              <SheetDescription className="text-violet-100 text-xs m-0">
+                {selectedText ? `Analyzing: "${selectedText.slice(0, 40)}${selectedText.length > 40 ? "..." : ""}"` : "AI-powered insights"}
+              </SheetDescription>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-white hover:bg-white/20"
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              <History className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-white hover:bg-white/20"
+              onClick={onClose}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          {/* History Panel */}
+          {showHistory && (
+            <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-sm">History</h3>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={clearChat}
-                  className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
+                  className="h-7 text-xs"
+                  onClick={clearHistory}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  Clear
                 </Button>
+              </div>
+              {history.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">No history yet</p>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {history.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => loadFromHistory(item)}
+                      className="w-full text-left p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <p className="text-xs font-medium line-clamp-1">{item.selectedText}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {new Date(item.timestamp).toLocaleTimeString()}
+                      </p>
+                    </button>
+                  ))}
+                </div>
               )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="flex items-center gap-2 mt-3">
-            <Button
-              variant={useWebSearch ? "default" : "outline"}
-              size="sm"
-              onClick={() => setUseWebSearch(!useWebSearch)}
-              className="h-7 px-2.5 text-xs"
-            >
-              <Search className="h-3 w-3 mr-1" />
-              {useWebSearch ? "Search On" : "Search Off"}
-            </Button>
-            <span className="text-[10px] text-muted-foreground px-2 py-1 rounded bg-muted/30">
-              {phaseContext?.phase || "unknown"}
-            </span>
-          </div>
-        </SheetHeader>
-
-        {/* Content Area - No Auto Scroll */}
-        <div className="flex-1 overflow-y-auto">
-          {/* History Panel */}
-          {showHistory && (
-            <div className="p-3 border-b bg-muted/20">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-xs">Recent Analyses</h3>
-                {history.length > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearHistory}
-                    className="h-6 px-2 text-[10px]"
-                  >
-                    Clear
-                  </Button>
-                )}
-              </div>
-              <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                {history.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => loadFromHistory(item)}
-                    className="w-full text-left p-2.5 rounded-lg bg-background hover:bg-accent transition-colors border border-border/50"
-                  >
-                    <div className="text-[10px] text-muted-foreground mb-1">
-                      {new Date(item.timestamp).toLocaleString()}
-                    </div>
-                    <div className="text-xs line-clamp-2 text-foreground">
-                      {item.selectedText.slice(0, 80)}...
-                    </div>
-                  </button>
-                ))}
-                {history.length === 0 && (
-                  <div className="text-center text-xs text-muted-foreground py-6">
-                    No recent analyses
-                  </div>
-                )}
-              </div>
             </div>
           )}
 
-          {/* Messages */}
-          <div className="p-4 space-y-4">
-            {messages.length === 0 && !isLoading && (
-              <div className="text-center py-16">
-                <div className="inline-flex p-4 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 mb-4">
-                  <CrackItIcon size={36} />
-                </div>
-                <h3 className="font-semibold text-sm mb-2">What would you like to explore?</h3>
-                <p className="text-xs text-muted-foreground mb-6 max-w-xs mx-auto">
-                  {selectedText
-                    ? "Ask me anything about the selected text. I'll provide insights with real web search."
-                    : "Ask me anything about your innovation project."}
-                </p>
-                {selectedText && (
-                  <Button
-                    onClick={() => analyzeSelection("Analyze this selection")}
-                    size="sm"
-                    className="h-8"
-                  >
-                    <CrackItIcon size={16} />
-                    Analyze Selection
-                  </Button>
-                )}
-              </div>
-            )}
+          {/* Web Search Toggle */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4 text-violet-600" />
+              <span className="text-sm font-medium">Web Search</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "h-7 px-3 text-xs font-medium transition-all",
+                useWebSearch
+                  ? "bg-violet-100 text-violet-700 hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400"
+              )}
+              onClick={() => setUseWebSearch(!useWebSearch)}
+            >
+              {useWebSearch ? "ON" : "OFF"}
+            </Button>
+          </div>
 
+          {/* Messages */}
+          <div className="space-y-4">
             {messages.map((msg, idx) => (
-              <div key={idx} className={cn(
-                "rounded-xl",
-                msg.role === "user"
-                  ? "bg-primary ml-12 p-3"
-                  : "bg-muted/30 mr-0 p-4 space-y-3"
-              )}>
+              <div
+                key={idx}
+                className={cn(
+                  "rounded-2xl",
+                  msg.role === "user"
+                    ? "bg-gradient-to-br from-violet-500 to-indigo-600 text-white ml-8 p-3"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mr-0 p-4 space-y-4 shadow-sm"
+                )}
+              >
                 {msg.role === "user" ? (
                   <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                 ) : (
                   <>
-                    {/* Status indicator - compact */}
-                    {(msg.isSearching || msg.sources || msg.streamPhase === "done") && (
+                    {/* Status Badge */}
+                    {(msg.isSearching || msg.sources) && (
                       <div className="flex items-center gap-2">
                         {msg.isSearching ? (
-                          <div className="flex items-center gap-1.5 text-xs text-blue-500">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-medium">
                             <Globe className="h-3 w-3 animate-pulse" />
-                            <span>Searching...</span>
+                            Searching...
                           </div>
                         ) : msg.sources && msg.sources.length > 0 ? (
-                          <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-medium">
                             <CheckCircle2 className="h-3 w-3" />
-                            <span>{msg.sources.length} sources found</span>
+                            {msg.sources.length} sources found
                           </div>
                         ) : null}
                       </div>
                     )}
 
-                    {/* Loading indicator */}
-                    {msg.isStreaming && !msg.thinking && !msg.content && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Brain className="h-3 w-3 animate-pulse" />
-                        <span>Thinking...</span>
-                      </div>
-                    )}
-
-                    {/* Search Keywords Section */}
+                    {/* Search Query Badge */}
                     {msg.searchQuery && (
-                      <div className="flex items-start gap-2 p-2 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
-                        <Tag className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                      <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-800">
+                        <Tag className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-semibold text-blue-700 dark:text-blue-300 mb-0.5">Keywords</p>
-                          <p className="text-xs text-blue-600 dark:text-blue-400 break-words" title={msg.searchQuery}>
+                          <p className="text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase tracking-wide">Search Query</p>
+                          <p className="text-sm text-blue-900 dark:text-blue-100 font-mono break-words mt-0.5">
                             {msg.searchQuery}
                           </p>
                         </div>
@@ -605,7 +536,7 @@ export function EnhancedAnalysisPanel({
 
                     {/* Content with clickable citations */}
                     {msg.content && (
-                      <div className="prose prose-sm dark:prose-invert max-w-none prose-p:text-xs prose-headings:text-xs prose-li:text-xs">
+                      <div className="prose prose-sm dark:prose-invert max-w-none prose-p:text-sm prose-headings:text-sm prose-li:text-sm">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           components={{
@@ -627,7 +558,7 @@ export function EnhancedAnalysisPanel({
                                       href={source.link}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 font-medium text-xs transition-colors no-underline align-middle"
+                                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold text-xs shadow-md shadow-blue-500/20 hover:shadow-lg hover:from-blue-600 hover:to-cyan-600 transition-all align-middle mx-0.5 no-underline"
                                       title={source.title}
                                       onClick={(e) => {
                                         e.preventDefault()
@@ -636,7 +567,8 @@ export function EnhancedAnalysisPanel({
                                       {...props}
                                     >
                                       [{citationMatch[1]}]
-                                      <span className="text-[10px] opacity-75 max-w-[100px] truncate">
+                                      <ExternalLink className="h-3 w-3" />
+                                      <span className="max-w-[80px] truncate font-normal opacity-90">
                                         {hostname}
                                       </span>
                                     </a>
@@ -644,7 +576,7 @@ export function EnhancedAnalysisPanel({
                                 }
                               }
 
-                              // Regular link - open in new tab
+                              // Regular link
                               return (
                                 <a
                                   href={href}
@@ -664,60 +596,105 @@ export function EnhancedAnalysisPanel({
                       </div>
                     )}
 
-                    {/* Sources - Show ALL sources (ChatGPT style) */}
+                    {/* Sources Section - Always visible if sources exist */}
                     {msg.sources && msg.sources.length > 0 && (
-                      <div className="pt-3 border-t border-border/50">
-                        <details
-                          className="group"
-                          open={false} // Default collapsed - click to expand
-                        >
-                          <summary className="flex items-center justify-between cursor-pointer text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors list-none mb-2">
-                            <span className="flex items-center gap-1.5">
-                              <Globe className="h-3 w-3" />
-                              Sources ({msg.sources.length})
-                            </span>
-                            <span className="opacity-50 group-hover:opacity-100 text-[10px]">(Click to expand)</span>
-                          </summary>
-                          <div className="space-y-2">
-                            {msg.sources.map((source, i) => (
-                              <a
+                      <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Globe className="h-4 w-4 text-violet-600" />
+                            Sources
+                          </h4>
+                          <span className="text-xs text-muted-foreground">{msg.sources.length} results</span>
+                        </div>
+
+                        <div className="space-y-2">
+                          {msg.sources.map((source, i) => {
+                            const isExpanded = expandedSources.has(i)
+                            const hostname = source.link.replace(/^https?:\/\//, '').replace(/\/.*$/, '')
+
+                            return (
+                              <div
                                 key={i}
-                                href={source.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block p-2.5 rounded-lg bg-background/50 hover:bg-accent/50 border border-border/30 transition-all text-xs group-hover:border-primary/30"
+                                className="group rounded-xl bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden transition-all hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md"
                               >
-                                <div className="flex items-start gap-2">
-                                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-semibold">
-                                    {i + 1}
-                                  </span>
-                                  <div className="min-w-0 flex-1">
-                                    <p className="font-medium text-foreground line-clamp-2 text-xs">{source.title}</p>
-                                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                                      {source.media || new URL(source.link).hostname}
-                                    </p>
-                                    {source.content && source.content.length > 0 && (
-                                      <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1">
-                                        {source.content.slice(0, 150)}...
-                                      </p>
+                                {/* Header - always visible, clickable */}
+                                <a
+                                  href={source.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block p-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
+                                  onClick={(e) => {
+                                    // Don't trigger expand when clicking the link
+                                    e.stopPropagation()
+                                  }}
+                                >
+                                  <div className="flex items-start gap-3">
+                                    {/* Number badge */}
+                                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-md">
+                                      {i + 1}
+                                    </span>
+
+                                    {/* Content */}
+                                    <div className="min-w-0 flex-1">
+                                      <h5 className="text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-2 mb-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                                        {source.title}
+                                      </h5>
+                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <span className="px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700">
+                                          {source.media || hostname}
+                                        </span>
+                                        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </a>
+
+                                {/* Expandable content */}
+                                {source.content && source.content.length > 0 && (
+                                  <div className="border-t border-slate-200 dark:border-slate-700">
+                                    <button
+                                      onClick={() => toggleSource(i)}
+                                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-muted-foreground hover:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
+                                    >
+                                      <span>{isExpanded ? "Hide summary" : "Show summary"}</span>
+                                      <span className={cn("transition-transform", isExpanded && "rotate-180")}>
+                                        ▼
+                                      </span>
+                                    </button>
+
+                                    {isExpanded && (
+                                      <div className="px-3 pb-3">
+                                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                          {source.content.slice(0, 300)}
+                                          {source.content.length > 300 && "..."}
+                                        </p>
+                                      </div>
                                     )}
                                   </div>
-                                </div>
-                              </a>
-                            ))}
-                          </div>
-                        </details>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
                       </div>
                     )}
                   </>
                 )}
               </div>
             ))}
+
+            {/* Loading indicator */}
+            {isLoading && (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 text-center">
+                <Loader2 className="h-6 w-6 animate-spin mx-auto text-violet-600" />
+                <p className="text-sm text-muted-foreground mt-2">Analyzing...</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Input Area */}
-        <div className="p-3 border-t bg-background">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div className="flex gap-2">
             <Textarea
               value={input}
@@ -730,22 +707,48 @@ export function EnhancedAnalysisPanel({
                   }
                 }
               }}
-              placeholder="Ask a question..."
-              className="min-h-[44px] max-h-[100px] resize-none text-sm"
+              placeholder="Ask a follow-up question..."
+              className="min-h-[50px] max-h-[120px] resize-none text-sm border-slate-300 dark:border-slate-700 focus:border-violet-500 focus:ring-violet-500"
               disabled={isLoading}
             />
             <Button
               onClick={() => analyzeSelection()}
               disabled={isLoading || !input.trim()}
               size="icon"
-              className="h-[44px] w-[44px] flex-shrink-0"
+              className="h-[50px] w-[50px] flex-shrink-0 bg-gradient-to-br from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
               )}
             </Button>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center justify-between mt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs text-muted-foreground hover:text-foreground"
+              onClick={clearChat}
+            >
+              <Trash2 className="h-3 w-3 mr-1" />
+              Clear chat
+            </Button>
+
+            {selectedText && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20"
+                onClick={() => analyzeSelection()}
+                disabled={isLoading}
+              >
+                <CrackItIcon size={14} className="mr-1" />
+                Analyze selection
+              </Button>
+            )}
           </div>
         </div>
       </SheetContent>
