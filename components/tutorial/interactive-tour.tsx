@@ -24,14 +24,6 @@ const TOUR_STEPS: TourStep[] = [
     position: "center",
   },
   {
-    id: "case-studies",
-    title: "Learn from Real Innovations",
-    description: "Explore case studies from Tesla, DJI, Nest, Siemens MindSphere, and ABB YuMi. Learn from successful innovations in EVs, IoT, robotics, smart home, and industrial automation.",
-    icon: <BookOpen className="h-6 w-6" />,
-    target: "button:has([data-action='browse-case-studies'])",
-    position: "bottom",
-  },
-  {
     id: "progress-bar",
     title: "Your 6-Step Journey",
     description: "Track your progress through Define → Market → Ideate → Select → Review → Pitch. The blue bar shows your current step. Click any completed step to navigate back.",
@@ -62,6 +54,14 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Target className="h-6 w-6" />,
     target: "[data-progress-area]",
     position: "right",
+  },
+  {
+    id: "case-studies",
+    title: "Learn from Real Innovations",
+    description: "Explore case studies from Tesla, DJI, Nest, Siemens MindSphere, and ABB YuMi. Learn from successful innovations in EVs, IoT, robotics, smart home, and industrial automation.",
+    icon: <BookOpen className="h-6 w-6" />,
+    target: "button:has([data-action='browse-case-studies'])",
+    position: "bottom",
   },
   {
     id: "complete",
