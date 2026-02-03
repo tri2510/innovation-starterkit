@@ -53,13 +53,14 @@ ${context}
 
 ## Ideas to Evaluate
 
-**NOTE**: These ideas are presented in RANDOM ORDER. Evaluate each idea independently based on its merits, not its position in this list.
+**NOTE**: These ideas are presented in RANDOM ORDER for unbiased evaluation.
+**CRITICAL**: You MUST return the exact same "id" value provided below for each idea.
 
 ${shuffledIdeas
   .map(
-    (idea: BusinessIdea, index: number) => `
-### Idea ${index + 1}: ${idea.name}
-**ID**: ${idea.id}
+    (idea: BusinessIdea) => `
+### ${idea.name}
+**ID (copy exactly)**: \`${idea.id}\`
 **Tagline**: ${idea.tagline}
 **Description**: ${idea.description}
 **Problem Solved**: ${idea.problemSolved}
@@ -85,6 +86,7 @@ ${idea.brief || "No brief provided"}
 3. **Use the full score range** - Don't cluster scores around 70-80; spread them based on real differences
 4. **Identify weaknesses first** - Before finding strengths, identify what could go wrong
 5. **Challenge assumptions** - What would need to be true for this to work?
+6. **Copy IDs exactly** - The "id" field in your response MUST match exactly (case-sensitive)
 
 **Score Distribution Guidelines**:
 - 90-100: Exceptional, rare, breakthrough idea with minimal risks
