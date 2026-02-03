@@ -60,7 +60,7 @@ const TOUR_STEPS: TourStep[] = [
     title: "Learn from Real Innovations",
     description: "Explore case studies from Tesla, DJI, Nest, Siemens MindSphere, and ABB YuMi. Learn from successful innovations in EVs, IoT, robotics, smart home, and industrial automation.",
     icon: <BookOpen className="h-6 w-6" />,
-    target: "button[data-action='browse-case-studies']",
+    target: "#case-studies-button",
     position: "bottom",
   },
   {

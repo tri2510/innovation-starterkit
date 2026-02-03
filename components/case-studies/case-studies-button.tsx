@@ -36,6 +36,7 @@ export function CaseStudiesButton({ currentStep }: CaseStudiesButtonProps) {
   return (
     <>
       <Button
+        id="case-studies-button"
         variant="outline"
         size="sm"
         onClick={() => setIsLibraryOpen(true)}
