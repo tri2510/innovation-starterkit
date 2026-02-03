@@ -58,10 +58,10 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: "case-studies",
     title: "Learn from Real Innovations",
-    description: "Explore case studies from Tesla, DJI, Nest, Siemens MindSphere, and ABB YuMi. Learn from successful innovations in EVs, IoT, robotics, smart home, and industrial automation.",
+    description: "Explore real-world case studies to understand how successful innovations were developed. Learn from actual examples across different industries and business models.",
     icon: <BookOpen className="h-6 w-6" />,
     target: "#case-studies-button",
-    position: "bottom",
+    position: "left",
   },
   {
     id: "complete",
@@ -92,14 +92,21 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
         return;
       }
 
-      const targetElement = document.querySelector(step.target) as HTMLElement;
-      if (targetElement) {
-        const rect = targetElement.getBoundingClientRect();
-        setHighlightedRect(rect);
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        const targetElement = document.querySelector(step.target) as HTMLElement;
+        if (targetElement) {
+          const rect = targetElement.getBoundingClientRect();
+          setHighlightedRect(rect);
 
-        // Scroll target into view
-        targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+          // Scroll target into view
+          targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+          // Element not found, show centered tooltip
+          console.log("Tour element not found:", step.target);
+          setHighlightedRect(null);
+        }
+      }, 100);
     };
 
     updateHighlight();
