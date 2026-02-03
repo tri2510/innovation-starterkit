@@ -41,6 +41,7 @@ export function CaseStudiesButton({ currentStep }: CaseStudiesButtonProps) {
         onClick={() => setIsLibraryOpen(true)}
         className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800 h-9 w-auto px-3 shrink-0"
         title="View Case Studies"
+        data-action="browse-case-studies"
       >
         <BookOpen className="h-4 w-4 sm:mr-1.5" />
         <span className="hidden sm:inline text-sm">Case Studies</span>

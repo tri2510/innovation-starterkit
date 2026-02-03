@@ -10,7 +10,7 @@ import { Sparkles, ArrowRight, Lightbulb, Check, Loader2, Send } from "lucide-re
 import { saveChallenge, getSession, clearSession, updateSession, saveChallengeProgress, getChallengeProgress } from "@/lib/session";
 import type { Challenge, ChatMessage } from "@/types/innovation";
 import { DEMO_CHALLENGE } from "@/lib/demo-data";
-import { OnboardingTour, WelcomeTooltip } from "@/components/tutorial/onboarding-tour";
+import { WelcomeTooltip } from "@/components/tutorial/welcome-tooltip";
 import { InteractiveTour } from "@/components/tutorial/interactive-tour";
 import { streamChatResponse, ProgressUpdateChunk } from "@/hooks/use-chat-streaming";
 import { PhaseLayout } from "@/components/wizard";

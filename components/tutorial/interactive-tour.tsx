@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { X, ChevronRight, ChevronLeft, MessageSquare, Layout, Target, Sparkles, Check } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, MessageSquare, Layout, Target, Sparkles, Check, BookOpen, Home } from "lucide-react";
+import { useCaseStudy } from "@/contexts/case-study-context";
 
 interface TourStep {
   id: string;
@@ -12,6 +13,7 @@ interface TourStep {
   icon: React.ReactNode;
   target: string; // CSS selector for the element to highlight
   position: "top" | "bottom" | "left" | "right" | "center";
+  mode?: "normal" | "case-study" | "both"; // When to show this step
 }
 
 const TOUR_STEPS: TourStep[] = [
@@ -22,6 +24,16 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Sparkles className="h-6 w-6" />,
     target: "body",
     position: "center",
+    mode: "both",
+  },
+  {
+    id: "case-study-mode",
+    title: "Explore Real Innovations",
+    description: "Click 'Browse Case Studies' to explore successful innovations from Tesla, DJI, Nest, and more. Learn from real-world examples across industrial IoT, robotics, and automotive.",
+    icon: <BookOpen className="h-6 w-6" />,
+    target: "button:has([data-action='browse-case-studies'])",
+    position: "bottom",
+    mode: "normal",
   },
   {
     id: "progress-bar",
@@ -30,6 +42,16 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Layout className="h-6 w-6" />,
     target: "[data-progress-bar]",
     position: "bottom",
+    mode: "normal",
+  },
+  {
+    id: "case-study-banner",
+    title: "Case Study Navigation",
+    description: "Browse through real innovation examples: Tesla (EVs), Siemens MindSphere (IIoT), Nest (Smart Home), DJI (Drones), ABB YuMi (Cobots). Navigate between phases using the buttons.",
+    icon: <BookOpen className="h-6 w-6" />,
+    target: "[data-case-study-banner]",
+    position: "bottom",
+    mode: "case-study",
   },
   {
     id: "chat",
@@ -38,6 +60,16 @@ const TOUR_STEPS: TourStep[] = [
     icon: <MessageSquare className="h-6 w-6" />,
     target: "[data-chat-area]",
     position: "left",
+    mode: "normal",
+  },
+  {
+    id: "case-study-content",
+    title: "Learn from Success",
+    description: "Explore how successful innovations tackled each phase. Compare your approach with real-world examples from industry leaders in manufacturing, IoT, and automation.",
+    icon: <BookOpen className="h-6 w-6" />,
+    target: "[data-progress-area]",
+    position: "right",
+    mode: "case-study",
   },
   {
     id: "input",
@@ -46,6 +78,7 @@ const TOUR_STEPS: TourStep[] = [
     icon: <MessageSquare className="h-6 w-6" />,
     target: "textarea[placeholder*='Type your response']",
     position: "top",
+    mode: "normal",
   },
   {
     id: "progress",
@@ -54,6 +87,16 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Target className="h-6 w-6" />,
     target: "[data-progress-area]",
     position: "right",
+    mode: "normal",
+  },
+  {
+    id: "case-study-exit",
+    title: "Start Your Innovation",
+    description: "Ready to work on your own idea? Click the Exit button to leave case study mode and start defining your innovation challenge.",
+    icon: <Home className="h-6 w-6" />,
+    target: "button:has([data-action='exit-case-study'])",
+    position: "bottom",
+    mode: "case-study",
   },
   {
     id: "complete",
@@ -62,6 +105,7 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Check className="h-6 w-6" />,
     target: "button:has([data-action='continue'])",
     position: "top",
+    mode: "normal",
   },
 ];
 
@@ -70,15 +114,24 @@ interface InteractiveTourProps {
 }
 
 export function InteractiveTour({ onComplete }: InteractiveTourProps) {
+  const { isActive: isCaseStudyActive } = useCaseStudy();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [highlightedRect, setHighlightedRect] = useState<DOMRect | null>(null);
+
+  // Filter tour steps based on current mode
+  const filteredSteps = TOUR_STEPS.filter(step => {
+    if (step.mode === "both") return true;
+    if (step.mode === "case-study") return isCaseStudyActive;
+    if (step.mode === "normal") return !isCaseStudyActive;
+    return true;
+  });
 
   useEffect(() => {
     if (!isVisible) return;
 
     const updateHighlight = () => {
-      const step = TOUR_STEPS[currentStep];
+      const step = filteredSteps[currentStep];
       if (step.target === "body") {
         setHighlightedRect(null);
         return;
@@ -99,10 +152,10 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
     // Recalculate on window resize
     window.addEventListener("resize", updateHighlight);
     return () => window.removeEventListener("resize", updateHighlight);
-  }, [isVisible, currentStep]);
+  }, [isVisible, currentStep, isCaseStudyActive]);
 
   const handleNext = () => {
-    if (currentStep < TOUR_STEPS.length - 1) {
+    if (currentStep < filteredSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleComplete();
@@ -127,8 +180,8 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
 
   if (!isVisible) return null;
 
-  const step = TOUR_STEPS[currentStep];
-  const isLastStep = currentStep === TOUR_STEPS.length - 1;
+  const step = filteredSteps[currentStep];
+  const isLastStep = currentStep === filteredSteps.length - 1;
   const isFirstStep = currentStep === 0;
 
   // Calculate tooltip position with boundary checking
@@ -300,7 +353,7 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
 
             {/* Progress Dots */}
             <div className="flex gap-2 mb-6">
-              {TOUR_STEPS.map((_, index) => (
+              {filteredSteps.map((_, index) => (
                 <div
                   key={index}
                   className={`h-1.5 flex-1 rounded-full transition-all ${
@@ -317,7 +370,7 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
             {/* Navigation */}
             <div className="flex items-center justify-between">
               <div className="text-xs text-slate-500 font-medium">
-                Step {currentStep + 1} of {TOUR_STEPS.length}
+                Step {currentStep + 1} of {filteredSteps.length}
               </div>
               <div className="flex gap-2">
                 {!isFirstStep && (

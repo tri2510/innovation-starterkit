@@ -54,7 +54,7 @@ export function CaseStudyBanner() {
   };
 
   return (
-    <div className="sticky top-0 z-50 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border-b border-primary/30">
+    <div className="sticky top-0 z-50 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border-b border-primary/30" data-case-study-banner>
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Left: Case Study Info */}
@@ -137,6 +137,7 @@ export function CaseStudyBanner() {
               size="sm"
               onClick={exitCaseStudyMode}
               className="border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600"
+              data-action="exit-case-study"
             >
               <X className="h-3.5 w-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">Exit</span>
