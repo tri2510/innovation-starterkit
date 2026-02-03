@@ -458,7 +458,7 @@ ${subStepContext}
         let inJsonBlock = false;
         let bufferedContent = "";
 
-        for await (const chunk of streamClaudeMessage(messages, IDEATION_ASSISTANT_PROMPT, 32768)) {
+        for await (const chunk of streamClaudeMessage(messages, IDEATION_ASSISTANT_PROMPT, 128000)) {
           fullResponse += chunk;
 
           // Check if we need to hide any content (inside a JSON block with IDEAS_UPDATE)
@@ -579,8 +579,12 @@ ${subStepContext}
               if (parsed.IDEAS_UPDATE && parsed.IDEAS_UPDATE.ideas && Array.isArray(parsed.IDEAS_UPDATE.ideas)) {
                 if (!controllerClosed) {
                   safeEnqueue(`data: ${JSON.stringify({ done: true, type: "update", data: parsed.IDEAS_UPDATE })}\n\n`);
-                  controller.close();
-                  controllerClosed = true;
+                  try {
+                    controller.close();
+                    controllerClosed = true;
+                  } catch (e) {
+                    console.warn("[Ideation] Controller already closed, ignoring:", (e as Error)?.message || e);
+                  }
                 }
                 return;
               }
@@ -595,8 +599,12 @@ ${subStepContext}
         // If no valid update, send as text response
         if (!controllerClosed) {
           safeEnqueue(`data: ${JSON.stringify({ done: true, type: "text", data: fullResponse.trim() })}\n\n`);
-          controller.close();
-          controllerClosed = true;
+          try {
+            controller.close();
+            controllerClosed = true;
+          } catch (e) {
+            console.warn("[Ideation] Controller already closed, ignoring:", (e as Error)?.message || e);
+          }
         }
       } catch (error) {
         console.error("Stream error:", error);
