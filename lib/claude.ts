@@ -59,7 +59,7 @@ export async function sendClaudeMessage<T = unknown>(
       messages: openaiMessages,
     });
 
-    const content = response.choices[0]?.message?.content;
+    const content = response.choices?.[0]?.message?.content;
     if (!content) {
       return {
         success: false,
@@ -132,7 +132,7 @@ export async function* streamClaudeMessage(
   });
 
   for await (const chunk of stream) {
-    const delta = chunk.choices[0]?.delta;
+    const delta = chunk.choices?.[0]?.delta;
 
     // Skip reasoning_content (thinking)
     if ((delta as any)?.reasoning_content) {
@@ -185,7 +185,7 @@ export async function* streamClaudeWithThinking(
 
   for await (const chunk of stream) {
     eventCount++;
-    const delta = chunk.choices[0]?.delta;
+    const delta = chunk.choices?.[0]?.delta;
 
     // Log first few events to understand the structure
     if (eventCount <= 3) {

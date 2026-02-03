@@ -184,7 +184,7 @@ export async function getStructuredAIResponse<T>(
       ],
     });
 
-    const content = response.choices[0]?.message?.content;
+    const content = response.choices?.[0]?.message?.content;
     if (!content) {
       throw new Error('No content in response');
     }
@@ -279,7 +279,7 @@ Return ONLY the JSON, no additional text`;
       ],
     });
 
-    const content = response.choices[0]?.message?.content;
+    const content = response.choices?.[0]?.message?.content;
     if (!content) {
       throw new Error('No content in response');
     }
@@ -376,7 +376,7 @@ Rules:
       ],
     });
 
-    const content = response.choices[0]?.message?.content;
+    const content = response.choices?.[0]?.message?.content;
     if (!content) {
       throw new Error('No content in response');
     }
@@ -695,7 +695,7 @@ export async function getConversationalResponse(
       messages: messages,
     });
 
-    const content = response.choices[0]?.message?.content;
+    const content = response.choices?.[0]?.message?.content;
     if (!content) {
       throw new Error('No content in response');
     }
