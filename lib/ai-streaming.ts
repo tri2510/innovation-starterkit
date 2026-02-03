@@ -33,6 +33,12 @@ const getModel = () => {
   return config.openai.defaultModel;
 };
 
+// Log API configuration (with masked key) for debugging
+console.log('[lib/ai-streaming] OpenAI client initialized:');
+console.log('[lib/ai-streaming] - baseURL:', config.openai.baseURL);
+console.log('[lib/ai-streaming] - defaultModel:', config.openai.defaultModel);
+console.log('[lib/ai-streaming] - apiKey (first 10 chars):', config.openai.apiKey ? config.openai.apiKey.slice(0, 10) + '...' : 'NOT SET');
+
 /**
  * Convert messages to OpenAI format (system message goes in messages array)
  */
@@ -279,8 +285,15 @@ Return ONLY the JSON, no additional text`;
       ],
     });
 
+    // Debug: Log the actual response structure
+    console.log('[extractProgressFromConversation] Response keys:', Object.keys(response));
+    console.log('[extractProgressFromConversation] Has choices?', !!response.choices);
+    console.log('[extractProgressFromConversation] Choices length:', response.choices?.length);
+    console.log('[extractProgressFromConversation] Response snippet:', JSON.stringify(response).slice(0, 500));
+
     const content = response.choices?.[0]?.message?.content;
     if (!content) {
+      console.error('[extractProgressFromConversation] No content found. Full response:', JSON.stringify(response, null, 2));
       throw new Error('No content in response');
     }
 
