@@ -13,12 +13,6 @@ interface Message {
   timestamp: number;
 }
 
-interface DebugEvent {
-  step: string;
-  timestamp: number;
-  data: any;
-}
-
 export async function POST(request: NextRequest) {
   try {
     const { selectedText, messages, useWebSearch, phaseContext, sessionData } = await request.json();
@@ -34,17 +28,6 @@ export async function POST(request: NextRequest) {
     // Use session data passed from client (sessionStorage is browser-only, so client must send it)
     // Note: We also try getSession() as a fallback for consistency with other API routes
     const effectiveSessionData = sessionData || getSession();
-
-    // Collect debug events for transparent UI output
-    const debugEvents: DebugEvent[] = [];
-
-    // Debug logging to verify context is available
-    console.log("[AI Insight] Phase:", phaseContext?.phase);
-    console.log("[AI Insight] Has selected text:", !!selectedText && selectedText.length > 0);
-    console.log("[AI Insight] Has challenge:", !!effectiveSessionData?.challenge);
-    console.log("[AI Insight] Has marketAnalysis:", !!effectiveSessionData?.marketAnalysis);
-    console.log("[AI Insight] Has ideas:", !!effectiveSessionData?.ideas);
-    console.log("[AI Insight] Selected idea ID:", effectiveSessionData?.selectedIdeaId);
 
     // Build rich context from phase - cumulative: includes all previous phases
     let contextInfo = `## Current Context:
@@ -128,24 +111,6 @@ ${selectedText ? `- Selected text: "${selectedText}"` : `- Direct chat mode (no 
 
 ---`;
 
-    // Log the final context for debugging
-    console.log("[AI Insight] Built context length:", contextInfo.length);
-    console.log("[AI Insight] Context preview:", contextInfo.slice(0, 500) + "...");
-
-    // Debug event: Context built
-    debugEvents.push({
-      step: "context_built",
-      timestamp: Date.now(),
-      data: {
-        phase: phaseContext?.phase,
-        contextLength: contextInfo.length,
-        hasChallenge: !!effectiveSessionData?.challenge,
-        hasMarketAnalysis: !!effectiveSessionData?.marketAnalysis,
-        hasIdeas: !!effectiveSessionData?.ideas,
-        selectedIdeaId: effectiveSessionData?.selectedIdeaId
-      }
-    });
-
     // Perform web search if enabled - build comprehensive search query
     let webSearchResults: string | null = null;
     let searchQueryUsed = "";
@@ -167,52 +132,21 @@ ${selectedText ? `- Selected text: "${selectedText}"` : `- Direct chat mode (no 
 
         const isFollowUp = messages && messages.length > 2;
 
-        // PRE-THINKING: Use AI to determine optimal search query based on selected text and full context
+        // Use AI to determine optimal search query based on selected text and full context
         if (selectedText && selectedText.trim().length > 0) {
-          console.log(`[AI Insight] Pre-thinking: Analyzing selected text "${selectedText}" with AI...`);
-
-          // Build context summary for AI analysis
-          const contextSummary = {
-            phase: phaseContext?.phase || "unknown",
-            challenge: effectiveSessionData?.challenge ? {
-              industry: effectiveSessionData.challenge.industry,
-              targetAudience: effectiveSessionData.challenge.targetAudience,
-              problem: effectiveSessionData.challenge.problem
-            } : null,
-            market: effectiveSessionData?.marketAnalysis,
-            selectedText: selectedText.trim()
-          };
-
-          // Use AI to generate optimal search query
           try {
-            // Debug event: Starting query generation
-            debugEvents.push({
-              step: "query_generation_start",
-              timestamp: Date.now(),
-              data: {
-                selectedText: selectedText.trim(),
-                phase: contextSummary.phase,
-                industry: contextSummary.challenge?.industry,
-                audience: contextSummary.challenge?.targetAudience
-              }
-            });
+            // Use the already-built contextInfo as input
+            const queryPrompt = `${contextInfo}
 
-            const queryPrompt = `Generate a search query for "${selectedText.trim()}" in the ${contextSummary.challenge?.industry || "retail"} industry for ${contextSummary.challenge?.targetAudience?.split(" ").slice(0, 5).join(" ") || "small business"}. Return ONLY the query.`;
+Selected text: "${selectedText.trim()}"
 
-            console.log(`[AI Insight] ========== QUERY GENERATION ==========`);
-            console.log(`[AI Insight] Full prompt: "${queryPrompt}"`);
-            console.log(`[AI Insight] Prompt length: ${queryPrompt.length}`);
-            console.log(`[AI Insight] Model: ${config.openai.defaultModel}`);
-            console.log(`[AI Insight] Base URL: ${config.openai.baseURL}`);
-            console.log(`[AI Insight] Max tokens: 500`);
+Generate a search query. Return ONLY the query.`;
 
             // Create OpenAI client for query generation
             const openai = new OpenAI({
               apiKey: config.openai.apiKey,
               baseURL: config.openai.baseURL,
             });
-
-            console.log(`[AI Insight] Sending request to AI...`);
 
             const queryResponse = await openai.chat.completions.create({
               model: config.openai.defaultModel,
@@ -223,47 +157,14 @@ ${selectedText ? `- Selected text: "${selectedText}"` : `- Direct chat mode (no 
               }]
             });
 
-            console.log(`[AI Insight] Received response from AI`);
-            console.log(`[AI Insight] Response choices: ${queryResponse.choices.length}`);
-            console.log(`[AI Insight] First choice:`, JSON.stringify(queryResponse.choices[0], null, 2));
-
             // The glm-4.7 model puts content in reasoning_content field
             const message = queryResponse.choices[0]?.message;
             const aiRawResponse = (message?.content || message?.reasoning_content || "").trim();
-            console.log(`[AI Insight] AI raw response: "${aiRawResponse}"`);
-            console.log(`[AI Insight] AI raw response length: ${aiRawResponse.length}`);
-
             const aiGeneratedQuery = aiRawResponse || selectedText.trim();
-            console.log(`[AI Insight] After trim (or fallback): "${aiGeneratedQuery}"`);
 
             searchQueryUsed = aiGeneratedQuery.slice(0, 70);
-            console.log(`[AI Insight] Pre-thinking: AI generated query = "${searchQueryUsed}"`);
-
-            // Debug event: Query generated
-            debugEvents.push({
-              step: "query_generated",
-              timestamp: Date.now(),
-              data: {
-                query: searchQueryUsed,
-                originalSelectedText: selectedText.trim(),
-                aiRawResponse: aiRawResponse,
-                method: "ai_generated"
-              }
-            });
 
           } catch (error) {
-            console.error(`[AI Insight] AI query generation failed, using fallback:`, error);
-
-            // Debug event: Query generation failed
-            debugEvents.push({
-              step: "query_generation_failed",
-              timestamp: Date.now(),
-              data: {
-                error: error instanceof Error ? error.message : String(error),
-                fallbackQuery: selectedText.trim().slice(0, 70)
-              }
-            });
-
             // Fallback to simple approach
             searchQueryUsed = selectedText.trim().slice(0, 70);
           }
@@ -288,7 +189,6 @@ ${selectedText ? `- Selected text: "${selectedText}"` : `- Direct chat mode (no 
             }
           }
           searchQueryUsed = questionWords.join(" ");
-          console.log(`[AI Insight] Pre-thinking: Follow-up strategy = "${searchQueryUsed}"`);
 
         } else {
           // DIRECT CHAT FIRST MESSAGE: Use richest available business context
@@ -299,23 +199,9 @@ ${selectedText ? `- Selected text: "${selectedText}"` : `- Direct chat mode (no 
           } else {
             searchQueryUsed = "business innovation startup market analysis software";
           }
-          console.log(`[AI Insight] Pre-thinking: Direct chat strategy = "${searchQueryUsed}"`);
         }
 
         searchQueryUsed = searchQueryUsed.slice(0, 70).trim();
-
-        console.log("[AI Insight] Search query:", searchQueryUsed);
-
-        // Debug event: Search starting
-        debugEvents.push({
-          step: "search_starting",
-          timestamp: Date.now(),
-          data: {
-            query: searchQueryUsed,
-            maxResults: 10,
-            searchDepth: "basic"
-          }
-        });
 
         // Use Tavily API instead of MCP
         const results = await tavilySearch(searchQueryUsed, {
@@ -323,23 +209,6 @@ ${selectedText ? `- Selected text: "${selectedText}"` : `- Direct chat mode (no 
           search_depth: "basic",
           topic: "general",
           days: 7,
-        });
-
-        console.log("[AI Insight] Tavily search returned", results.length, "results");
-
-        // Debug event: Search completed
-        debugEvents.push({
-          step: "search_completed",
-          timestamp: Date.now(),
-          data: {
-            query: searchQueryUsed,
-            resultCount: results.length,
-            sources: results.map(r => ({
-              id: r.refer,
-              title: r.title,
-              source: r.media
-            }))
-          }
         });
 
         if (results.length > 0) {
@@ -424,22 +293,14 @@ If this is a follow-up, answer the user's question based on the conversation his
             controller.enqueue(encoder.encode(formatted));
           };
 
-          // Send debug events first for transparency
-          if (debugEvents.length > 0) {
-            sendEvent({ type: "debug", data: debugEvents });
-            console.log("[AI Insight] Sent", debugEvents.length, "debug events to client");
-          }
-
           // Send search query first if web search was performed
           if (searchQueryUsed) {
             sendEvent({ type: "searchQuery", data: searchQueryUsed });
-            console.log("[AI Insight] Sent search query:", searchQueryUsed);
           }
 
           // Send web search sources if available (use raw results with full metadata)
           if (rawSearchResults.length > 0) {
             sendEvent({ type: "sources", data: rawSearchResults });
-            console.log("[AI Insight] Sent", rawSearchResults.length, "sources to client");
           }
 
           // Stream with thinking enabled
