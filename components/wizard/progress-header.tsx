@@ -17,6 +17,7 @@ import { clearSession, resetPhase, saveStateToFile, loadStateFromFile, getSessio
 import { exportSessionToMarkdown } from "@/lib/export-session";
 import { useRef, useMemo } from "react";
 import { PhaseSummaryTooltip } from "./phase-summary-tooltip";
+import { CaseStudiesButton } from "@/components/case-studies";
 
 interface ProgressHeaderProps {
   currentStep: string;
@@ -191,6 +192,9 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
             className="hidden"
             onChange={handleFileChange}
           />
+
+          {/* Case Studies Button */}
+          <CaseStudiesButton currentStep={currentStep} />
 
           {/* More Menu Dropdown */}
           <DropdownMenu>

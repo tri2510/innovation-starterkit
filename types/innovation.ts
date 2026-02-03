@@ -285,3 +285,76 @@ export interface IndustryBenchmark {
   sampleSize: number;
   lastUpdated: string;
 }
+
+// Case Studies Types
+export type CaseStudyPhaseType = "challenge" | "market" | "ideation" | "investment-appraisal" | "pitch";
+export type BusinessModelType = "marketplace" | "saas" | "on-demand" | "subscription" | "freemium" | "e-commerce";
+
+export interface CaseStudyChallenge {
+  problem: string;
+  targetAudience: string;
+  currentSolutions: string;
+  keyInsight: string;
+}
+
+export interface CaseStudyMarket {
+  marketSize: string;
+  targetSegment: string;
+  competitors: string[];
+  opportunities: string[];
+  keyInsight: string;
+}
+
+export interface CaseStudyIdeation {
+  initialIdea: string;
+  pivots: string[];
+  finalValueProp: string;
+  keyFeatures: string[];
+  keyInsight: string;
+}
+
+export interface CaseStudyInvestment {
+  initialInvestment: string;
+  fundingRounds: string[];
+  breakEvenTimeframe: string;
+  roi: string;
+  keyInsight: string;
+}
+
+export interface CaseStudyPitch {
+  title: string;
+  tagline: string;
+  keySlides: string[];
+  keyInsight: string;
+}
+
+export interface CaseStudy {
+  id: string;
+  title: string;
+  tagline: string;
+  company: string;
+  yearFounded: number;
+  industry: string;
+  businessModel: BusinessModelType;
+  featured: boolean;
+  tags: string[];
+
+  // Full walkthrough data for each phase
+  phases: {
+    challenge: CaseStudyChallenge;
+    market: CaseStudyMarket;
+    ideation: CaseStudyIdeation;
+    "investment-appraisal": CaseStudyInvestment;
+    pitch: CaseStudyPitch;
+  };
+
+  // Overall metrics
+  metrics: {
+    roi: string;
+    timeframe: string;
+    marketImpact: string;
+  };
+
+  // Key learnings
+  keyLearnings: string[];
+}

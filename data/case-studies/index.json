@@ -1,0 +1,389 @@
+{
+  "caseStudies": [
+    {
+      "id": "airbnb",
+      "title": "Airbnb",
+      "tagline": "Belong Anywhere",
+      "company": "Airbnb, Inc.",
+      "yearFounded": 2008,
+      "industry": "Hospitality & Travel",
+      "businessModel": "marketplace",
+      "featured": true,
+      "tags": ["marketplace", "trust", "network-effects", "design", "pivoting"],
+      "phases": {
+        "challenge": {
+          "problem": "Travelers couldn't find affordable, authentic local accommodations. Hotels were expensive and lacked local character, while existing options like Craigslist had trust and safety issues.",
+          "targetAudience": "Initially: Conference attendees in San Francisco looking for affordable lodging. Expanded to: Budget travelers, experience seekers, and people seeking authentic local stays.",
+          "currentSolutions": "Hotels (expensive, impersonal), hostels (basic, shared), Craigslist (unsafe, no reviews), couch surfing (free but inconsistent quality)",
+          "keyInsight": "Start with a tiny, specific niche (SF conference attendees) rather than trying to solve travel accommodation for everyone from day one."
+        },
+        "market": {
+          "marketSize": "$150B+ global accommodation market, with $30B+ alternative lodging segment",
+          "targetSegment": "1.5M+ travelers seeking alternatives to traditional hotels, willing to trade some amenities for authenticity and local experience",
+          "competitors": [
+            "Hotels (Marriott, Hilton) - established, trusted but expensive",
+            "VRBO - vacation rentals focused on whole homes",
+            "Craigslist - free but no trust system",
+            "CouchSurfing - free but not sustainable business model"
+          ],
+          "opportunities": [
+            "Growing sharing economy trend",
+            "Millennials preferring experiences over things",
+            "Economic recession driving cost-conscious travel",
+            "Professional photography as a quality differentiator",
+            "Review system to build trust"
+          ],
+          "keyInsight": "The real opportunity wasn't just finding places to stay - it was building trust between strangers through reviews, verified photos, and secure payments."
+        },
+        "ideation": {
+          "initialIdea": "AirBed & Breakfast - rent out air mattresses in their apartment during a design conference, including breakfast and local hosting",
+          "pivots": [
+            "From just air mattresses to any type of accommodation (couches, spare rooms, entire homes)",
+            "From SF-only to global expansion city by city",
+            "Added professional photography service to improve listing quality",
+            "Shifted from 'cheap accommodation' to 'belong anywhere' - authentic experiences"
+          ],
+          "finalValueProp": "Book unique homes and experiences all over the world, live like a local, and belong anywhere.",
+          "keyFeatures": [
+            "Host profiles with reviews and verifications",
+            "Guest reviews and ratings",
+            "Secure payment processing (hold funds until stay is complete)",
+            "Professional photography service",
+            "Instant book for last-minute travelers",
+            "Experiences (local activities hosted by locals)"
+          ],
+          "keyInsight": "Design matters! The 'professional photography' pivot was crucial - listings with pro photos got 2-3x more bookings, proving that trust and quality presentation wins over quantity."
+        },
+        "investment-appraisal": {
+          "initialInvestment": "$20,000 - sold cereal boxes ('Obama O's' and 'Cap'n McCains') to fund early operations",
+          "fundingRounds": [
+            "$20,000 seed - Y Combinator (2009)",
+            "$600,000 Series A - Sequoia Capital (2009)",
+            "$7.2M Series B (2010)",
+            "$112M Series C (2011)",
+            "$200M Series D at $1.3B valuation (2012)",
+            "$475M Series E at $10B valuation (2014)",
+            "$1.5B Series F at $25.5B valuation (2015)",
+            "IPO at $47/share valuing company at $47B (2020)"
+          ],
+          "breakEvenTimeframe": "Took ~6 years to reach profitability (2014), but had $10B+ valuation before being profitable",
+          "roi": "50,000x return from initial $20K seed to IPO",
+          "keyInsight": "Marketplaces lose money at first due to supply-side acquisition costs. The key is scaling supply to create network effects - once critical mass is reached, margins expand dramatically."
+        },
+        "pitch": {
+          "title": "Belong Anywhere",
+          "tagline": "Book unique homes and experiences all over the world",
+          "keySlides": [
+            "Problem: Hotels are expensive and lack soul. You don't feel like you live there.",
+            "Solution: Live like a local. Stay in unique homes, experience cities like residents do.",
+            "Market: $150B accommodation market, rapidly growing alternative lodging segment",
+            "Traction: 200 bookings in first year, growing to millions of stays globally",
+            "Business Model: 3% host fee + 6-12% guest fee per booking",
+            "Vision: Universal access to spaces - anyone can belong anywhere"
+          ],
+          "keyInsight": "Great pitch decks tell a story, not just list facts. Airbnb's early decks focused on the emotional value of 'belonging' rather than just transaction value."
+        }
+      },
+      "metrics": {
+        "roi": "50,000x return from seed to IPO",
+        "timeframe": "12 years from founding to IPO (2008-2020)",
+        "marketImpact": "4M+ hosts, 1.4B+ guest arrivals, 220+ countries, disrupted $150B hotel industry"
+      },
+      "keyLearnings": [
+        "Start SMALL and niche (SF conference attendees) before expanding",
+        "Design and presentation matters - professional photos drove 2-3x more bookings",
+        "Build trust through reviews, verifications, and secure payments",
+        "Network effects are powerful but take time to build",
+        "Pivoting is normal - air mattresses → any accommodation was crucial",
+        "Regulatory navigation is part of the business (cities banning short-term rentals)"
+      ]
+    },
+    {
+      "id": "uber",
+      "title": "Uber",
+      "tagline": "Move Forward",
+      "company": "Uber Technologies, Inc.",
+      "yearFounded": 2009,
+      "industry": "Transportation",
+      "businessModel": "on-demand",
+      "featured": true,
+      "tags": ["on-demand", "network-effects", "disruption", "regulation", "mobile-first"],
+      "phases": {
+        "challenge": {
+          "problem": "Getting a taxi in San Francisco was frustrating - long wait times, uncertain arrival, cash-only payments, rude drivers, and no way to track your ride.",
+          "targetAudience": "Urban professionals in SF who value convenience and time over cost, expanded to anyone needing reliable transportation",
+          "currentSolutions": "Traditional taxis (call ahead, street hail), limo services (expensive, require advance booking), public transit (fixed routes, crowded)",
+          "keyInsight": "The problem wasn't just transportation - it was the entire experience of booking, tracking, paying, and rating your ride."
+        },
+        "market": {
+          "marketSize": "$100B+ taxi/limousine market in the US, $1T+ global transportation market",
+          "targetSegment": "Urban millennials and professionals with smartphones, willing to pay for convenience, initially in major cities",
+          "competitors": [
+            "Traditional taxis - regulated, entrenched, but poor user experience",
+            "Lyft - founded 2012, friendlier brand, pink mustaches",
+            "Sidecar - peer-to-peer ridesharing (failed, shut down 2015)",
+            "Public transit - cheaper but less convenient"
+          ],
+          "opportunities": [
+            "Smartphone penetration enabling real-time location tracking",
+            "Cashless payment systems",
+            "Rating systems for accountability",
+            "Underutilized personal vehicles as supply",
+            "Urbanization and declining car ownership among millennials"
+          ],
+          "keyInsight": "By making drivers supply more responsive through dynamic pricing (surge pricing), Uber could match supply with demand in real-time - something taxis couldn't do."
+        },
+        "ideation": {
+          "initialIdea": "UberCab - luxury black car service for SF elites, book via app, track in real-time, automatic payment",
+          "pivots": [
+            "From luxury black cars only → UberX (regular drivers with personal cars)",
+            "From cash-only → automatic cashless payment",
+            "From scheduled rides → on-demand with real-time tracking",
+            "From ride-sharing → food delivery (Uber Eats), freight, delivery"
+          ],
+          "finalValueProp": "Reliable ride in minutes. Tap a button, get picked up by a nearby driver, and go.",
+          "keyFeatures": [
+            "Real-time GPS tracking of driver",
+            "Automatic cashless payment",
+            "Driver and passenger ratings for accountability",
+            "Surge pricing to balance supply/demand",
+            "Split fare with friends",
+            "Scheduled rides"
+          ],
+          "keyInsight": "Starting with luxury (Uber Black) built the brand and worked out kinks with professional drivers before scaling to mass market with UberX."
+        }
+      },
+      "metrics": {
+        "roi": "70,000x+ return from early investment to IPO",
+        "timeframe": "10 years from founding to IPO (2009-2019)",
+        "marketImpact": "110M+ monthly active users, 5M+ drivers globally, disrupted taxi industry worldwide"
+      },
+      "keyLearnings": [
+        "Regulation is part of the business model - operate first, ask forgiveness later",
+        "Start high-end to build brand, then go mass market",
+        "Network effects work both ways - more riders attracts more drivers, which reduces wait times attracting more riders",
+        "Unit economics matter - each ride must be profitable or have a clear path to profitability",
+        "Expansion into adjacent markets (food, freight) leverages same driver network"
+      ]
+    },
+    {
+      "id": "slack",
+      "title": "Slack",
+      "tagline": "Where Work Happens",
+      "company": "Slack Technologies, Inc.",
+      "yearFounded": 2013,
+      "industry": "Software / B2B SaaS",
+      "businessModel": "saas",
+      "featured": true,
+      "tags": ["saas", "b2b", "product-led-growth", "viral-loop", " pivoting"],
+      "phases": {
+        "challenge": {
+          "problem": "Teams struggled with fragmented communication - email threads, chat apps, file sharing, and project management tools were all separate, creating chaos and lost information.",
+          "targetAudience": "Software teams and startups who need real-time collaboration, expanded to all knowledge workers",
+          "currentSolutions": [
+            "Email (threads, CC hell, slow)",
+            "IRC (technical, no file sharing)",
+            "HipChat (Atlassian, clunky UI)",
+            "Skype (not team-focused)",
+            "Google Talk (discontinued)"
+          ],
+          "keyInsight": "The problem wasn't just messaging - it was making work visible, searchable, and integratable with other tools teams already use."
+        },
+        "market": {
+          "marketSize": "$50B+ enterprise collaboration software market",
+          "targetSegment": "Technology companies, startups, and modern teams adopting cloud tools",
+          "competitors": [
+            "Microsoft Teams - bundled with Office 365",
+            "Google Chat - part of Workspace",
+            "HipChat - acquired by Atlassian, later shut down",
+            "Discord - started as gaming chat, expanding to work"
+          ],
+          "opportunities": [
+            "Rise of remote and distributed teams",
+            "Mobile workforce needing real-time sync",
+            "API-first approach to integrate with tools teams already use",
+            "Free tier for viral adoption within organizations",
+            "Bottom-up adoption (employees choose tools, not IT departments)"
+          ],
+          "keyInsight": "Sell to individuals, not companies. Let teams adopt it organically (freemium), then upsell the organization later. This 'product-led growth' was revolutionary."
+        },
+        "ideation": {
+          "initialIdea": "Built as internal chat tool for a failing game company (Glitch). The game failed, but the chat tool was amazing.",
+          "pivots": [
+            "From internal tool → commercial product",
+            "From gaming chat → business communication",
+            "From desktop-only → mobile apps",
+            "From siloed app → integration platform (connect with GitHub, Google Drive, etc.)"
+          ],
+          "finalValueProp": "Slack brings all your communication together in one place, making it searchable and accessible.",
+          "keyFeatures": [
+            "Channels (organized by topic/team)",
+            "Direct messages",
+            "File sharing and integration with cloud storage",
+            "Searchable message history",
+            "Rich integrations with 2000+ apps",
+            "Threads to organize side conversations"
+          ],
+          "keyInsight": "Integration was the moat - by connecting with all the tools teams already use (GitHub, Jira, Google Drive), Slack became the 'operating system for work'."
+        }
+      },
+      "metrics": {
+        "roi": "200x+ return from VC investment to $27.7B acquisition by Salesforce",
+        "timeframe": "7 years from founding to acquisition (2013-2020)",
+        "marketImpact": "12M+ daily active users, 750,000+ organizations, defined the team collaboration category"
+      },
+      "keyLearnings": [
+        "Build dogfooding - build something you need yourself",
+        "Product-led growth (freemium) beats traditional enterprise sales",
+        "Integrations create lock-in - the more tools you connect, the harder it is to leave",
+        "Fast following works - IRC wasn't new, but Slack made it beautiful and easy",
+        "Sell to users, not buyers - bottom-up adoption in enterprises"
+      ]
+    },
+    {
+      "id": "netflix",
+      "title": "Netflix",
+      "tagline": "See What's Next",
+      "company": "Netflix, Inc.",
+      "yearFounded": 1997,
+      "industry": "Media & Entertainment",
+      "businessModel": "subscription",
+      "featured": true,
+      "tags": ["subscription", "disruption", "original-content", "data-driven", "pivoting"],
+      "phases": {
+        "challenge": {
+          "problem": "Video rental stores had late fees, limited selection, and required customers to physically visit stores. People hated late fees ($500M/year industry in late fees alone).",
+          "targetAudience": "Movie enthusiasts who hated late fees and wanted better selection, initially DVD-by-mail",
+          "currentSolutions": [
+            "Blockbuster - dominant chain, high late fees, limited selection per store",
+            "Local video stores - limited inventory",
+            "Cable TV - scheduled programming, not on-demand"
+          ],
+          "keyInsight": "Late fees weren't a revenue source for Blockbuster - they were the source of customer hatred. Eliminating them was a competitive advantage."
+        },
+        "market": {
+          "marketSize": "$50B+ video rental market (1997), expanding to $200B+ streaming and content market",
+          "targetSegment": "Movie lovers with DVD players, later expanded to anyone with internet connection",
+          "competitors": [
+            "Blockbuster - 9000+ stores, $6B revenue, but slow to adapt",
+            "Redbox - DVD kiosks, $1/night, limited selection",
+            "Hulu - joint venture of networks, ad-supported",
+            "Amazon Prime Video - bundled with Prime shipping"
+          ],
+          "opportunities": [
+            "DVD format allowed mailing (lightweight, durable)",
+            "Internet bandwidth improving for streaming",
+            "Data on user preferences could inform content recommendations",
+            "Original content could differentiate from competitors",
+            "Global expansion without physical infrastructure"
+          ],
+          "keyInsight": "Data was the secret weapon - Netflix knew what users watched, when they stopped watching, what they liked, enabling personalized recommendations and smart content decisions."
+        },
+        "ideation": {
+          "initialIdea": "Rent DVDs by mail - no late fees, keep as long as you want, prepaid return envelopes",
+          "pivots": [
+            "From pay-per-rental → subscription model (unlimited rentals)",
+            "From DVD-by-mail → streaming video (2007)",
+            "From licensed content → original programming (House of Cards, 2013)",
+            "From domestic → global expansion (190+ countries)"
+          ],
+          "finalValueProp": "Watch TV shows and movies anytime, anywhere - personalized for you.",
+          "keyFeatures": [
+            "Unlimited streaming for flat monthly fee",
+            "Personalized recommendations based on viewing history",
+            "Original programming you can't watch anywhere else",
+            "Offline downloads for mobile",
+            "Multiple user profiles per account",
+            "4K HDR quality"
+          ],
+          "keyInsight": "The shift to original content (House of Cards for $100M) was the pivot from content distributor to content studio - making Netflix indispensable, not just another streaming option."
+        }
+      },
+      "metrics": {
+        "roi": "1000x+ return from IPO to peak (2002-2021)",
+        "timeframe": "24 years and ongoing - continuous evolution",
+        "marketImpact": "270M+ paid subscribers worldwide, destroyed Blockbuster, defined streaming era, $20B+ annual revenue"
+      },
+      "keyLearnings": [
+        "Disrupt yourself before someone else does - Netflix killed its profitable DVD business to pursue streaming",
+        "Original content creates moats - Netflix originals can't be licensed to competitors",
+        "Data-driven decisions - House of Cards greenlit based on user data, not gut instinct",
+        "Global mindset - expand worldwide, not just US-first",
+        "Focus on user experience - no ads (originally), binge-worthy content, personalized recommendations"
+      ]
+    },
+    {
+      "id": "spotify",
+      "title": "Spotify",
+      "tagline": "Music for Everyone",
+      "company": "Spotify Technology S.A.",
+      "yearFounded": 2006,
+      "industry": "Music & Audio",
+      "businessModel": "freemium",
+      "featured": true,
+      "tags": ["freemium", "subscription", "data-driven", "playlists", "mobile-first"],
+      "phases": {
+        "challenge": {
+          "problem": "Music piracy (Napster, Limewire) was rampant. Buying music on iTunes was expensive per song. People wanted access to all music, not ownership of individual songs.",
+          "targetAudience": "Music lovers who wanted legal access to millions of songs without paying per track",
+          "currentSolutions": [
+            "Piracy (Napster, Limewire) - free but illegal, poor quality",
+            "iTunes - pay per song/$1.29, expensive for large libraries",
+            "Pandora - radio-style, can't pick specific songs",
+            "Radio - ads, limited selection, no control"
+          ],
+          "keyInsight": "Access beats ownership. People would rather pay $10/month for unlimited access than buy songs individually."
+        },
+        "market": {
+          "marketSize": "$20B+ global music industry (recorded music)",
+          "targetSegment": "Digital natives, smartphone users, music enthusiasts",
+          "competitors": [
+            "Apple Music - bundled with Apple devices",
+            "Amazon Music - bundled with Prime",
+            "Pandora - internet radio",
+            "YouTube Music - video-focused"
+          ],
+          "opportunities": [
+            "Smartphone penetration enabling on-the-go listening",
+            "Social sharing of music",
+            "Playlist curation as discovery mechanism",
+            "Data on listening habits for artist recommendations",
+            "Podcasts as growth area"
+          ],
+          "keyInsight": "Playlists were the killer feature - user-created and Spotify-curated playlists became how people discovered music, creating daily engagement habits."
+        },
+        "ideation": {
+          "initialIdea": "Legal streaming music service - faster than piracy (instant playback vs download), better quality, pays artists",
+          "pivots": [
+            "From desktop-only → mobile apps",
+            "From Europe-only → US launch (after label negotiations)",
+            "From music only → podcasts and audiobooks",
+            "From playlists → personalized daily mixes (Discover Weekly)"
+          ],
+          "finalValueProp": "Millions of songs. No credit card needed. Free on mobile, tablet, and computer.",
+          "keyFeatures": [
+            "On-demand streaming of 100M+ songs",
+            "Personalized playlists (Discover Weekly, Daily Mix)",
+            "Offline mode for premium subscribers",
+            "Social sharing and collaborative playlists",
+            "Podcasts integration",
+            "Spotify Connect (play across devices)"
+          ],
+          "keyInsight": "Freemium model worked because free users converted to premium at 2-3% rate, but free users also generated data for recommendations and social sharing, creating network effects."
+        }
+      },
+      "metrics": {
+        "roi": "100x+ return from early investment to IPO (2008-2018)",
+        "timeframe": "12 years from founding to IPO (2006-2018)",
+        "marketImpact": "574M+ monthly active users, 226M+ paid subscribers, reduced piracy, transformed music industry economics"
+      },
+      "keyLearnings": [
+        "Freemium requires discipline - free tier must be valuable but not cannibalize premium",
+        "Personalization at scale - algorithmic playlists (Discover Weekly) created daily habits",
+        "Labels are partners, not enemies - negotiated fair deals to get licenses",
+        "Mobile was critical - people listen on phones, not desktops",
+        "First-mover advantage in streaming mattered - established before Apple Music and others"
+      ]
+    }
+  ]
+}
