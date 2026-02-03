@@ -57,6 +57,8 @@ export async function sendClaudeMessage<T = unknown>(
       model: config.openai.defaultModel,
       max_tokens: maxTokens,
       messages: openaiMessages,
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
 
     const content = response.choices?.[0]?.message?.content;
@@ -129,12 +131,14 @@ export async function* streamClaudeMessage(
     max_tokens: maxTokens,
     messages: openaiMessages,
     stream: true,
+    // Disable Z.AI thinking mode for faster responses
+    thinking: { type: "disabled" } as any,
   });
 
   for await (const chunk of stream) {
     const delta = chunk.choices?.[0]?.delta;
 
-    // Skip reasoning_content (thinking)
+    // Check for reasoning_content (Z.AI thinking mode) - skip if present
     if ((delta as any)?.reasoning_content) {
       continue;
     }
@@ -164,9 +168,6 @@ export async function* streamClaudeWithThinking(
 
   console.log("[streamClaudeWithThinking] Starting stream with thinking:", options?.thinking !== false, "webSearch:", options?.webSearch);
 
-  // Note: Z.AI's thinking mode and web search are enabled by default for glm-4.7
-  // We don't need to add special parameters
-
   const stream = await openai.chat.completions.create({
     model: config.openai.defaultModel,
     max_tokens: 4096,
@@ -178,6 +179,9 @@ export async function* streamClaudeWithThinking(
       }))
     ],
     stream: true,
+    // Only enable thinking mode if explicitly requested (options.thinking === true)
+    // By default, disable it for cleaner responses
+    ...(options?.thinking !== true && { thinking: { type: "disabled" } as any }),
   }) as AsyncIterable<ChatCompletionChunk>;
 
   let eventCount = 0;

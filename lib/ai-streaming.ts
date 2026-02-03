@@ -33,12 +33,6 @@ const getModel = () => {
   return config.openai.defaultModel;
 };
 
-// Log API configuration (with masked key) for debugging
-console.log('[lib/ai-streaming] OpenAI client initialized:');
-console.log('[lib/ai-streaming] - baseURL:', config.openai.baseURL);
-console.log('[lib/ai-streaming] - defaultModel:', config.openai.defaultModel);
-console.log('[lib/ai-streaming] - apiKey (first 10 chars):', config.openai.apiKey ? config.openai.apiKey.slice(0, 10) + '...' : 'NOT SET');
-
 /**
  * Convert messages to OpenAI format (system message goes in messages array)
  */
@@ -84,6 +78,8 @@ export async function streamChatResponseWithProgress(
       max_tokens: 4096,
       messages: openaiMessages,
       stream: true,
+      // Disable Z.AI thinking mode for faster responses (no reasoning_content)
+      thinking: { type: "disabled" } as any,
     });
 
     for await (const chunk of stream) {
@@ -188,6 +184,8 @@ export async function getStructuredAIResponse<T>(
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt }
       ],
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
 
     const content = response.choices?.[0]?.message?.content;
@@ -283,17 +281,12 @@ Return ONLY the JSON, no additional text`;
         { role: 'system', content: extractionPrompt },
         { role: 'user', content: 'Extract the progress update from this conversation.' }
       ],
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
-
-    // Debug: Log the actual response structure
-    console.log('[extractProgressFromConversation] Response keys:', Object.keys(response));
-    console.log('[extractProgressFromConversation] Has choices?', !!response.choices);
-    console.log('[extractProgressFromConversation] Choices length:', response.choices?.length);
-    console.log('[extractProgressFromConversation] Response snippet:', JSON.stringify(response).slice(0, 500));
 
     const content = response.choices?.[0]?.message?.content;
     if (!content) {
-      console.error('[extractProgressFromConversation] No content found. Full response:', JSON.stringify(response, null, 2));
       throw new Error('No content in response');
     }
 
@@ -387,6 +380,8 @@ Rules:
         { role: 'system', content: extractionPrompt },
         { role: 'user', content: 'Extract the market progress update from this conversation.' }
       ],
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
 
     const content = response.choices?.[0]?.message?.content;
@@ -706,6 +701,8 @@ export async function getConversationalResponse(
       model: getModel(),
       max_tokens: 4096,
       messages: messages,
+      // Disable Z.AI thinking mode
+      thinking: { type: "disabled" } as any,
     });
 
     const content = response.choices?.[0]?.message?.content;
