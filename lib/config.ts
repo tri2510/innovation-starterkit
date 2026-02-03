@@ -19,7 +19,7 @@ export const config = {
 
   // API Client Settings (with sensible defaults)
   api: {
-    timeout: parseInt(process.env.API_TIMEOUT || '60000', 10),
+    timeout: parseInt(process.env.API_TIMEOUT || '180000', 10),
     maxRetries: parseInt(process.env.API_MAX_RETRIES || '3', 10),
   },
 
