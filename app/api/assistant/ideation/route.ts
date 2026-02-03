@@ -1,8 +1,41 @@
 import { NextRequest } from "next/server";
-import { streamClaudeMessage, ClaudeMessage } from "@/lib/claude";
+import { streamClaudeMessage, ClaudeMessage, sendClaudeMessage } from "@/lib/claude";
 import { getSession } from "@/lib/session";
 import { buildIdeationContext } from "@/lib/prompts-clean";
 import type { ChatMessage, BusinessIdea, IdeationSubStep } from "@/types/innovation";
+
+/**
+ * Detect if user is asking to score/evaluate ideas
+ */
+function isScoringRequest(text: string): boolean {
+  const scoringKeywords = [
+    "score",
+    "evaluate",
+    "rate",
+    "assess",
+    "grade",
+    "rank",
+    "rating",
+    "scoring",
+    "metrics"
+  ];
+  const lowerText = text.toLowerCase();
+  return scoringKeywords.some(keyword => lowerText.includes(keyword));
+}
+
+/**
+ * Format scored ideas into a readable summary
+ */
+function formatScoresSummary(scoredIdeas: any[], allIdeas: BusinessIdea[]): string {
+  return `Generated scores for ${scoredIdeas.length} idea${scoredIdeas.length > 1 ? 's' : ''}!
+
+${scoredIdeas.map((scored) => {
+  const idea = allIdeas.find((i) => i.id === scored.id);
+  return `• "${idea?.name || 'Unknown'}": ${Math.round(scored.metrics?.uniqueness || 0)}% unique, ${Math.round(scored.metrics?.feasibility || 0)}% feasible`;
+}).join('\n')}
+
+You can ask me to explain these metrics or suggest improvements to increase the scores.`;
+}
 
 const IDEATION_ASSISTANT_PROMPT = `You are an expert innovation consultant and business strategist assisting users with their business ideas throughout the ideation process.
 
@@ -252,6 +285,71 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // HYBRID SCORING: Check if user wants to score and has many unscored ideas
+  if (isScoringRequest(userInput)) {
+    const unscoredIdeas = currentIdeas.filter((i: BusinessIdea) => !i.metrics);
+
+    // If >3 unscored ideas, use batch score API to avoid timeout
+    if (unscoredIdeas.length > 3) {
+      try {
+        console.log(`[Assistant] Detected scoring request for ${unscoredIdeas.length} ideas, using batch score API`);
+
+        // Call the batch score API
+        const scoreResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/ai/ideate/score`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ideas: unscoredIdeas,
+            challenge: currentChallenge,
+            marketAnalysis: currentMarketAnalysis,
+          }),
+        });
+
+        const scoreData = await scoreResponse.json();
+
+        if (!scoreData.success) {
+          throw new Error('Failed to score ideas');
+        }
+
+        const scoredIdeas = scoreData.data;
+
+        // Update ideas with scores
+        const updatedIdeas = currentIdeas.map((idea: BusinessIdea) => {
+          const scored = scoredIdeas.find((s: any) => s.id === idea.id);
+          return scored
+            ? { ...idea, metrics: scored.metrics, evaluation: scored.evaluation }
+            : idea;
+        });
+
+        // Format the response
+        const summary = formatScoresSummary(scoredIdeas, updatedIdeas);
+
+        // Return as streaming response for consistency
+        const encoder = new TextEncoder();
+        const stream = new ReadableStream({
+          async start(controller) {
+            // Send text message first (not done yet)
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: summary })}\n\n`));
+            // Then send update with done flag
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, type: "update", data: { ideas: updatedIdeas } })}\n\n`));
+            controller.close();
+          },
+        });
+
+        return new Response(stream, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+          },
+        });
+      } catch (error) {
+        console.error('[Assistant] Batch scoring failed, falling back to AI:', error);
+        // Fall through to normal AI response if batch scoring fails
+      }
+    }
+  }
+
   // Build rich context using buildIdeationContext (same as scoring API)
   const challengeContext = currentChallenge ? buildIdeationContext(currentChallenge, currentMarketAnalysis) : "";
 
@@ -360,7 +458,7 @@ ${subStepContext}
         let inJsonBlock = false;
         let bufferedContent = "";
 
-        for await (const chunk of streamClaudeMessage(messages, IDEATION_ASSISTANT_PROMPT, 32768)) {
+        for await (const chunk of streamClaudeMessage(messages, IDEATION_ASSISTANT_PROMPT, 128000)) {
           fullResponse += chunk;
 
           // Check if we need to hide any content (inside a JSON block with IDEAS_UPDATE)
@@ -481,8 +579,12 @@ ${subStepContext}
               if (parsed.IDEAS_UPDATE && parsed.IDEAS_UPDATE.ideas && Array.isArray(parsed.IDEAS_UPDATE.ideas)) {
                 if (!controllerClosed) {
                   safeEnqueue(`data: ${JSON.stringify({ done: true, type: "update", data: parsed.IDEAS_UPDATE })}\n\n`);
-                  controller.close();
-                  controllerClosed = true;
+                  try {
+                    controller.close();
+                    controllerClosed = true;
+                  } catch (e) {
+                    console.warn("[Ideation] Controller already closed, ignoring:", (e as Error)?.message || e);
+                  }
                 }
                 return;
               }
@@ -497,8 +599,12 @@ ${subStepContext}
         // If no valid update, send as text response
         if (!controllerClosed) {
           safeEnqueue(`data: ${JSON.stringify({ done: true, type: "text", data: fullResponse.trim() })}\n\n`);
-          controller.close();
-          controllerClosed = true;
+          try {
+            controller.close();
+            controllerClosed = true;
+          } catch (e) {
+            console.warn("[Ideation] Controller already closed, ignoring:", (e as Error)?.message || e);
+          }
         }
       } catch (error) {
         console.error("Stream error:", error);

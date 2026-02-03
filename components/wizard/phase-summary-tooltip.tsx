@@ -10,6 +10,33 @@ interface PhaseSummaryTooltipProps {
   children: React.ReactNode;
 }
 
+interface InvestmentAppraisal {
+  estimatedInvestment?: string;
+  timeframe?: string;
+  targetMarket?: string;
+  businessModel?: string;
+  revenueStreams?: string[];
+  competitiveAdvantage?: string;
+  metrics?: {
+    overallScore?: number;
+    problemClarity?: any;
+    marketSize?: any;
+    innovation?: any;
+    financialViability?: any;
+    strategicFit?: any;
+    marketFit?: any;
+    roi?: string;
+    risk?: string;
+  };
+  financialAnalysis?: {
+    roi?: string;
+    paybackPeriod?: string;
+    npv?: string;
+    irr?: string;
+    breakEvenPoint?: string;
+  };
+}
+
 /**
  * PhaseSummaryTooltip - Shows a summary of completed phase data on hover
  *
@@ -36,7 +63,7 @@ export function PhaseSummaryTooltip({ phase, session, children }: PhaseSummaryTo
       case "ideation":
         return getIdeationSummary(session.ideas, session.selectedIdeaId);
       case "investment-appraisal":
-        return getAppraisalSummary(session.ideas, session.selectedIdeaId);
+        return getAppraisalSummary(session.investmentAppraisal as any);
       case "pitch":
         return getPitchSummary(session.pitchDeck);
       default:
@@ -166,17 +193,15 @@ function getIdeationSummary(ideas?: BusinessIdea[], selectedIdeaId?: string): Su
   };
 }
 
-function getAppraisalSummary(ideas?: BusinessIdea[], selectedIdeaId?: string): Summary | null {
-  if (!ideas || ideas.length === 0) return null;
+function getAppraisalSummary(appraisal?: InvestmentAppraisal): Summary | null {
+  if (!appraisal) return null;
 
-  const selectedIdea = ideas.find((i) => i.id === selectedIdeaId) || ideas[0];
+  // Check if appraisal has meaningful data
+  const hasData = appraisal.estimatedInvestment || appraisal.businessModel;
 
-  // Check if appraisal fields are populated
-  if (!selectedIdea?.estimatedInvestment) return null;
+  if (!hasData) return null;
 
-  // Type guard for detailed metrics
-  const hasDetailedMetrics = selectedIdea.metrics && 'overallScore' in selectedIdea.metrics;
-  const overallScore = hasDetailedMetrics ? (selectedIdea.metrics as any).overallScore : undefined;
+  const roi = appraisal.financialAnalysis?.roi || appraisal.metrics?.roi;
 
   return {
     icon: <DollarSign className="h-4 w-4 text-emerald-400 dark:text-emerald-600" />,
@@ -184,35 +209,29 @@ function getAppraisalSummary(ideas?: BusinessIdea[], selectedIdeaId?: string): S
     content: (
       <>
         <div className="grid grid-cols-2 gap-2 mb-2">
-          <div>
-            <span className="text-neutral-400 dark:text-neutral-600 text-xs uppercase">Investment</span>
-            <p className="font-semibold text-neutral-100 dark:text-neutral-800">{selectedIdea.estimatedInvestment}</p>
-          </div>
-          {selectedIdea.timeframe && (
+          {appraisal.estimatedInvestment && (
+            <div>
+              <span className="text-neutral-400 dark:text-neutral-600 text-xs uppercase">Investment</span>
+              <p className="font-semibold text-neutral-100 dark:text-neutral-800">{appraisal.estimatedInvestment}</p>
+            </div>
+          )}
+          {appraisal.timeframe && (
             <div>
               <span className="text-neutral-400 dark:text-neutral-600 text-xs uppercase">Timeline</span>
-              <p className="font-semibold text-neutral-100 dark:text-neutral-800">{selectedIdea.timeframe}</p>
+              <p className="font-semibold text-neutral-100 dark:text-neutral-800">{appraisal.timeframe}</p>
             </div>
           )}
         </div>
-        {selectedIdea.businessModel && (
-          <div>
-            <span className="text-neutral-400 dark:text-neutral-600 text-xs uppercase">Business Model</span>
-            <p className="line-clamp-2 text-xs text-neutral-100 dark:text-neutral-800">{selectedIdea.businessModel}</p>
+        {roi && (
+          <div className="mb-2">
+            <span className="text-neutral-400 dark:text-neutral-600 text-xs uppercase">ROI</span>
+            <p className="font-semibold text-green-400 dark:text-green-600">{roi}</p>
           </div>
         )}
-        {overallScore && (
-          <div className="mt-2 pt-2 border-t border-neutral-700 dark:border-neutral-300">
-            <span className="text-neutral-400 dark:text-neutral-600 text-xs uppercase">Overall Score</span>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-2 bg-neutral-700 dark:bg-neutral-300 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-green-500"
-                  style={{ width: `${overallScore}%` }}
-                />
-              </div>
-              <span className="font-bold text-neutral-100 dark:text-neutral-800">{overallScore}</span>
-            </div>
+        {appraisal.businessModel && (
+          <div>
+            <span className="text-neutral-400 dark:text-neutral-600 text-xs uppercase">Business Model</span>
+            <p className="line-clamp-2 text-xs text-neutral-100 dark:text-neutral-800">{appraisal.businessModel}</p>
           </div>
         )}
       </>

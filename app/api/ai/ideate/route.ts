@@ -19,6 +19,19 @@ type EvaluatedIdea = {
   evaluation: BusinessIdea["evaluation"];
 };
 
+/**
+ * Shuffle array to prevent positional bias during evaluation
+ * Ideas presented in same order as generated may receive biased scores
+ */
+function shuffleIdeas<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { challenge, marketAnalysis, userInput, conversationHistory, skipEvaluation = false } =
@@ -37,10 +50,6 @@ export async function POST(request: NextRequest) {
       marketAnalysis as MarketAnalysis
     );
 
-    // === PHASE 1: GENERATION ===
-    // First call: Generate ideas with detailed briefs (no self-scoring)
-    console.log("[Ideation API] Phase 1: Generating ideas with briefs...");
-
     const generationMessages = [
       ...(conversationHistory || []),
       {
@@ -50,6 +59,9 @@ export async function POST(request: NextRequest) {
           `Generate business ideas for this innovation challenge:\n\n${context}`,
       },
     ];
+
+    // === PHASE 1: GENERATION ===
+    console.log("[Ideation API] Phase 1: Generating ideas with briefs...");
 
     const generationResponse = await sendClaudeMessage<GeneratedIdea[]>(
       generationMessages,
@@ -95,16 +107,22 @@ export async function POST(request: NextRequest) {
     }
 
     // === PHASE 2: EVALUATION ===
-    // Second call: Evaluate the generated ideas independently
     console.log("[Ideation API] Phase 2: Evaluating ideas independently...");
+
+    // Shuffle ideas to prevent positional bias from generation order
+    // This ensures evaluation is independent of generation sequence
+    const shuffledIdeas = shuffleIdeas(generatedIdeas);
+    console.log(`[Ideation API] Shuffled ideas for bias reduction (order randomized)`);
 
     // Build evaluation context with full challenge, market, and generated ideas
     const evaluationContext = `## Challenge Context
 ${context}
 
-## Generated Ideas to Evaluate
+## Ideas to Evaluate
 
-${generatedIdeas
+**NOTE**: These ideas are presented in RANDOM ORDER. Evaluate each idea independently based on its merits, not its position in this list.
+
+${shuffledIdeas
   .map(
     (idea, index) => `
 ### Idea ${index + 1}: ${idea.name}
@@ -124,6 +142,22 @@ ${idea.brief || "No brief provided"}
   .join("\n---\n")}
 
 ---
+
+## Critical Evaluation Instructions
+
+**IMPORTANT**: You are acting as an INDEPENDENT, CRITICAL evaluator. Your role is to:
+
+1. **Be objective and skeptical** - Look for flaws, assumptions, and risks
+2. **Compare ideas relative to each other** - Not all ideas deserve high scores
+3. **Use the full score range** - Don't cluster scores around 70-80; spread them based on real differences
+4. **Identify weaknesses first** - Before finding strengths, identify what could go wrong
+5. **Challenge assumptions** - What would need to be true for this to work?
+
+**Score Distribution Guidelines**:
+- 90-100: Exceptional, rare, breakthrough idea with minimal risks
+- 75-89: Strong idea with clear advantages but some limitations
+- 60-74: Viable idea with significant trade-offs or risks
+- Below 60: Major flaws or unrealistic assumptions
 
 Please evaluate these ideas critically and provide objective scores.`;
 

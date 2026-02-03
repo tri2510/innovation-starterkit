@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSession, setStep, savePitchDeck, getConversationHistory, saveConversationHistory, clearSession } from "@/lib/session";
 import { exportSessionToPDF } from "@/lib/export-pdf";
+import { DEMO_PITCH_DECK } from "@/lib/demo-data";
 import type { PitchDeck, Challenge, MarketAnalysis, BusinessIdea, DetailedIdeaMetrics, ChatMessage } from "@/types/innovation";
 import { PhaseLayout } from "@/components/wizard";
 import { PhaseChat } from "@/components/chat";
@@ -405,10 +406,23 @@ export default function PitchPage() {
     setIsLoading: setIsChatLoading,
     addMessage,
     isInitialLoad,
+    handleQuickFill,
   } = usePhaseState({
     phase: "pitch",
     prerequisites: { challenge: true, selectedIdeaId: true, ideas: true },
     loadConversationHistory: true,
+    demoData: DEMO_PITCH_DECK,
+    onDemoFill: (setPhaseData, addMessage) => {
+      setPitchDeck(DEMO_PITCH_DECK);
+      setHasGenerated(true);
+      savePitchDeck(DEMO_PITCH_DECK);
+      addMessage({
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `✓ Loaded demo pitch deck "${DEMO_PITCH_DECK.title}" with ${DEMO_PITCH_DECK.slides.length} slides.`,
+        timestamp: Date.now(),
+      });
+    },
   });
 
   const selectedIdea = sessionData.ideas?.find((i: any) => i.id === sessionData.selectedIdeaId) || sessionData.ideas?.[0];
@@ -454,8 +468,8 @@ export default function PitchPage() {
   // Navigate back
   const handleBack = () => {
     saveConversationHistory("pitch", messages);
-    setStep("ideation");
-    router.push("/ideation");
+    setStep("investment-appraisal");
+    router.push("/investment-appraisal");
   };
 
   // Generate pitch deck

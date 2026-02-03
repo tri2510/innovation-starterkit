@@ -60,8 +60,8 @@ const TOUR_STEPS: TourStep[] = [
     title: "Ready to Continue!",
     description: "Once all required fields are complete, click 'Analyze Market' to proceed to the next step. Your progress is saved automatically.",
     icon: <Check className="h-6 w-6" />,
-    target: "button:has([data-action='continue'])",
-    position: "top",
+    target: "body",
+    position: "center",
   },
 ];
 
@@ -258,13 +258,10 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
     <>
       {/* Spotlight Overlay */}
       <div className="fixed inset-0 z-50 pointer-events-none">
-        {/* Dimmed background - no blur to keep highlighted element clear */}
-        <div className="absolute inset-0 bg-black/60" />
-
-        {/* Highlighted element spotlight */}
-        {highlightedRect && (
+        {highlightedRect ? (
+          // Highlighted element spotlight (for specific elements)
           <div
-            className="absolute border-4 border-blue-500 rounded-lg bg-blue-500/10 transition-all duration-300"
+            className="absolute border-4 border-blue-500 rounded-lg transition-all duration-300"
             style={{
               top: `${highlightedRect.top - 4}px`,
               left: `${highlightedRect.left - 4}px`,
@@ -273,6 +270,9 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
               boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.3)",
             }}
           />
+        ) : (
+          // Dimmed background (for center-positioned tooltips like welcome/complete)
+          <div className="absolute inset-0 bg-black/60" />
         )}
       </div>
 
