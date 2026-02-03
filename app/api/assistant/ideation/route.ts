@@ -328,7 +328,9 @@ export async function POST(request: NextRequest) {
         const encoder = new TextEncoder();
         const stream = new ReadableStream({
           async start(controller) {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, type: "text", data: summary })}\n\n`));
+            // Send text message first (not done yet)
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: summary })}\n\n`));
+            // Then send update with done flag
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, type: "update", data: { ideas: updatedIdeas } })}\n\n`));
             controller.close();
           },
