@@ -94,19 +94,36 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
 
       // Small delay to ensure DOM is updated
       setTimeout(() => {
-        const targetElement = document.querySelector(step.target) as HTMLElement;
-        if (targetElement) {
+        // Try multiple selectors for case studies button
+        let targetElement = document.querySelector(step.target) as HTMLElement;
+
+        // Fallback: try finding button with specific class or text
+        if (!targetElement && step.target === "#case-studies-button") {
+          targetElement = document.querySelector("button[title='View Case Studies']") as HTMLElement;
+          if (!targetElement) {
+            // Another fallback: find button containing the BookOpen icon
+            const buttons = document.querySelectorAll("button");
+            for (const btn of buttons) {
+              if (btn.textContent?.includes("Case Studies")) {
+                targetElement = btn as HTMLElement;
+                break;
+              }
+            }
+          }
+        }
+
+        if (targetElement && targetElement.offsetParent !== null) {
           const rect = targetElement.getBoundingClientRect();
           setHighlightedRect(rect);
 
           // Scroll target into view
           targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
         } else {
-          // Element not found, show centered tooltip
-          console.log("Tour element not found:", step.target);
+          // Element not found or not visible, show centered tooltip
+          console.log("Tour element not found or hidden:", step.target);
           setHighlightedRect(null);
         }
-      }, 100);
+      }, 150);
     };
 
     updateHighlight();
