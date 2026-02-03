@@ -329,7 +329,7 @@ export async function POST(request: NextRequest) {
         const stream = new ReadableStream({
           async start(controller) {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, type: "text", data: summary })}\n\n`));
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, type: "update", data: { IDEAS_UPDATE: { ideas: updatedIdeas } } })}\n\n`));
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, type: "update", data: { ideas: updatedIdeas } })}\n\n`));
             controller.close();
           },
         });
