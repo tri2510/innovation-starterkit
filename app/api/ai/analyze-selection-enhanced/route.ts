@@ -159,7 +159,7 @@ Generate a search query. Return ONLY the query.`;
 
             // The glm-4.7 model puts content in reasoning_content field
             const message = queryResponse.choices[0]?.message;
-            const aiRawResponse = (message?.content || message?.reasoning_content || "").trim();
+            const aiRawResponse = (message?.content || (message as any)?.reasoning_content || "").trim();
             const aiGeneratedQuery = aiRawResponse || selectedText.trim();
 
             searchQueryUsed = aiGeneratedQuery.slice(0, 70);
