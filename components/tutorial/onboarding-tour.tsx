@@ -89,7 +89,7 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <Card className="max-w-md w-full mx-4 shadow-2xl border-slate-200">
+      <Card className="max-w-md w-full mx-4 shadow-2xl border-slate-200 dark:border-slate-700">
         <CardContent className="p-6">
           {/* Progress Dots */}
           <div className="flex gap-2 mb-6">
@@ -97,7 +97,7 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
               <div
                 key={index}
                 className={`h-1 flex-1 rounded-full transition-colors ${
-                  index <= currentStep ? "bg-slate-800" : "bg-slate-200"
+                  index <= currentStep ? "bg-slate-800 dark:bg-slate-200" : "bg-slate-200 dark:bg-slate-700"
                 }`}
               />
             ))}
@@ -109,14 +109,14 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
               {step.icon}
             </div>
             <div className="flex-1">
-              <h3 className="text-xl font-bold text-slate-900 mb-2">{step.title}</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">{step.description}</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">{step.title}</h3>
+              <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{step.description}</p>
             </div>
           </div>
 
           {/* Navigation */}
           <div className="flex items-center justify-between">
-            <div className="text-sm text-slate-500">
+            <div className="text-sm text-slate-500 dark:text-slate-400">
               Step {currentStep + 1} of {TOUR_STEPS.length}
             </div>
             <div className="flex gap-3">
@@ -124,7 +124,7 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
                 variant="ghost"
                 size="sm"
                 onClick={handleSkip}
-                className="text-slate-600 hover:text-slate-900"
+                className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
               >
                 Skip Tour
               </Button>
@@ -172,20 +172,20 @@ export function WelcomeTooltip() {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
-      <Card className="shadow-xl border-slate-200 bg-white">
+      <Card className="shadow-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0">
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-slate-900">Welcome back! Ready to continue your innovation journey?</p>
+              <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Welcome back! Ready to continue your innovation journey?</p>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleDismiss}
-              className="h-8 w-8 text-slate-500 hover:text-slate-700"
+              className="h-8 w-8 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             >
               <X className="h-4 w-4" />
             </Button>

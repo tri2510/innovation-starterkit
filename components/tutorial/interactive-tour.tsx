@@ -281,7 +281,7 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
         className="fixed z-[60] pointer-events-auto transition-all duration-300"
         style={tooltipStyle}
       >
-        <Card className="w-[380px] shadow-2xl border-slate-200 bg-white overflow-hidden">
+        <Card className="w-[380px] shadow-2xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-4">
             <div className="flex items-center gap-3">
@@ -296,7 +296,7 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
 
           {/* Content */}
           <div className="p-6">
-            <p className="text-slate-600 text-sm leading-relaxed mb-6">{step.description}</p>
+            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6">{step.description}</p>
 
             {/* Progress Dots */}
             <div className="flex gap-2 mb-6">
@@ -305,10 +305,10 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
                   key={index}
                   className={`h-1.5 flex-1 rounded-full transition-all ${
                     index === currentStep
-                      ? "bg-slate-800"
+                      ? "bg-slate-800 dark:bg-slate-200"
                       : index < currentStep
-                        ? "bg-slate-300"
-                        : "bg-slate-100"
+                        ? "bg-slate-300 dark:bg-slate-600"
+                        : "bg-slate-100 dark:bg-slate-800"
                   }`}
                 />
               ))}
@@ -316,7 +316,7 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
 
             {/* Navigation */}
             <div className="flex items-center justify-between">
-              <div className="text-xs text-slate-500 font-medium">
+              <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 Step {currentStep + 1} of {TOUR_STEPS.length}
               </div>
               <div className="flex gap-2">
@@ -325,7 +325,7 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
                     variant="outline"
                     size="sm"
                     onClick={handlePrevious}
-                    className="border-slate-300 text-slate-700 hover:bg-slate-50"
+                    className="border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Back
@@ -391,21 +391,21 @@ export function WelcomeTooltip() {
 
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 animate-in slide-in-from-bottom-4 duration-500">
-      <Card className="shadow-xl border-slate-200 bg-white">
+      <Card className="shadow-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <div className="p-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-slate-900">Welcome back to your innovation journey!</p>
-              <p className="text-xs text-slate-500 mt-1">Continue where you left off</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Welcome back to your innovation journey!</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Continue where you left off</p>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleDismiss}
-              className="h-8 w-8 text-slate-500 hover:text-slate-700 flex-shrink-0"
+              className="h-8 w-8 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex-shrink-0"
             >
               <X className="h-4 w-4" />
             </Button>
