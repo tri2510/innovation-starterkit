@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2, ExternalLink } from "lucide-react"
+import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2, ExternalLink, ChevronDown } from "lucide-react"
 import { CrackItIcon } from "./crack-it-icon"
 import { cn } from "@/lib/utils"
 import {
@@ -307,10 +307,13 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
       }
 
       // Auto-collapse thinking when content starts streaming
-      if (streamingContentRef.current && last.content !== streamingContentRef.current) {
+      const hasNewContent = streamingContentRef.current && streamingContentRef.current.length > 0
+      const hadNoContentBefore = !last.content || last.content.length === 0
+
+      if (hasNewContent && last.content !== streamingContentRef.current) {
         last.content = streamingContentRef.current
-        // Collapse thinking when content starts
-        if (showThinking && streamingContentRef.current.length > 0 && !last.content) {
+        // Collapse thinking when first content arrives
+        if (showThinking && hadNoContentBefore) {
           setShowThinking(false)
         }
       }
@@ -474,6 +477,26 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
 
           {/* Messages */}
           <div className="space-y-3">
+            {/* Empty State - shown when no messages */}
+            {messages.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mb-4">
+                  <CrackItIcon size={40} />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                  {selectedText ? "Ready to Analyze" : "AI-Powered Insights"}
+                </h3>
+                {selectedText ? (
+                  <p className="text-sm text-muted-foreground max-w-xs">
+                    Click <strong>"Analyze It"</strong> below to get AI-powered analysis with web search
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground max-w-xs">
+                    Select text from your workspace to analyze it with AI
+                  </p>
+                )}
+              </div>
+            )}
             {messages.map((msg, idx) => (
               <div
                 key={idx}
@@ -489,22 +512,17 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
                 ) : (
                   <>
                     {/* Status Badge - shows real-time progress */}
-                    {(msg.isSearching || msg.sources || msg.statusMessage) && (
+                    {(msg.isSearching || msg.sources) && (
                       <div className="flex items-center gap-2 mb-3">
-                        {msg.isSearching || msg.statusStage === "searching" ? (
+                        {msg.isSearching ? (
                           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-xs font-medium">
                             <Globe className="h-3 w-3 animate-spin" />
-                            {msg.statusMessage || "Searching..."}
+                            Searching...
                           </div>
                         ) : msg.sources && msg.sources.length > 0 ? (
                           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs font-medium">
                             <CheckCircle2 className="h-3 w-3" />
                             {msg.sources.length} sources
-                          </div>
-                        ) : msg.statusMessage ? (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-xs font-medium">
-                            <Brain className="h-3 w-3 animate-pulse" />
-                            {msg.statusMessage}
                           </div>
                         ) : null}
                       </div>
@@ -651,9 +669,7 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
                                         className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
                                       >
                                         <span>{isExpanded ? "Hide" : "Show"} summary</span>
-                                        <span className={cn("transition-transform duration-200 text-[8px]", isExpanded && "rotate-180")}>
-                                          ▼
-                                        </span>
+                                        <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", isExpanded && "rotate-180")} />
                                       </button>
                                     )}
                                   </div>
