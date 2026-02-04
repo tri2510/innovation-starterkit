@@ -518,8 +518,8 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
                             <Search className="h-3 w-3" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1">Search Query</p>
-                            <p className="text-xs text-slate-700 dark:text-slate-300 break-words leading-relaxed">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Search Query</p>
+                            <p className="text-sm font-semibold text-violet-900 dark:text-violet-100 break-words leading-relaxed">
                               {msg.searchQuery}
                             </p>
                           </div>
