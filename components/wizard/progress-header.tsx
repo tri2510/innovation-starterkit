@@ -17,6 +17,7 @@ import { clearSession, resetPhase, saveStateToFile, loadStateFromFile, getSessio
 import { exportSessionToMarkdown } from "@/lib/export-session";
 import { useRef, useMemo } from "react";
 import { PhaseSummaryTooltip } from "./phase-summary-tooltip";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 interface ProgressHeaderProps {
   currentStep: string;
@@ -182,6 +183,9 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
               <HelpCircle className="h-5 w-5" />
             </Button>
           )}
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
           {/* Hidden file input for loading state */}
           <input
