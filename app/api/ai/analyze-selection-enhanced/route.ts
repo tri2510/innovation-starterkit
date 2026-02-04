@@ -29,14 +29,6 @@ export async function POST(request: NextRequest) {
     // Note: We also try getSession() as a fallback for consistency with other API routes
     const effectiveSessionData = sessionData || getSession();
 
-    // Debug logging to verify context is available
-    console.log("[AI Insight] Phase:", phaseContext?.phase);
-    console.log("[AI Insight] Has selected text:", !!selectedText && selectedText.length > 0);
-    console.log("[AI Insight] Has challenge:", !!effectiveSessionData?.challenge);
-    console.log("[AI Insight] Has marketAnalysis:", !!effectiveSessionData?.marketAnalysis);
-    console.log("[AI Insight] Has ideas:", !!effectiveSessionData?.ideas);
-    console.log("[AI Insight] Selected idea ID:", effectiveSessionData?.selectedIdeaId);
-
     // Build rich context from phase - cumulative: includes all previous phases
     let contextInfo = `## Current Context:
 - User is in: ${phaseContext?.phase || "unknown"} phase
@@ -119,10 +111,6 @@ ${selectedText ? `- Selected text: "${selectedText}"` : `- Direct chat mode (no 
 
 ---`;
 
-    // Log the final context for debugging
-    console.log("[AI Insight] Built context length:", contextInfo.length);
-    console.log("[AI Insight] Context preview:", contextInfo.slice(0, 500) + "...");
-
     // Perform web search if enabled - build comprehensive search query
     let webSearchResults: string | null = null;
     let searchQueryUsed = "";
@@ -144,49 +132,15 @@ ${selectedText ? `- Selected text: "${selectedText}"` : `- Direct chat mode (no 
 
         const isFollowUp = messages && messages.length > 2;
 
-        // PRE-THINKING: Use AI to determine optimal search query based on selected text and full context
+        // Use AI to determine optimal search query based on selected text and full context
         if (selectedText && selectedText.trim().length > 0) {
-          console.log(`[AI Insight] Pre-thinking: Analyzing selected text "${selectedText}" with AI...`);
-
-          // Build context summary for AI analysis
-          const contextSummary = {
-            phase: phaseContext?.phase || "unknown",
-            challenge: effectiveSessionData?.challenge ? {
-              industry: effectiveSessionData.challenge.industry,
-              targetAudience: effectiveSessionData.challenge.targetAudience,
-              problem: effectiveSessionData.challenge.problem
-            } : null,
-            market: effectiveSessionData?.marketAnalysis,
-            selectedText: selectedText.trim()
-          };
-
-          // Use AI to generate optimal search query
           try {
-            const queryPrompt = `You are a search query optimization expert. Analyze the selected text and business context to generate the MOST EFFECTIVE web search query.
+            // Use the already-built contextInfo as input
+            const queryPrompt = `${contextInfo}
 
-SELECTED TEXT: "${selectedText.trim()}"
+Selected text: "${selectedText.trim()}"
 
-BUSINESS CONTEXT:
-- Phase: ${contextSummary.phase}
-- Industry: ${contextSummary.challenge?.industry || "N/A"}
-- Target Audience: ${contextSummary.challenge?.targetAudience || "N/A"}
-- Problem Domain: ${contextSummary.challenge?.problem?.substring(0, 100) || "N/A"}
-
-YOUR TASK:
-1. Understand what the user is really looking for
-2. Expand acronyms if they refer to business concepts (TAM → Total Addressable Market, etc.)
-3. Add relevant business context to avoid brand collisions
-4. Create a search query that will return the most useful results
-5. Keep query under 70 characters
-
-CRITICAL RULES:
-- If "TAM" refers to market sizing, use "Total Addressable Market" 
-- If "SAM" refers to market sizing, use "Serviceable Addressable Market"
-- Add business context (industry, audience) to avoid wrong results
-- Prioritize recent business relevance over general definitions
-- Avoid competitor brand names in the query
-
-Respond ONLY with the optimized search query (no explanation).`;
+Generate a search query. Return ONLY the query.`;
 
             // Create OpenAI client for query generation
             const openai = new OpenAI({
@@ -196,20 +150,21 @@ Respond ONLY with the optimized search query (no explanation).`;
 
             const queryResponse = await openai.chat.completions.create({
               model: config.openai.defaultModel,
-              max_tokens: 100,
+              max_tokens: 1000,
               messages: [{
                 role: "user",
                 content: queryPrompt
               }]
             });
 
-            const aiGeneratedQuery = queryResponse.choices[0]?.message?.content?.trim() || selectedText.trim();
+            // The glm-4.7 model puts content in reasoning_content field
+            const message = queryResponse.choices[0]?.message;
+            const aiRawResponse = (message?.content || (message as any)?.reasoning_content || "").trim();
+            const aiGeneratedQuery = aiRawResponse || selectedText.trim();
 
             searchQueryUsed = aiGeneratedQuery.slice(0, 70);
-            console.log(`[AI Insight] Pre-thinking: AI generated query = "${searchQueryUsed}"`);
 
           } catch (error) {
-            console.error(`[AI Insight] AI query generation failed, using fallback:`, error);
             // Fallback to simple approach
             searchQueryUsed = selectedText.trim().slice(0, 70);
           }
@@ -234,7 +189,6 @@ Respond ONLY with the optimized search query (no explanation).`;
             }
           }
           searchQueryUsed = questionWords.join(" ");
-          console.log(`[AI Insight] Pre-thinking: Follow-up strategy = "${searchQueryUsed}"`);
 
         } else {
           // DIRECT CHAT FIRST MESSAGE: Use richest available business context
@@ -245,12 +199,9 @@ Respond ONLY with the optimized search query (no explanation).`;
           } else {
             searchQueryUsed = "business innovation startup market analysis software";
           }
-          console.log(`[AI Insight] Pre-thinking: Direct chat strategy = "${searchQueryUsed}"`);
         }
 
         searchQueryUsed = searchQueryUsed.slice(0, 70).trim();
-
-        console.log("[AI Insight] Search query:", searchQueryUsed);
 
         // Use Tavily API instead of MCP
         const results = await tavilySearch(searchQueryUsed, {
@@ -259,8 +210,6 @@ Respond ONLY with the optimized search query (no explanation).`;
           topic: "general",
           days: 7,
         });
-
-        console.log("[AI Insight] Tavily search returned", results.length, "results");
 
         if (results.length > 0) {
           // Format search results for AI context
@@ -344,16 +293,28 @@ If this is a follow-up, answer the user's question based on the conversation his
             controller.enqueue(encoder.encode(formatted));
           };
 
+          // UX: Send immediate status so UI shows something right away
+          sendEvent({
+            type: "status",
+            data: { stage: "starting", message: "Preparing analysis..." }
+          });
+
           // Send search query first if web search was performed
           if (searchQueryUsed) {
             sendEvent({ type: "searchQuery", data: searchQueryUsed });
-            console.log("[AI Insight] Sent search query:", searchQueryUsed);
+            sendEvent({
+              type: "status",
+              data: { stage: "searching", message: "Searching the web..." }
+            });
           }
 
           // Send web search sources if available (use raw results with full metadata)
           if (rawSearchResults.length > 0) {
             sendEvent({ type: "sources", data: rawSearchResults });
-            console.log("[AI Insight] Sent", rawSearchResults.length, "sources to client");
+            sendEvent({
+              type: "status",
+              data: { stage: "analyzing", message: "Analyzing with AI..." }
+            });
           }
 
           // Stream with thinking enabled

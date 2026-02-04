@@ -376,17 +376,35 @@ export function FinancialPreviewSection({
                   </div>
                   {showRadar && (
                     <div className="aspect-square max-w-[280px] mx-auto">
+                      <style jsx>{`
+                        .dark .recharts-polar-grid {
+                          stroke: #4b5563 !important;
+                        }
+                        .dark .recharts-polar-angle-axis text,
+                        .dark .recharts-polar-radius-axis text {
+                          fill: #94a3b8 !important;
+                        }
+                        .dark .recharts-radar .recharts-tooltip-cursor {
+                          fill: #1e293b !important;
+                          stroke: #9333ea !important;
+                        }
+                        .dark .recharts-layer.recharts-polar-grid {
+                          stroke: #4b5563 !important;
+                        }
+                      `}</style>
                       <ResponsiveContainer width="100%" height="100%">
                         <RadarChart data={radarData}>
-                          <PolarGrid stroke="#e5e7eb" strokeWidth={1} />
+                          <PolarGrid stroke="#e5e7eb" strokeWidth={1} className="dark:stroke-slate-600" />
                           <PolarAngleAxis
                             dataKey="metric"
                             tick={{ fill: '#6b7280', fontSize: 10 }}
+                            className="dark:fill-slate-400"
                           />
                           <PolarRadiusAxis
                             angle={90}
                             domain={[0, 100]}
                             tick={{ fill: '#9ca3af', fontSize: 8 }}
+                            className="dark:fill-slate-300"
                           />
                           <Radar
                             name="Your Idea"
