@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, X, TrendingUp, Building2, Sparkles, Filter } from "lucide-react";
+import { Search, TrendingUp, Building2, Sparkles, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -117,27 +117,18 @@ export function CaseStudiesLibrary({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                <Sparkles className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <DialogTitle className="text-xl font-semibold">
-                  Case Studies Library
-                </DialogTitle>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Learn from real-world success stories
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+              <Sparkles className="h-5 w-5 text-primary" />
             </div>
-            <button
-              onClick={onClose}
-              className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </button>
+            <div>
+              <DialogTitle className="text-xl font-semibold">
+                Case Studies Library
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Learn from real-world success stories
+              </p>
+            </div>
           </div>
         </DialogHeader>
 
@@ -173,7 +164,6 @@ export function CaseStudiesLibrary({
                 onClick={() => setSelectedModel(model.value)}
                 className="flex-shrink-0"
               >
-                <span className="mr-1">{model.icon}</span>
                 {model.label}
               </Button>
             ))}
