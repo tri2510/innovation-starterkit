@@ -62,24 +62,24 @@ function CollapsibleReviewSummary({ challenge, marketAnalysis, selectedIdea }: C
   };
 
   return (
-    <div className="border-b border-slate-100">
+    <div className="border-b border-slate-200 dark:border-slate-800">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
+        className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
             <Target className="h-5 w-5 text-white" />
           </div>
           <div className="text-left">
-            <h3 className="font-semibold text-slate-900">Review Summary</h3>
-            <p className="text-xs text-slate-500">Your approved business concept</p>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100">Review Summary</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Your approved business concept</p>
           </div>
         </div>
         {isExpanded ? (
-          <ChevronUp className="h-5 w-5 text-slate-500" />
+          <ChevronUp className="h-5 w-5 text-slate-500 dark:text-slate-400" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-slate-500" />
+          <ChevronDown className="h-5 w-5 text-slate-500 dark:text-slate-400" />
         )}
       </button>
 
@@ -87,12 +87,12 @@ function CollapsibleReviewSummary({ challenge, marketAnalysis, selectedIdea }: C
         <div className="px-6 pb-6 space-y-4">
           {/* Challenge Summary */}
           {challenge && (
-            <div className="bg-slate-50 rounded-lg p-4">
+            <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Target className="h-4 w-4 text-slate-600" />
-                <h4 className="font-semibold text-slate-900 text-sm">The Challenge</h4>
+                <Target className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">The Challenge</h4>
               </div>
-              <div className="space-y-2 text-sm text-slate-700">
+              <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                 <div>
                   <span className="font-medium">Problem:</span>
                   <p className="mt-1">{challenge.problem}</p>
@@ -107,24 +107,24 @@ function CollapsibleReviewSummary({ challenge, marketAnalysis, selectedIdea }: C
 
           {/* Market Analysis Summary */}
           {marketAnalysis && (
-            <div className="bg-slate-50 rounded-lg p-4">
+            <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-4 w-4 text-slate-600" />
-                <h4 className="font-semibold text-slate-900 text-sm">Market Opportunity</h4>
+                <TrendingUp className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Market Opportunity</h4>
               </div>
-              <div className="space-y-2 text-sm text-slate-700">
+              <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="bg-white rounded p-2 text-center">
-                    <div className="text-xs text-slate-500">TAM</div>
-                    <div className="font-medium text-xs">{marketAnalysis.tam?.split('(')[0]?.trim()}</div>
+                  <div className="bg-white dark:bg-slate-950 rounded p-2 text-center">
+                    <div className="text-xs text-slate-500 dark:text-slate-400">TAM</div>
+                    <div className="font-medium text-xs text-slate-900 dark:text-slate-100">{marketAnalysis.tam?.split('(')[0]?.trim()}</div>
                   </div>
-                  <div className="bg-white rounded p-2 text-center">
-                    <div className="text-xs text-slate-500">SAM</div>
-                    <div className="font-medium text-xs">{marketAnalysis.sam?.split('(')[0]?.trim()}</div>
+                  <div className="bg-white dark:bg-slate-950 rounded p-2 text-center">
+                    <div className="text-xs text-slate-500 dark:text-slate-400">SAM</div>
+                    <div className="font-medium text-xs text-slate-900 dark:text-slate-100">{marketAnalysis.sam?.split('(')[0]?.trim()}</div>
                   </div>
-                  <div className="bg-white rounded p-2 text-center">
-                    <div className="text-xs text-slate-500">SOM</div>
-                    <div className="font-medium text-xs">{marketAnalysis.som?.split('(')[0]?.trim()}</div>
+                  <div className="bg-white dark:bg-slate-950 rounded p-2 text-center">
+                    <div className="text-xs text-slate-500 dark:text-slate-400">SOM</div>
+                    <div className="font-medium text-xs text-slate-900 dark:text-slate-100">{marketAnalysis.som?.split('(')[0]?.trim()}</div>
                   </div>
                 </div>
                 {marketAnalysis.trends && marketAnalysis.trends.length > 0 && (
@@ -133,12 +133,12 @@ function CollapsibleReviewSummary({ challenge, marketAnalysis, selectedIdea }: C
                     <ul className="mt-1 space-y-1">
                       {marketAnalysis.trends.slice(0, 2).map((trend, idx) => (
                         <li key={idx} className="flex items-center gap-2">
-                          <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
-                          <span className="text-xs">{trend.name}</span>
+                          <span className="h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-600" />
+                          <span className="text-xs text-slate-900 dark:text-slate-100">{trend.name}</span>
                           <span className={`text-xs px-1.5 py-0.5 rounded ${
-                            trend.momentum === 'rising' ? 'bg-green-100 text-green-700' :
-                            trend.momentum === 'stable' ? 'bg-slate-100 text-slate-700' :
-                            'bg-red-100 text-red-700'
+                            trend.momentum === 'rising' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                            trend.momentum === 'stable' ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' :
+                            'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                           }`}>
                             {trend.momentum}
                           </span>
@@ -153,22 +153,22 @@ function CollapsibleReviewSummary({ challenge, marketAnalysis, selectedIdea }: C
 
           {/* Selected Idea Summary */}
           {selectedIdea && (
-            <div className="bg-slate-50 rounded-lg p-4">
+            <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
-                <IdeaIcon className="h-4 w-4 text-slate-600" />
-                <h4 className="font-semibold text-slate-900 text-sm">{selectedIdea.name}</h4>
+                <IdeaIcon className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">{selectedIdea.name}</h4>
               </div>
-              <div className="space-y-2 text-sm text-slate-700">
-                <p className="italic text-slate-600">"{selectedIdea.tagline}"</p>
+              <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                <p className="italic text-slate-600 dark:text-slate-400">"{selectedIdea.tagline}"</p>
                 <p>{selectedIdea.description}</p>
                 <div className="grid grid-cols-2 gap-2 pt-2">
-                  <div className="bg-white rounded p-2">
-                    <div className="text-xs text-slate-500">Market Fit</div>
-                    <div className="font-semibold text-slate-900">{selectedIdea.metrics ? getMetricScore(selectedIdea.metrics, "marketFit") : "—"}/100</div>
+                  <div className="bg-white dark:bg-slate-950 rounded p-2">
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Market Fit</div>
+                    <div className="font-semibold text-slate-900 dark:text-slate-100">{selectedIdea.metrics ? getMetricScore(selectedIdea.metrics, "marketFit") : "—"}/100</div>
                   </div>
-                  <div className="bg-white rounded p-2">
-                    <div className="text-xs text-slate-500">Feasibility</div>
-                    <div className="font-semibold text-slate-900">{selectedIdea.metrics ? getMetricScore(selectedIdea.metrics, "feasibility") : "—"}/100</div>
+                  <div className="bg-white dark:bg-slate-950 rounded p-2">
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Feasibility</div>
+                    <div className="font-semibold text-slate-900 dark:text-slate-100">{selectedIdea.metrics ? getMetricScore(selectedIdea.metrics, "feasibility") : "—"}/100</div>
                   </div>
                 </div>
               </div>
@@ -194,12 +194,12 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
     <div className="px-6 py-6">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-10 w-10 rounded-md bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center border border-slate-600">
+          <div className="h-10 w-10 rounded-md bg-gradient-to-br from-slate-700 to-slate-800 dark:from-slate-600 dark:to-slate-700 flex items-center justify-center border border-slate-600 dark:border-slate-500">
             <Presentation className="h-5 w-5 text-slate-100" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{pitchDeck.title}</h1>
-            <p className="text-sm text-slate-600">{pitchDeck.tagline}</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{pitchDeck.title}</h1>
+            <p className="text-sm text-slate-600 dark:text-slate-400">{pitchDeck.tagline}</p>
           </div>
         </div>
       </div>
@@ -216,7 +216,7 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="text-sm font-medium text-slate-600 min-w-[80px] text-center">
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-400 min-w-[80px] text-center">
             Slide {currentSlideIndex + 1} of {pitchDeck.slides.length}
           </span>
           <Button
@@ -233,10 +233,10 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
         <Card className="overflow-hidden shadow-lg">
           <CardContent className="p-0">
             <div className="aspect-video relative">
-              <div className="absolute inset-0 bg-white text-slate-900 p-10 flex flex-col">
+              <div className="absolute inset-0 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-10 flex flex-col">
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
                   <div className="mb-3">
-                    <span className="inline-block px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold uppercase tracking-wide">
+                    <span className="inline-block px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold uppercase tracking-wide">
                       {pitchDeck.slides[currentSlideIndex].type}
                     </span>
                   </div>
@@ -251,7 +251,7 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
                           <ul className="space-y-1.5 md:space-y-2">
                             {value.slice(0, 6).map((item, i) => (
                               <li key={i} className="flex items-start gap-2 md:gap-3 text-base md:text-lg">
-                                <span className="h-2 w-2 rounded-full bg-slate-900 mt-2 md:mt-2.5 flex-shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-slate-900 dark:bg-slate-100 mt-2 md:mt-2.5 flex-shrink-0" />
                                 <span className="break-words line-clamp-2">{typeof item === "object" ? JSON.stringify(item) : item}</span>
                               </li>
                             ))}
@@ -280,8 +280,8 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
       {/* Slide Thumbnails Navigation */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-slate-700">All Slides</h3>
-          <span className="text-xs text-slate-500">Click to jump to slide</span>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">All Slides</h3>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Click to jump to slide</span>
         </div>
         <div className="flex gap-3 overflow-x-auto py-8 px-2 items-center">
           {pitchDeck.slides.map((slide, index) => (
@@ -290,25 +290,25 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
               onClick={() => onSelectSlide(index)}
               className={`flex-shrink-0 rounded-lg border-2 snap-start transition-all duration-200 origin-center ${
                 index === currentSlideIndex
-                  ? "w-36 h-28 border-slate-800 bg-gradient-to-br from-slate-50 to-slate-100 shadow-lg scale-110 z-10"
-                  : "w-36 h-28 border-slate-200 bg-gradient-to-br from-white to-slate-50 opacity-70 hover:opacity-100 hover:shadow-md hover:border-slate-300 hover:scale-105"
+                  ? "w-36 h-28 border-slate-800 dark:border-slate-200 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 shadow-lg scale-110 z-10"
+                  : "w-36 h-28 border-slate-200 dark:border-slate-700 bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 opacity-70 hover:opacity-100 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 hover:scale-105"
               } flex flex-col p-2.5 pt-1.5 text-left relative`}
             >
               <div className={`absolute top-1.5 right-1.5 h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold z-10 ${
                 index === currentSlideIndex
-                  ? "bg-slate-800 text-white"
-                  : "bg-slate-200 text-slate-600"
+                  ? "bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900"
+                  : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
               }`}>
                 {index + 1}
               </div>
               <div className="flex-1 flex flex-col justify-center py-1">
                 <span
-                  className="text-slate-900 text-xs font-semibold block line-clamp-2 leading-tight"
+                  className="text-slate-900 dark:text-slate-100 text-xs font-semibold block line-clamp-2 leading-tight"
                   title={slide.title}
                 >
                   {slide.title}
                 </span>
-                <span className="text-slate-500 text-[9px] uppercase tracking-wide font-medium mt-1">
+                <span className="text-slate-500 dark:text-slate-400 text-[9px] uppercase tracking-wide font-medium mt-1">
                   {slide.type}
                 </span>
               </div>
@@ -318,28 +318,28 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6 mb-6">
-        <Card className="border border-slate-200 bg-white shadow-sm">
+        <Card className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 dark:from-slate-600 dark:to-slate-700 flex items-center justify-center">
                 <Presentation className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-slate-900">{pitchDeck.slides.length} Slides</h3>
-                <p className="text-xs text-slate-600">Ready to present</p>
+                <h3 className="font-semibold text-slate-900 dark:text-slate-100">{pitchDeck.slides.length} Slides</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Ready to present</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Professional pitch deck covering problem, solution, market, and business model.
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 bg-white shadow-sm">
+        <Card className="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
           <CardContent className="pt-6 space-y-3">
             <Button
               onClick={() => exportSessionToPDF()}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 text-white dark:text-slate-900"
               size="lg"
             >
               <Download className="h-4 w-4 mr-2" />
@@ -348,14 +348,14 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 bg-gradient-to-br from-slate-50 to-white shadow-sm">
+        <Card className="border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 shadow-sm">
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-800 mb-3">
+              <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-800 dark:from-slate-600 dark:to-slate-700 mb-3">
                 <Sparkles className="h-7 w-7 text-white" />
               </div>
-              <h3 className="font-bold mb-1 text-slate-900">Congratulations!</h3>
-              <p className="text-sm text-slate-600 mb-4">
+              <h3 className="font-bold mb-1 text-slate-900 dark:text-slate-100">Congratulations!</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                 You've completed the innovation journey
               </p>
               <Button
@@ -367,7 +367,7 @@ function SlideViewer({ pitchDeck, currentSlideIndex, onPreviousSlide, onNextSlid
                 }}
                 variant="outline"
                 size="sm"
-                className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
+                className="w-full border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Start New Journey
@@ -868,15 +868,15 @@ export default function PitchPage() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
               <div className="flex items-center gap-2">
-                <Presentation className="h-4 w-4 text-slate-600" />
-                <h1 className="text-sm font-semibold">{isGenerating ? "Generating" : "Ready to Generate"}</h1>
+                <Presentation className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                <h1 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{isGenerating ? "Generating" : "Ready to Generate"}</h1>
               </div>
             </div>
 
             <div className="flex-1 overflow-y-auto pb-20">
               <div className="container mx-auto px-6 py-6 max-w-5xl">
                 {selectedIdea && (
-                  <div className="border border-slate-200 rounded-lg bg-white shadow-sm overflow-hidden">
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
                     <CollapsibleReviewSummary
                       challenge={sessionData.challenge}
                       marketAnalysis={sessionData.marketAnalysis}
@@ -919,8 +919,8 @@ export default function PitchPage() {
         <div className="flex-1 flex flex-col overflow-hidden bg-gradient-to-b from-background to-muted/20">
           <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
             <div className="flex items-center gap-2">
-              <Presentation className="h-4 w-4 text-slate-600" />
-              <h1 className="text-sm font-semibold">Pitch Deck</h1>
+              <Presentation className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <h1 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Pitch Deck</h1>
             </div>
           </div>
 
@@ -937,7 +937,7 @@ export default function PitchPage() {
                       <div className="h-7 w-7 rounded-md bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
                         <Target className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
                       </div>
-                      <span className="text-sm font-semibold">Innovation Plan Summary</span>
+                      <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">Innovation Plan Summary</span>
                       <Badge variant="outline" className="text-xs">{selectedIdea.metrics?.roi?.toUpperCase() || "N/A"} ROI</Badge>
                     </div>
                     {isReviewSummaryExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
