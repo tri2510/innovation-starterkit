@@ -10,16 +10,17 @@ export function ThemeToggle() {
 
   useEffect(() => {
     setMounted(true);
-    // Get initial theme from localStorage or system preference
-    const savedTheme = localStorage.getItem('theme');
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Get initial theme from localStorage, default to light mode
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
 
     if (savedTheme) {
-      setTheme(savedTheme as 'light' | 'dark');
+      setTheme(savedTheme);
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    } else if (systemPrefersDark) {
-      setTheme('dark');
-      document.documentElement.classList.add('dark');
+    } else {
+      // Default to light mode, ignore system preference
+      setTheme('light');
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   }, []);
 
