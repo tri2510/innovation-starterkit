@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2, Tag, ExternalLink } from "lucide-react"
+import { Loader2, Brain, History, Send, X, Globe, Search, Trash2, CheckCircle2, ExternalLink } from "lucide-react"
 import { CrackItIcon } from "./crack-it-icon"
 import { cn } from "@/lib/utils"
 import {
@@ -103,15 +103,15 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
     }
   }, [isOpen])
 
-  // Auto-expand first 3 sources by default
-  useEffect(() => {
-    if (messages.length > 0) {
-      const lastMessage = messages[messages.length - 1]
-      if (lastMessage?.sources && lastMessage.sources.length > 0) {
-        setExpandedSources(new Set([0, 1, 2]))
-      }
-    }
-  }, [messages])
+  // Auto-expand sources by default - now disabled, summaries hidden by default
+  // useEffect(() => {
+  //   if (messages.length > 0) {
+  //     const lastMessage = messages[messages.length - 1]
+  //     if (lastMessage?.sources && lastMessage.sources.length > 0) {
+  //       setExpandedSources(new Set([0, 1, 2]))
+  //     }
+  //   }
+  // }, [messages])
 
   // Auto-save messages to session storage
   useEffect(() => {
@@ -305,9 +305,21 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
           setShowThinking(true)
         }
       }
+
+      // Auto-collapse thinking when content starts streaming
       if (streamingContentRef.current && last.content !== streamingContentRef.current) {
         last.content = streamingContentRef.current
+        // Collapse thinking when content starts
+        if (showThinking && streamingContentRef.current.length > 0 && !last.content) {
+          setShowThinking(false)
+        }
       }
+
+      // Auto-collapse thinking when phase changes to content
+      if (phase === "content" && showThinking) {
+        setShowThinking(false)
+      }
+
       if (streamingSearchQueryRef.current && last.searchQuery !== streamingSearchQueryRef.current) {
         last.searchQuery = streamingSearchQueryRef.current
       }
@@ -325,7 +337,7 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
       updated[updated.length - 1] = last
       return updated
     })
-  }, [])
+  }, [showThinking])
 
   const scheduleUpdate = useCallback((phase?: "thinking" | "content" | "done") => {
     if (streamingTimeoutRef.current) {
@@ -398,45 +410,36 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="flex flex-col w-full sm:max-w-md p-0 gap-0 bg-slate-50 dark:bg-slate-950">
-        {/* Header with gradient */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white">
+        {/* Header */}
+        <div className="relative flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
-              <CrackItIcon size={20} />
+            <div className="p-2 rounded-lg bg-violet-100 dark:bg-violet-900/30">
+              <CrackItIcon size={32} />
             </div>
             <div>
-              <SheetTitle className="text-lg font-semibold text-white m-0">Crack It</SheetTitle>
-              <SheetDescription className="text-violet-100 text-xs m-0">
+              <SheetTitle className="text-lg font-semibold text-foreground m-0">Crack It</SheetTitle>
+              <SheetDescription className="text-muted-foreground text-xs m-0">
                 {selectedText ? `Analyzing: "${selectedText.slice(0, 40)}${selectedText.length > 40 ? "..." : ""}"` : "AI-powered insights"}
               </SheetDescription>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-white hover:bg-white/20"
-              onClick={() => setShowHistory(!showHistory)}
-            >
-              <History className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-white hover:bg-white/20"
-              onClick={onClose}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          {/* History Button - positioned below close button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-4 top-12 h-8 w-8 hover:bg-slate-100 dark:hover:bg-slate-800"
+            onClick={() => setShowHistory(!showHistory)}
+          >
+            <History className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
           {/* History Panel */}
           {showHistory && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div className="flex items-center justify-between mb-3">
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-sm">History</h3>
                 <Button
                   variant="ghost"
@@ -449,9 +452,9 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
                 </Button>
               </div>
               {history.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-4">No history yet</p>
+                <p className="text-xs text-muted-foreground text-center py-3">No history yet</p>
               ) : (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
                   {history.map((item) => (
                     <button
                       key={item.id}
@@ -469,29 +472,8 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
             </div>
           )}
 
-          {/* Web Search Toggle */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-violet-600" />
-              <span className="text-sm font-medium">Web Search</span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "h-7 px-3 text-xs font-medium transition-all",
-                useWebSearch
-                  ? "bg-violet-100 text-violet-700 hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400"
-              )}
-              onClick={() => setUseWebSearch(!useWebSearch)}
-            >
-              {useWebSearch ? "ON" : "OFF"}
-            </Button>
-          </div>
-
           {/* Messages */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
@@ -499,7 +481,7 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
                   "rounded-2xl",
                   msg.role === "user"
                     ? "bg-gradient-to-br from-violet-500 to-indigo-600 text-white ml-8 p-3"
-                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mr-0 p-4 space-y-4 shadow-sm"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mr-0 p-3 space-y-3 shadow-sm"
                 )}
               >
                 {msg.role === "user" ? (
@@ -508,19 +490,19 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
                   <>
                     {/* Status Badge - shows real-time progress */}
                     {(msg.isSearching || msg.sources || msg.statusMessage) && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 mb-3">
                         {msg.isSearching || msg.statusStage === "searching" ? (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-medium animate-pulse">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-xs font-medium">
                             <Globe className="h-3 w-3 animate-spin" />
                             {msg.statusMessage || "Searching..."}
                           </div>
                         ) : msg.sources && msg.sources.length > 0 ? (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-medium">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs font-medium">
                             <CheckCircle2 className="h-3 w-3" />
-                            {msg.sources.length} sources found
+                            {msg.sources.length} sources
                           </div>
                         ) : msg.statusMessage ? (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-xs font-medium">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-xs font-medium">
                             <Brain className="h-3 w-3 animate-pulse" />
                             {msg.statusMessage}
                           </div>
@@ -530,13 +512,17 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
 
                     {/* Search Query Badge */}
                     {msg.searchQuery && (
-                      <div className="inline-flex items-start gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-800">
-                        <Tag className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase tracking-wide">Search Query</p>
-                          <p className="text-sm text-blue-900 dark:text-blue-100 font-mono break-words mt-0.5">
-                            {msg.searchQuery}
-                          </p>
+                      <div className="mb-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <div className="flex items-start gap-2 px-3 py-2">
+                          <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 mt-0.5">
+                            <Search className="h-3 w-3" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1">Search Query</p>
+                            <p className="text-xs text-slate-700 dark:text-slate-300 break-words leading-relaxed">
+                              {msg.searchQuery}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -614,78 +600,71 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
 
                     {/* Sources Section - Always visible if sources exist */}
                     {msg.sources && msg.sources.length > 0 && (
-                      <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-                        <div className="flex items-center justify-between mb-3">
-                          <h4 className="text-sm font-semibold flex items-center gap-2">
-                            <Globe className="h-4 w-4 text-violet-600" />
-                            Sources
-                          </h4>
-                          <span className="text-xs text-muted-foreground">{msg.sources.length} results</span>
+                      <div className="rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden">
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-3 py-2 border-b border-slate-200 dark:border-slate-800">
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-center w-6 h-6 rounded bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">
+                              <Globe className="h-3.5 w-3.5" />
+                            </div>
+                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">Sources</span>
+                            <span className="text-xs text-muted-foreground">({msg.sources.length})</span>
+                          </div>
                         </div>
 
-                        <div className="space-y-2">
+                        {/* Sources List - Compact */}
+                        <div className="divide-y divide-slate-200 dark:divide-slate-800">
                           {msg.sources.map((source, i) => {
                             const isExpanded = expandedSources.has(i)
                             const hostname = source.link.replace(/^https?:\/\//, '').replace(/\/.*$/, '')
 
                             return (
-                              <div
-                                key={i}
-                                className="group rounded-xl bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden transition-all hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md"
-                              >
-                                {/* Header - always visible, clickable */}
-                                <a
-                                  href={source.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="block p-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
-                                  onClick={(e) => {
-                                    // Don't trigger expand when clicking the link
-                                    e.stopPropagation()
-                                  }}
-                                >
-                                  <div className="flex items-start gap-3">
-                                    {/* Number badge */}
-                                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-md">
+                              <div key={i} className="bg-white dark:bg-slate-950">
+                                {/* Source content */}
+                                <div className="px-3 py-2">
+                                  {/* Title row with number badge */}
+                                  <div className="flex items-start gap-2 mb-1.5">
+                                    <span className="flex-shrink-0 w-5 h-5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center text-[10px] font-semibold mt-0.5">
                                       {i + 1}
                                     </span>
-
-                                    {/* Content */}
-                                    <div className="min-w-0 flex-1">
-                                      <h5 className="text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-2 mb-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-                                        {source.title}
-                                      </h5>
-                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <span className="px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700">
-                                          {source.media || hostname}
-                                        </span>
-                                        <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                                      </div>
-                                    </div>
+                                    <h5 className="text-xs font-medium text-slate-900 dark:text-slate-100 leading-snug flex-1">
+                                      {source.title}
+                                    </h5>
                                   </div>
-                                </a>
 
-                                {/* Expandable content */}
-                                {source.content && source.content.length > 0 && (
-                                  <div className="border-t border-slate-200 dark:border-slate-700">
-                                    <button
-                                      onClick={() => toggleSource(i)}
-                                      className="w-full px-3 py-2 flex items-center justify-between text-xs text-muted-foreground hover:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
+                                  {/* Bottom row: link + summary button */}
+                                  <div className="flex items-center justify-between gap-2 pl-7">
+                                    <a
+                                      href={source.link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-1 text-[10px] text-violet-600 dark:text-violet-400 hover:underline min-w-0"
                                     >
-                                      <span>{isExpanded ? "Hide summary" : "Show summary"}</span>
-                                      <span className={cn("transition-transform", isExpanded && "rotate-180")}>
-                                        ▼
-                                      </span>
-                                    </button>
+                                      <span className="truncate">{source.media || hostname}</span>
+                                      <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" />
+                                    </a>
 
-                                    {isExpanded && (
-                                      <div className="px-3 pb-3">
-                                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                                          {source.content.slice(0, 300)}
-                                          {source.content.length > 300 && "..."}
-                                        </p>
-                                      </div>
+                                    {/* Summary toggle button */}
+                                    {source.content && source.content.length > 0 && (
+                                      <button
+                                        onClick={() => toggleSource(i)}
+                                        className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+                                      >
+                                        <span>{isExpanded ? "Hide" : "Show"} summary</span>
+                                        <span className={cn("transition-transform duration-200 text-[8px]", isExpanded && "rotate-180")}>
+                                          ▼
+                                        </span>
+                                      </button>
                                     )}
+                                  </div>
+                                </div>
+
+                                {/* Summary content */}
+                                {isExpanded && source.content && source.content.length > 0 && (
+                                  <div className="px-3 pb-2 border-t border-slate-100 dark:border-slate-800">
+                                    <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed pt-2 whitespace-pre-wrap">
+                                      {source.content}
+                                    </p>
                                   </div>
                                 )}
                               </div>
@@ -710,61 +689,84 @@ export function EnhancedAnalysisPanel({ isOpen, onClose, selectedText, phaseCont
         </div>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-          <div className="flex gap-2">
-            <Textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault()
-                  if (input.trim() && !isLoading) {
-                    analyzeSelection()
-                  }
-                }
-              }}
-              placeholder="Ask a follow-up question..."
-              className="min-h-[50px] max-h-[120px] resize-none text-sm border-slate-300 dark:border-slate-700 focus:border-violet-500 focus:ring-violet-500"
-              disabled={isLoading}
-            />
-            <Button
-              onClick={() => analyzeSelection()}
-              disabled={isLoading || !input.trim()}
-              size="icon"
-              className="h-[50px] w-[50px] flex-shrink-0 bg-gradient-to-br from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
-            >
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Send className="h-5 w-5" />
-              )}
-            </Button>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex items-center justify-between mt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 text-xs text-muted-foreground hover:text-foreground"
-              onClick={clearChat}
-            >
-              <Trash2 className="h-3 w-3 mr-1" />
-              Clear chat
-            </Button>
-
-            {selectedText && (
+        <div className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          {/* Input Controls Bar */}
+          <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-1.5">
+              {/* Web Search Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 text-xs text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20"
-                onClick={() => analyzeSelection()}
-                disabled={isLoading}
+                className={cn(
+                  "h-7 px-2 text-xs font-medium transition-all gap-1",
+                  useWebSearch
+                    ? "bg-violet-100 text-violet-700 hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300"
+                    : "bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400"
+                )}
+                onClick={() => setUseWebSearch(!useWebSearch)}
               >
-                <CrackItIcon size={14} className="mr-1" />
-                Analyze selection
+                <Search className="h-3 w-3" />
+                {useWebSearch ? "Web Search ON" : "Web Search OFF"}
               </Button>
-            )}
+            </div>
+            <div className="flex items-center gap-1">
+              {/* Clear Chat Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 gap-1"
+                onClick={clearChat}
+              >
+                <Trash2 className="h-3 w-3" />
+                Clear
+              </Button>
+              {/* Analyze It Selection */}
+              {selectedText && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="h-7 px-3 text-xs font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-700 hover:to-indigo-700 gap-1.5 shadow-md shadow-violet-500/20"
+                  onClick={() => analyzeSelection()}
+                  disabled={isLoading}
+                >
+                  <CrackItIcon size={14} />
+                  Analyze It
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Text Input */}
+          <div className="p-3">
+            <div className="flex gap-2">
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    if (input.trim() && !isLoading) {
+                      analyzeSelection()
+                    }
+                  }
+                }}
+                placeholder="Ask a follow-up question..."
+                className="min-h-[44px] max-h-[120px] resize-none text-sm border-slate-300 dark:border-slate-700 focus:border-violet-500 focus:ring-violet-500"
+                disabled={isLoading}
+              />
+              <Button
+                onClick={() => analyzeSelection()}
+                disabled={isLoading || !input.trim()}
+                size="icon"
+                className="h-[44px] w-[44px] flex-shrink-0 bg-gradient-to-br from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Send className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </SheetContent>

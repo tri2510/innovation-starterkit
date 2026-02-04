@@ -28,7 +28,7 @@ export function SelectionToolbar({ position, isVisible, onAnalyze }: SelectionTo
         className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
         aria-label="Analyze with AI"
       >
-        <CrackItIcon size={28} />
+        <CrackItIcon size={32} />
         Crack It
       </button>
     </div>
