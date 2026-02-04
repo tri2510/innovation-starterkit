@@ -287,3 +287,91 @@ export interface IndustryBenchmark {
   sampleSize: number;
   lastUpdated: string;
 }
+
+// Case Studies Types
+export type CaseStudyPhaseType = "challenge" | "market" | "ideation" | "investment-appraisal" | "pitch";
+export type BusinessModelType = "marketplace" | "saas" | "on-demand" | "subscription" | "freemium" | "e-commerce";
+
+export interface CaseStudyChallenge {
+  problem: string;
+  targetAudience: string;
+  currentSolutions: string;
+  keyInsight: string;
+}
+
+export interface CaseStudyMarket {
+  marketSize: string;
+  targetSegment: string;
+  initialTargetMarket: string;
+  trends: string[];
+  competitors: string[];
+  opportunities: string[];
+  keyInsight: string;
+}
+
+export interface CaseStudyIdeation {
+  initialIdea: string;
+  pivots: string[];
+  finalValueProp: string;
+  keyFeatures: string[];
+  mvpFeatures: string[];
+  uniqueSellingPoints: string[];
+  keyInsight: string;
+}
+
+export interface CaseStudyInvestment {
+  fundingNeeded: string;
+  useOfFunds: Array<{ category: string; amount: string; description: string }>;
+  revenueModel: string;
+  projections?: {
+    year1?: { revenue: string; users?: string; rides?: string; bookings?: string; cities?: string; subscribers?: string };
+    year2?: { revenue: string; users?: string; rides?: string; bookings?: string; cities?: string; subscribers?: string };
+    year3?: { revenue: string; users?: string; rides?: string; bookings?: string; cities?: string; subscribers?: string };
+  };
+  initialInvestment: string;
+  fundingRounds: Array<{ round: string; amount: string; investors: string[]; date: string }>;
+  breakEvenTimeframe: string;
+  roi: string;
+  keyInsight: string;
+}
+
+export interface CaseStudyPitch {
+  title: string;
+  tagline: string;
+  traction: string;
+  team: string;
+  ask: string;
+  keySlides: string[];
+  keyInsight: string;
+}
+
+export interface CaseStudy {
+  id: string;
+  title: string;
+  tagline: string;
+  company: string;
+  yearFounded: number;
+  industry: string;
+  businessModel: BusinessModelType;
+  featured: boolean;
+  tags: string[];
+
+  // Full walkthrough data for each phase
+  phases: {
+    challenge: CaseStudyChallenge;
+    market: CaseStudyMarket;
+    ideation: CaseStudyIdeation;
+    "investment-appraisal": CaseStudyInvestment;
+    pitch: CaseStudyPitch;
+  };
+
+  // Overall metrics
+  metrics: {
+    roi: string;
+    timeframe: string;
+    marketImpact: string;
+  };
+
+  // Key learnings
+  keyLearnings: string[];
+}

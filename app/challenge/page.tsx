@@ -10,13 +10,14 @@ import { Sparkles, ArrowRight, Lightbulb, Check, Loader2, Send } from "lucide-re
 import { saveChallenge, getSession, clearSession, updateSession, saveChallengeProgress, getChallengeProgress } from "@/lib/session";
 import type { Challenge, ChatMessage } from "@/types/innovation";
 import { DEMO_CHALLENGE } from "@/lib/demo-data";
-import { OnboardingTour, WelcomeTooltip } from "@/components/tutorial/onboarding-tour";
+import { WelcomeTooltip } from "@/components/tutorial/welcome-tooltip";
 import { InteractiveTour } from "@/components/tutorial/interactive-tour";
 import { streamChatResponse, ProgressUpdateChunk } from "@/hooks/use-chat-streaming";
 import { PhaseLayout } from "@/components/wizard";
 import { PhaseChat } from "@/components/chat";
 import { usePhaseState } from "@/hooks";
 import type { UsePhaseStateOptions } from "@/hooks";
+import { useCaseStudy } from "@/contexts/case-study-context";
 
 interface Message extends ChatMessage {
   isQuestion?: boolean;
@@ -31,6 +32,7 @@ interface Message extends ChatMessage {
  */
 export default function ChallengePage() {
   const router = useRouter();
+  const { isActive: isCaseStudyActive } = useCaseStudy();
 
   // Required fields for the challenge
   const requiredFields = ["problem", "targetAudience", "currentSolutions"];
@@ -123,7 +125,7 @@ export default function ChallengePage() {
 
     // First, try to load from challengeProgress (exact state restoration)
     const savedProgress = getChallengeProgress();
-    if (savedProgress && savedProgress.length > 0) {
+    if (savedProgress && savedProgress.length > 0 && !isCaseStudyActive) {
       // Restore the exact state with icons added back
       const restoredProgress: ProgressItem[] = savedProgress.map(item => ({
         ...item,
@@ -145,7 +147,7 @@ export default function ChallengePage() {
       }
     }
     // Backward compatibility: fall back to loading from challenge data
-    else if (session?.challenge) {
+    else if (session?.challenge && !isCaseStudyActive) {
       setChallengeSummary(session.challenge);
 
       // Load progress items from challenge (backward compatibility)
@@ -158,7 +160,7 @@ export default function ChallengePage() {
       ];
       setProgressItems(updatedProgress);
       setOverallProgress(calculateProgress(updatedProgress));
-    } else {
+    } else if (!isCaseStudyActive) {
       // No session data - ensure progress items are reset to initial state
       const resetProgress: ProgressItem[] = [
         { id: "problem", label: "Problem Statement", icon: null as any, status: "pending", excerpt: "", isOptional: false },
@@ -172,15 +174,43 @@ export default function ChallengePage() {
       setChallengeSummary(null);
     }
 
-    // Note: Conversation history is now handled by usePhaseState hook
-
     hasInitializedSession.current = true;
-  }, []); // Empty deps - run once on mount
+  }, [isCaseStudyActive]);
+
+  // Load case study data when in case study mode
+  useEffect(() => {
+    if (isCaseStudyActive) {
+      const session = getSession();
+      if (session?.challenge) {
+        setChallengeSummary(session.challenge);
+
+        // Mark all progress items as complete for case study
+        const updatedProgress: ProgressItem[] = [
+          { id: "problem", label: "Problem Statement", icon: null as any, status: "complete", excerpt: session.challenge.problem, isOptional: false },
+          { id: "targetAudience", label: "Target Audience", icon: null as any, status: "complete", excerpt: session.challenge.targetAudience, isOptional: false },
+          { id: "currentSolutions", label: "Existing Solutions", icon: null as any, status: "complete", excerpt: session.challenge.currentSolutions, isOptional: false },
+          { id: "industry", label: "Industry", icon: null as any, status: session.challenge.industry ? "complete" : "pending", excerpt: session.challenge.industry || "", isOptional: true },
+          { id: "context", label: "Additional Context", icon: null as any, status: "complete", excerpt: session.challenge.context || "", isOptional: true },
+        ];
+        setProgressItems(updatedProgress);
+        setOverallProgress(100);
+
+        // Load case study conversation messages
+        if (session.challengeConversationHistory) {
+          setMessages(session.challengeConversationHistory);
+        }
+      }
+    }
+  }, [isCaseStudyActive, setMessages]);
 
   // Check if user has seen the tour
   useEffect(() => {
-    // Note: NEXT_PUBLIC_DISABLE_TOUR is handled at build time by Next.js
-    // We check the environment variable directly since this is client-side
+    if (isCaseStudyActive) {
+      setTourCompleted(true);
+      setShowTour(false);
+      return;
+    }
+
     if ((process.env.NEXT_PUBLIC_DISABLE_TOUR as string | undefined) === 'true') {
       setTourCompleted(true);
       return;
@@ -193,14 +223,14 @@ export default function ChallengePage() {
     } else {
       setTourCompleted(true);
     }
-  }, []);
+  }, [isCaseStudyActive]);
 
   // Auto-save conversation history whenever messages change
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && !isCaseStudyActive) {
       saveHistory();
     }
-  }, [messages, saveHistory]);
+  }, [messages, saveHistory, isCaseStudyActive]);
 
   // Update question count based on messages
   useEffect(() => {
@@ -208,15 +238,16 @@ export default function ChallengePage() {
     setQuestionCount(count);
   }, [messages]);
 
-  // Auto-save progress items to session whenever they change (simple full state save)
+  // Auto-save progress items to session whenever they change
   useEffect(() => {
-    // Save the exact progress items state for perfect restoration on refresh
-    saveChallengeProgress(progressItems);
-  }, [progressItems]);
+    if (!isCaseStudyActive) {
+      saveChallengeProgress(progressItems);
+    }
+  }, [progressItems, isCaseStudyActive]);
 
   // Client-side fallback: Auto-show Analyze Market button when all required fields are complete
   useEffect(() => {
-    if (areRequiredFieldsComplete(progressItems) && !challengeSummary) {
+    if (areRequiredFieldsComplete(progressItems) && !challengeSummary && !isCaseStudyActive) {
       const summary: Challenge = {
         problem: progressItems.find(i => i.id === "problem")?.excerpt || "",
         targetAudience: progressItems.find(i => i.id === "targetAudience")?.excerpt || "",
@@ -226,7 +257,7 @@ export default function ChallengePage() {
       };
       setChallengeSummary(summary);
     }
-  }, [progressItems, challengeSummary]);
+  }, [progressItems, challengeSummary, isCaseStudyActive]);
 
   // Helper functions
   const calculateProgress = (items: ProgressItem[]) => {
@@ -266,6 +297,11 @@ export default function ChallengePage() {
   };
 
   const handleSendMessage = async (messageContent?: string) => {
+    // In case study mode, don't send messages
+    if (isCaseStudyActive) {
+      return;
+    }
+
     const contentToSend = messageContent || inputValue;
     if (!contentToSend.trim() || isLoading) return;
 
@@ -422,6 +458,12 @@ export default function ChallengePage() {
   };
 
   const handleContinue = () => {
+    if (isCaseStudyActive) {
+      // In case study mode, just navigate - no save needed
+      router.push("/market");
+      return;
+    }
+
     const challenge: Challenge = {
       problem: progressItems.find(i => i.id === "problem")?.excerpt || "",
       targetAudience: progressItems.find(i => i.id === "targetAudience")?.excerpt || "",
@@ -436,6 +478,8 @@ export default function ChallengePage() {
   };
 
   const handleEditField = (itemId: string) => {
+    if (isCaseStudyActive) return;
+
     const editPrompts: Record<string, string> = {
       problem: "I'd like to add more details about the problem statement",
       targetAudience: "I'd like to provide more information about the target audience",
@@ -453,6 +497,8 @@ export default function ChallengePage() {
   };
 
   const handleConfirmChip = async (itemId: string, confirmed: boolean) => {
+    if (isCaseStudyActive) return;
+
     if (confirmed) {
       setProgressItems((prev) => {
         const updated = prev.map((item) => {
@@ -541,14 +587,6 @@ export default function ChallengePage() {
               setProgressItems((prev) => {
                 const updated = prev.map((item) => {
                   if (field && item.id === field) {
-                    if (status === "complete") {
-                      const message = getCelebrationMessage(item.id);
-                      if (message) {
-                        setCelebrationMessage(message);
-                        setTimeout(() => setCelebrationMessage(null), 3000);
-                      }
-                    }
-
                     return {
                       ...item,
                       status: status as "gathering" | "awaiting_confirmation" | "complete",
@@ -632,6 +670,8 @@ export default function ChallengePage() {
   };
 
   const handleConfirm = async (itemId: string) => {
+    if (isCaseStudyActive) return;
+
     const confirmMessage: Message = {
       id: Date.now().toString(),
       role: "user",
@@ -786,7 +826,7 @@ export default function ChallengePage() {
     setShowTour(true);
   };
 
-  // Sample prompts
+  // Sample prompts (only in non-case-study mode)
   const allSamplePrompts = [
     "I want to improve remote team collaboration",
     "Small businesses struggle with inventory management",
@@ -801,9 +841,11 @@ export default function ChallengePage() {
   const [displayedPrompts, setDisplayedPrompts] = useState<string[]>([]);
 
   useEffect(() => {
+    if (isCaseStudyActive) return;
+
     const shuffled = [...allSamplePrompts].sort(() => Math.random() - 0.5);
     setDisplayedPrompts(shuffled.slice(0, 3));
-  }, []);
+  }, [isCaseStudyActive]);
 
   const handleSuggestionClick = async (prompt: string) => {
     await handleSendMessage(prompt);
@@ -812,14 +854,13 @@ export default function ChallengePage() {
   // Handle copying selected text to input
   const handleCopyToInput = (text: string) => {
     setInputValue(inputValue ? `${inputValue} ${text}` : text);
-    // Focus the input
     if (inputRef.current) {
       inputRef.current.focus();
     }
   };
 
   // Custom above-input content for confirmation chips
-  const confirmationChips = !isLoading && progressItems.filter(item => item.status === "awaiting_confirmation").length > 0 ? (
+  const confirmationChips = !isLoading && !isCaseStudyActive && progressItems.filter(item => item.status === "awaiting_confirmation").length > 0 ? (
     <div className="flex flex-wrap gap-2">
       {progressItems
         .filter(item => item.status === "awaiting_confirmation")
@@ -849,7 +890,7 @@ export default function ChallengePage() {
   ) : null;
 
   // Custom above-input content for suggestion chips - static
-  const suggestionChips = !isLoading ? (
+  const suggestionChips = !isLoading && !isCaseStudyActive ? (
     <div className="flex flex-wrap gap-2">
       {displayedPrompts.map((prompt, index) => (
         <button
@@ -864,9 +905,18 @@ export default function ChallengePage() {
     </div>
   ) : null;
 
+  // Case study mode banner in chat
+  const caseStudyBanner = isCaseStudyActive ? (
+    <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-4">
+      <p className="text-sm text-primary font-medium mb-1">📚 Case Study Mode</p>
+      <p className="text-xs text-muted-foreground">You're viewing a real-world success story. Chat is disabled in case study mode. Use the navigation above to explore each phase.</p>
+    </div>
+  ) : null;
+
   // Combine custom chips
-  const aboveInputContent = (confirmationChips || suggestionChips) ? (
+  const aboveInputContent = (confirmationChips || suggestionChips || caseStudyBanner) ? (
     <>
+      {caseStudyBanner}
       {confirmationChips}
       {suggestionChips}
     </>
@@ -874,8 +924,8 @@ export default function ChallengePage() {
 
   return (
     <>
-      {showTour && <InteractiveTour onComplete={handleTourComplete} />}
-      {!showTour && tourCompleted && <WelcomeTooltip />}
+      {showTour && !isCaseStudyActive && <InteractiveTour onComplete={handleTourComplete} />}
+      {!showTour && tourCompleted && !isCaseStudyActive && <WelcomeTooltip />}
 
       <PhaseLayout
         currentStep="challenge"
@@ -883,7 +933,7 @@ export default function ChallengePage() {
         leftPanel={
           <PhaseChat
             title="Conversation"
-            subtitle={`${questionCount} ${questionCount === 1 ? 'question' : 'questions'}`}
+            subtitle={isCaseStudyActive ? "Case Study Walkthrough" : `${questionCount} ${questionCount === 1 ? 'question' : 'questions'}`}
             messages={visibleMessages}
             inputValue={inputValue}
             onInputChange={setInputValue}
@@ -892,7 +942,8 @@ export default function ChallengePage() {
             onRetry={handleRetry}
             onCopyToInput={handleCopyToInput}
             aboveInputContent={aboveInputContent}
-            placeholder="Type your response... (Enter to send)"
+            placeholder={isCaseStudyActive ? "Chat disabled in case study mode" : "Type your response... (Enter to send)"}
+            disabled={isCaseStudyActive}
           />
         }
         rightPanel={
@@ -900,7 +951,9 @@ export default function ChallengePage() {
             <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b bg-background/95">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
-                <h1 className="text-sm font-semibold">Your Progress</h1>
+                <h1 className="text-sm font-semibold">
+                  {isCaseStudyActive ? "Case Study Progress" : "Your Progress"}
+                </h1>
               </div>
             </div>
 
@@ -925,7 +978,7 @@ export default function ChallengePage() {
                   onClick={handleContinue}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  Analyze Market
+                  {isCaseStudyActive ? "Next Phase: Market" : "Analyze Market"}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -933,10 +986,10 @@ export default function ChallengePage() {
           </>
         }
         headerProps={{
-          showRestart: true,
-          onShowTour: handleShowTour,
+          showRestart: !isCaseStudyActive,
+          onShowTour: !isCaseStudyActive ? handleShowTour : undefined,
         }}
-        navProps={undefined} // Custom continue button in right panel
+        navProps={undefined}
       />
     </>
   );

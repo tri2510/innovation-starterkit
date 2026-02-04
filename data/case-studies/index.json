@@ -1,0 +1,656 @@
+{
+  "caseStudies": [
+    {
+      "id": "tesla",
+      "title": "Tesla",
+      "tagline": "Accelerating the World's Transition to Sustainable Energy",
+      "company": "Tesla, Inc.",
+      "yearFounded": 2003,
+      "industry": "Automotive & Energy",
+      "businessModel": "direct-to-consumer",
+      "featured": true,
+      "tags": ["electric-vehicles", "battery-technology", "autonomous-driving", "software-defined", "manufacturing"],
+      "phases": {
+        "challenge": {
+          "problem": "Electric vehicles were perceived as slow, ugly, impractical, and unappealing. The auto industry was entrenched in internal combustion engine (ICE) technology with little innovation in decades.",
+          "targetAudience": "Initially: Wealthy eco-conscious early adopters and tech enthusiasts. Expanded to: Mass market seeking sustainable transportation without compromising performance.",
+          "currentSolutions": "Traditional ICE vehicles (gasoline, polluting), hybrids (Toyota Prius - still uses gas), early EVs (Nissan Leaf - limited range, slow charging)",
+          "keyInsight": "Start with a high-end sports car to prove EVs can be exciting and desirable, then work down-market. Build from the top to change perceptions."
+        },
+        "market": {
+          "marketSize": "$2.8T global automotive market, with EV segment growing from <1% (2012) to 15%+ (2024)",
+          "targetSegment": "Affluent tech enthusiasts and eco-conscious buyers, expanding to mainstream vehicle buyers, plus energy storage customers",
+          "initialTargetMarket": "Silicon Valley wealthy tech workers (2008-2012) - high income, environmental values, early technology adopters",
+          "trends": [
+            "Climate change awareness driving EV adoption",
+            "Battery technology improvements (costs down 87% from 2010-2020)",
+            "Autonomous driving technology advancement",
+            "Government incentives for EVs",
+            "Software-defined vehicles becoming expectation"
+          ],
+          "competitors": [
+            "Traditional automakers (BMW, Mercedes) - slow to EV transition",
+            "BYD - Chinese EV giant with cost advantage",
+            "Rivian - EV pickup and delivery van focus",
+            "Lucid Motors - luxury EV with longer range"
+          ],
+          "opportunities": [
+            "First-mover advantage in premium EV segment",
+            "Vertical integration (battery manufacturing, software)",
+            "Supercharger network as competitive moat",
+            "Energy storage market (Powerwall, grid-scale)",
+            "Autonomous driving as subscription revenue"
+          ],
+          "keyInsight": "The competitive advantage isn't just the car - it's the ecosystem: Supercharger network, over-the-air updates, and vertical integration of battery technology."
+        },
+        "ideation": {
+          "initialIdea": "Build an electric sports car that would be faster and more exciting than gasoline cars, proving EVs could be desirable, not just practical.",
+          "pivots": [
+            "From licensing Lotus chassis → building complete vehicles from scratch (Model S)",
+            "From sports car only → sedan, SUV, truck, semi-truck",
+            "From selling patents → opening patents to accelerate industry EV adoption",
+            "From car company → energy company (solar, storage)"
+          ],
+          "finalValueProp": "Build the best car, and make it electric. Accelerate the world's transition to sustainable energy.",
+          "keyFeatures": [
+            "Long-range battery (300-500+ miles)",
+            "Supercharger network (fast charging)",
+            "Over-the-air software updates",
+            "Autopilot / Full Self-Driving capability",
+            "Minimalist interior with large touchscreen",
+            "Frunk (front trunk) thanks to no engine"
+          ],
+          "mvpFeatures": [
+            "Electric Roadster based on Lotus chassis",
+            "Lithium-ion battery pack",
+            "Basic charging infrastructure",
+            "Performance specs (0-60 in 3.7 seconds)",
+            "Premium interior and design"
+          ],
+          "uniqueSellingPoints": [
+            "Best-in-class acceleration and performance",
+            "Largest fast-charging network",
+            "Continuous improvement via OTA updates",
+            "Industry-leading battery technology",
+            "Integrated ecosystem (cars + solar + storage)"
+          ],
+          "keyInsight": "Over-the-air updates transform cars from static products into continuously improving platforms, adding features and fixing bugs without dealership visits."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "$7.5M initial Series A, eventually raised $20B+ before profitable",
+          "useOfFunds": [
+            {"category": "R&D", "amount": "35%", "description": "Battery technology, Autopilot, vehicle design"},
+            {"category": "Manufacturing", "amount": "30%", "description": "Gigafactories, production lines, tooling"},
+            {"category": "Supercharger Network", "amount": "15%", "description": "Charging infrastructure deployment globally"},
+            {"category": "Sales & Service", "amount": "20%", "description": "Direct sales, service centers, showrooms"}
+          ],
+          "revenueModel": "Direct vehicle sales (avg $50K per car), plus energy products (Powerwall, Solar), software revenue (FSD subscription $12K or $199/month)",
+          "projections": {
+            "year1": {"revenue": "$15M", "vehicles": "100", "markets": "US only"},
+            "year2": {"revenue": "$200M", "vehicles": "2,500", "markets": "US + Europe"},
+            "year3": {"revenue": "$2B", "vehicles": "25K", "markets": "North America, Europe, Asia"}
+          },
+          "initialInvestment": "$7.5M Series A led by Valor Equity Partners (2006), including Elon Musk's $6.5M",
+          "fundingRounds": [
+            {"round": "Series A", "amount": "$7.5M", "investors": ["Valor Equity Partners", "Capricorn Investment Group"], "date": "2006"},
+            {"round": "Series B", "amount": "$40M", "investors": ["Technology Partners"], "date": "2007"},
+            {"round": "Series C", "amount": "$45M", "investors": ["VantagePoint Capital Partners"], "date": "2008"},
+            {"round": "Series D", "amount": "$50M", "investors": ["Daimler", "Fidelity"], "date": "2009"},
+            {"round": "IPO", "amount": "$226M", "investors": ["Public"], "date": "2010"},
+            {"round": "Secondary", "amount": "$2B", "investors": ["Public markets"], "date": "2020"}
+          ],
+          "breakEvenTimeframe": "First annual profit in 2020 (17 years after founding), after delivering 500K vehicles",
+          "roi": "2000x+ return from early investment to peak (2021)",
+          "keyInsight": "Vertical integration was expensive but necessary - owning battery production, software, and manufacturing gave Tesla cost advantages and control that competitors couldn't match."
+        },
+        "pitch": {
+          "title": "Accelerating Sustainable Energy",
+          "tagline": "Build the best car, then make it electric",
+          "traction": "500 Roadsters produced (2008-2012), 2,500 Model S in first year (2012). Now 1.8M+ vehicles delivered annually, leading EV market share.",
+          "team": "Elon Musk (CEO, product visionary), JB Straubel (CTO, battery technology), Franz von Holzhausen (Chief Designer). Engineering and design excellence.",
+          "ask": "$40M Series B to fund Model S development, build manufacturing capability. Critical funding for scaling from niche Roadster to mass-market sedan.",
+          "keySlides": [
+            "Problem: Cars are polluting, dependent on oil, and not improving",
+            "Solution: Electric vehicles are better - faster, safer, cheaper to operate",
+            "Product: Model S - premium sedan, 300-mile range, 0-60 in 4.4 seconds",
+            "Technology: Proprietary battery packs, over-the-air updates",
+            "Market: $2.8T auto market, early in EV transition",
+            "Team: Silicon Valley approach to auto manufacturing"
+          ],
+          "keyInsight": "The pitch reframed Tesla as a technology company, not just a car company. Silicon Valley talent and methods applied to manufacturing was the core narrative."
+        }
+      },
+      "metrics": {
+        "roi": "2000x+ return from early investment to peak (2021)",
+        "timeframe": "17 years to first profit (2003-2020)",
+        "marketImpact": "Forced entire auto industry to accelerate EV plans, 1.8M+ vehicles annually, $800B+ market cap at peak"
+      },
+      "keyLearnings": [
+        "Start high-end to build brand perception, then go mass market",
+        "Vertical integration is hard but creates competitive advantages",
+        "Software-defined products enable continuous improvement after sale",
+        "First-mover advantage in major transitions (ICE to EV) is massive",
+        "Direct-to-consumer sales bypasses dealer resistance to EVs"
+      ]
+    },
+    {
+      "id": "siemens-mindphere",
+      "title": "Siemens MindSphere",
+      "tagline": "The IoT Operating System for Industry",
+      "company": "Siemens AG",
+      "yearFounded": 2016,
+      "industry": "Industrial IoT & Software",
+      "businessModel": "platform",
+      "featured": true,
+      "tags": ["iot", "industrial", "platform", "data-analytics", "manufacturing"],
+      "phases": {
+        "challenge": {
+          "problem": "Industrial companies had massive amounts of machine data but no way to collect, analyze, or act on it in real-time. Equipment failures were reactive rather than predictive, causing unplanned downtime and lost productivity.",
+          "targetAudience": "Manufacturing companies, energy producers, and industrial enterprises with connected equipment seeking digital transformation",
+          "currentSolutions": "On-premise SCADA systems (siloed, expensive), legacy monitoring (limited analytics), manual inspections (reactive, inefficient)",
+          "keyInsight": "Industrial data was trapped in silos. The opportunity wasn't just collecting data - it was creating a platform that could analyze data across equipment types and manufacturers."
+        },
+        "market": {
+          "marketSize": "$263B global IoT market in industrial applications by 2024, growing at 20% CAGR",
+          "targetSegment": "Fortune 1000 industrial manufacturers, energy companies, and building automation seeking operational efficiency",
+          "initialTargetMarket": "Siemens' existing industrial customer base (2016) - manufacturing plants with Siemens automation equipment already installed",
+          "trends": [
+            "Industry 4.0 and digital transformation",
+            "Predictive maintenance adoption",
+            "Edge computing capabilities",
+            "Cloud-based analytics for industrial",
+            "Sustainability and energy optimization requirements"
+          ],
+          "competitors": [
+            "GE Predix - similar industrial IoT platform",
+            "AWS IoT SiteWise - cloud provider solution",
+            "Microsoft Azure IoT - generalist cloud platform",
+            "ABB Ability - industrial automation with analytics"
+          ],
+          "opportunities": [
+            "Base of 2.5M+ Siemens-installed devices to connect",
+            "Predictive maintenance market ($4B+)",
+            "Energy efficiency regulations driving data needs",
+            "Manufacturing skill shortage requiring automation",
+            "Digital transformation budgets in industrial companies"
+          ],
+          "keyInsight": "Siemens' installed base of equipment was the unfair advantage - MindSphere could connect to existing Siemens devices better than any competitor's platform."
+        },
+        "ideation": {
+          "initialIdea": "Create a cloud-based IoT platform to collect data from Siemens industrial equipment, analyze it for insights, and enable applications to improve operations",
+          "pivots": [
+            "From proprietary-only → open platform supporting multiple equipment vendors",
+            "From manufacturing focus → energy, buildings, transportation",
+            "From PaaS only → Marketplace for industrial apps",
+            "From cloud-only → hybrid (edge + cloud) architecture"
+          ],
+          "finalValueProp": "MindSphere is the IoT operating system that connects your products, plants, systems, and machines to reveal actionable insights.",
+          "keyFeatures": [
+            "Connect to any industrial equipment (protocols: OPC UA, MQTT)",
+            "Time-series data storage and management",
+            "Analytics and machine learning capabilities",
+            "Fleet management across multiple sites",
+            "App marketplace for industrial applications",
+            "Edge computing for low-latency processing"
+          ],
+          "mvpFeatures": [
+            "Data connectivity from Siemens devices",
+            "Cloud storage for time-series data",
+            "Basic analytics dashboards",
+            "Alert and notification system",
+            "API for third-party developers"
+          ],
+          "uniqueSellingPoints": [
+            "Deep integration with Siemens automation equipment",
+            "Industry-specific analytics templates",
+            "Hybrid edge-cloud architecture",
+            "App store model for industrial solutions",
+            "Enterprise-grade security and compliance"
+          ],
+          "keyInsight": "Platform strategy: Don't build all applications yourself. Create APIs and let partners and customers build industry-specific solutions on top of your infrastructure."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "Internal Siemens investment of €500M+ for platform development and go-to-market",
+          "useOfFunds": [
+            {"category": "Platform Development", "amount": "40%", "description": "Cloud infrastructure, data platform, APIs"},
+            {"category": "Partner Ecosystem", "amount": "25%", "description": "App marketplace, developer tools, partner programs"},
+            {"category": "Sales & Marketing", "amount": "20%", "description": "Enterprise sales, industry marketing, customer success"},
+            {"category": "Support & Services", "amount": "15%", "description": "Implementation, onboarding, technical support"}
+          ],
+          "revenueModel": "SaaS platform subscription: monthly fees based on data volume ($0.50/GB) + device count + app marketplace revenue share (30%)",
+          "projections": {
+            "year1": {"revenue": "€20M", "connected_devices": "100K", "customers": "50"},
+            "year2": {"revenue": "€100M", "connected_devices": "500K", "customers": "300"},
+            "year3": {"revenue": "€400M", "connected_devices": "2M", "customers": "1000"}
+          },
+          "initialInvestment": "€500M internal investment from Siemens Digital Industries division",
+          "fundingRounds": [
+            {"round": "Internal Investment", "amount": "€500M+", "investors": ["Siemens AG"], "date": "2016-2020"}
+          ],
+          "breakEvenTimeframe": "Expected 5-7 years to profitability due to heavy platform investment, but cross-sells to Siemens automation products improve overall economics",
+          "roi": "Platform enables $10B+ in Siemens automation product sales through digital differentiation",
+          "keyInsight": "For an industrial incumbent, platform ROI isn't just direct revenue - it's about protecting and growing core product sales by adding digital capabilities."
+        },
+        "pitch": {
+          "title": "Industrial IoT Platform",
+          "tagline": "Connect your machines. Unlock your data. Transform your business.",
+          "traction": "Launched in 2016, scaled to 2M+ connected devices by 2021. Now 1000+ enterprise customers across manufacturing, energy, and buildings.",
+          "team": "Siemens Digital Industries leadership, combining industrial automation expertise with cloud software talent from acquisitions",
+          "ask": "Internal investment to build platform and partner ecosystem before competitors could establish dominance",
+          "keySlides": [
+            "Problem: Industrial data is trapped in equipment silos, unused for optimization",
+            "Solution: Cloud-based IoT platform connecting all equipment, regardless of vendor",
+            "Market: $263B industrial IoT market, 20% annual growth",
+            "Advantage: 2.5M+ Siemens-installed devices as base, deep domain expertise",
+            "Business Model: Platform subscription + app marketplace revenue share",
+            "Vision: Operating system for Industry 4.0 - the backbone of digital transformation"
+          ],
+          "keyInsight": "The pitch to industrial customers focused on protecting existing CAPEX investments by adding digital capabilities without replacing equipment - a key concern for conservative industrial buyers."
+        }
+      },
+      "metrics": {
+        "roi": "Platform enables $10B+ in Siemens automation product sales",
+        "timeframe": "Ongoing since 2016",
+        "marketImpact": "2M+ connected devices, 1000+ enterprise customers, established Siemens as IoT platform leader"
+      },
+      "keyLearnings": [
+        "Installed base is an unfair advantage - leverage existing customer relationships",
+        "Platform strategy beats building everything - enable partners and customers",
+        "Industrial customers need hybrid (edge + cloud) for latency and reliability",
+        "Domain expertise matters more than generic cloud capabilities",
+        "Digital transformation requires patience - enterprises move slowly"
+      ]
+    },
+    {
+      "id": "nest",
+      "title": "Nest",
+      "tagline": "The Learning Thermostat",
+      "company": "Nest Labs, Inc. (acquired by Google)",
+      "yearFounded": 2010,
+      "industry": "Smart Home / IoT",
+      "businessModel": "hardware-plus-software",
+      "featured": true,
+      "tags": ["smart-home", "iot", "energy-efficiency", "design", "machine-learning"],
+      "phases": {
+        "challenge": {
+          "problem": "Thermostats were ugly, confusing, and programmable features were too complex for most users. 90% of people never programmed their thermostats, wasting energy and money.",
+          "targetAudience": "Homeowners with central heating/cooling, particularly tech-savvy and design-conscious consumers wanting energy savings without complexity",
+          "currentSolutions": "Traditional programmable thermostats (complex interfaces), manual thermostats (no programming), smart thermostats from utilities (ugly, limited features)",
+          "keyInsight": "The problem wasn't functionality - it was usability. Great design and machine learning could make energy savings effortless instead of requiring programming."
+        },
+        "market": {
+          "marketSize": "$3B smart thermostat market, part of $80B smart home market",
+          "targetSegment": "Homeowners aged 30-55 with tech interest, design appreciation, and environmental awareness. Strong initial adoption in coastal urban areas.",
+          "initialTargetMarket": "Silicon Valley and San Francisco tech workers (2011) - high income, environmental values, early technology adopters",
+          "trends": [
+            "Smart home device proliferation",
+            "Energy costs rising globally",
+            "Consumer demand for design aesthetics",
+            "Smartphone adoption enabling remote control",
+            "Machine learning becoming practical for consumer devices"
+          ],
+          "competitors": [
+            "Honeywell/Resideo - traditional thermostats, industrial design",
+            "Ecobee - smart thermostat with room sensors",
+            "Honeywell Lyric - reactive smart thermostat product",
+            "Utility-provided programmable thermostats (ugly, basic)"
+          ],
+          "opportunities": [
+            "No thermostat had focused on design as differentiator",
+            "Energy rebate programs from utilities",
+            "Smartphone as control interface (no need for complex on-device UI)",
+            "Machine learning could automate scheduling instead of requiring manual programming",
+            "Platform expansion (smoke detectors, cameras, doorbells)"
+          ],
+          "keyInsight": "First smart home device that consumers actually wanted to display in their home. Design wasn't just aesthetic - it was a feature that drove adoption and word-of-mouth."
+        },
+        "ideation": {
+          "initialIdea": "Build a beautiful, simple thermostat that learns your schedule automatically, programs itself, and can be controlled from your phone",
+          "pivots": [
+            "From thermostat only → platform of smart home devices",
+            "From consumer direct → partnerships with energy utilities",
+            "From selling devices → energy services (Rush Hour Rewards)",
+            "From standalone → integration with broader smart home ecosystems"
+          ],
+          "finalValueProp": "The Nest Learning Thermostat programs itself in a week and turns itself down when you're away to help save energy.",
+          "keyFeatures": [
+            "Auto-schedule - learns your preferences in a week",
+            "Auto-away - detects when you leave, turns down HVAC",
+            "Remote control via smartphone apps",
+            "Energy history and reports",
+            "Airwave feature for AC efficiency",
+            "Farsight - shows target temperature or time, wakes on approach"
+          ],
+          "mvpFeatures": [
+            "Beautiful circular design with metal dial",
+            "Learning algorithms for schedule",
+            "Motion sensors to detect occupancy",
+            "Wi-Fi connectivity for remote control",
+            "iPhone and Android apps",
+            "Basic energy usage reporting"
+          ],
+          "uniqueSellingPoints": [
+            "Design trophy - looks like premium Apple product",
+            "Learns automatically, no programming required",
+            "Saves average 10-12% on heating, 15% on cooling",
+            "Half of installation done by users (DIY)",
+            "Integrates with utilities for rebates and demand response"
+          ],
+          "keyInsight": "Motion sensors were the breakthrough feature - they enabled 'auto-away' which delivered energy savings without user intervention, proving the value proposition immediately."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "$20M initial VC funding, eventually raised $80M before acquisition",
+          "useOfFunds": [
+            {"category": "Hardware Development", "amount": "40%", "description": "Industrial design, engineering, certification"},
+            {"category": "Software & Cloud", "amount": "25%", "description": "Apps, cloud services, machine learning algorithms"},
+            {"category": "Manufacturing", "amount": "20%", "description": "Tooling, inventory, supply chain"},
+            {"category": "Sales & Marketing", "amount": "15%", "description": "Retail partnerships, brand building, installers"}
+          ],
+          "revenueModel": "Hardware sales ($249 MSRP per unit) + installation services + utility partnership revenue (Rush Hour Rewards program)",
+          "projections": {
+            "year1": {"revenue": "$10M", "units": "40K", "markets": "US only"},
+            "year2": {"revenue": "$100M", "units": "400K", "markets": "US + Canada + Europe"},
+            "year3": {"revenue": "$300M", "units": "1.2M", "markets": "North America, Europe, Asia"}
+          },
+          "initialInvestment": "$20M Series A from Kleiner Perkins, Shasta Ventures, and Google Ventures to fund initial development and launch",
+          "fundingRounds": [
+            {"round": "Series A", "amount": "$20M", "investors": ["Kleiner Perkins", "Shasta Ventures", "Google Ventures"], "date": "2010"},
+            {"round": "Series B", "amount": "$20M", "investors": ["Venrock", "Generation Investment"], "date": "2011"},
+            {"round": "Series C", "amount": "$40M", "investors": ["KPCB", "Google Ventures"], "date": "2012"},
+            {"round": "Acquisition", "amount": "$3.2B", "investors": ["Google"], "date": "2014"}
+          ],
+          "breakEvenTimeframe": "Profitable before acquisition in 2014, with $300M+ annual revenue run rate",
+          "roi": "40x return from total VC investment to $3.2B acquisition by Google",
+          "keyInsight": "Hardware startups are capital-intensive, but premium pricing and high gross margins (70%+) made Nest attractive. Platform potential expanded the valuation significantly."
+        },
+        "pitch": {
+          "title": "The Learning Thermostat",
+          "tagline": "Programs itself. Pays for itself.",
+          "traction": "Sold 40K units in first month (2011), 1M units by 2013. Controlled by 1% of US thermostats within 3 years despite $249 price.",
+          "team": "Tony Fadell (CEO, 'father of the iPod'), Matt Rogers (co-founder, former Apple engineer). Hardware and design excellence from Apple alumni.",
+          "ask": "$20M Series A to fund product development, manufacturing tooling, and go-to-market for first product launch",
+          "keySlides": [
+            "Problem: 90% of people don't program their thermostats, wasting energy",
+            "Solution: Beautiful thermostat that learns your schedule automatically",
+            "Market: 250M US thermostats, most outdated, $80B smart home opportunity",
+            "Product: Apple-quality design, machine learning algorithms, smartphone control",
+            "Business: Premium hardware, high margins, platform potential",
+            "Team: Apple alumni who built iPod, understanding of consumer hardware"
+          ],
+          "keyInsight": "The pitch combined Apple-quality design credentials with massive energy savings data. Investors bought into the 'thermostat as the first smart home device' vision."
+        }
+      },
+      "metrics": {
+        "roi": "40x return from VC investment to $3.2B acquisition",
+        "timeframe": "4 years from founding to acquisition (2010-2014)",
+        "marketImpact": "1M+ thermostats sold, defined smart home design standards, launched the modern IoT market"
+      },
+      "keyLearnings": [
+        "Design is a feature, not just aesthetics - beautiful products sell themselves",
+        "Machine learning can solve usability problems (auto-programming vs manual)",
+        "Premium pricing works when product quality and user experience justify it",
+        "Partner with utilities for rebates - they benefit from energy savings too",
+        "Start with one category-defining product, then expand platform"
+      ]
+    },
+    {
+      "id": "dji",
+      "title": "DJI",
+      "tagline": "The Future of Possible",
+      "company": "DJI Technology Co.",
+      "yearFounded": 2006,
+      "industry": "Robotics & Drones",
+      "businessModel": "hardware-plus-software",
+      "featured": true,
+      "tags": ["robotics", "drones", "camera-technology", "manufacturing", "dual-use"],
+      "phases": {
+        "challenge": {
+          "problem": "Drones were expensive, difficult to fly, and unstable. Industrial and commercial applications were limited by unreliable technology, while consumer market was virtually non-existent due to poor user experience.",
+          "targetAudience": "Initially: Hobbyists and RC enthusiasts. Expanded to: Photographers, filmmakers, agriculture, construction, inspection, enterprise/industrial users",
+          "currentSolutions": "Custom-built DIY drones (unreliable), military drones (expensive, restricted), RC helicopters (hard to fly, limited payload)",
+          "keyInsight": "Flight stability and intelligent flight modes would unlock the market. Making drones easy to fly through software and sensors was the breakthrough needed."
+        },
+        "market": {
+          "marketSize": "$30B+ global drone market by 2024, with consumer drones at $5B+ and commercial/industrial at $25B+",
+          "targetSegment": "Photographers and videographers seeking aerial shots, agricultural enterprises for crop monitoring, construction for site surveying, industrial inspection",
+          "initialTargetMarket": "RC hobbyists and photography enthusiasts in China and US (2008-2012) - willing to pay for premium, early adopters of new technology",
+          "trends": [
+            "Camera sensor miniaturization",
+            "Battery technology improvements (lithium-polymer)",
+            "MEMS sensors becoming affordable",
+            "Smartphone processing power enabling on-board computing",
+            "Commercial drone regulations being established"
+          ],
+          "competitors": [
+            "3D Robotics - open source approach, failed to scale manufacturing",
+            "Parrot - AR Drone for consumers, limited enterprise focus",
+            "Autel Robotics - Chinese competitor, lower price",
+            "Skydio - US-based, focused on autonomous flight"
+          ],
+          "opportunities": [
+            "No dominant player in consumer drone space",
+            "Film and photography industry ready for aerial capabilities",
+            "Agriculture needs crop monitoring at scale",
+            "Construction and infrastructure inspection markets underserved",
+            "Gimbal technology could stabilize any camera, not just on drones"
+          ],
+          "keyInsight": "Vertical integration - controlling both hardware and software - allowed DJI to deliver integrated experience that competitors couldn't match with piecemeal solutions."
+        },
+        "ideation": {
+          "initialIdea": "Build flight controller systems for RC helicopters, evolving to complete drone systems with stabilized camera gimbals",
+          "pivots": [
+            "From flight controllers only → complete drone systems",
+            "From hobbyist components → prosumer photography drones",
+            "From consumer only → enterprise/industrial applications",
+            "From drones only → camera stabilizers (Ronin series), handheld gimbals"
+          ],
+          "finalValueProp": "DJI drones give anyone the ability to capture stunning aerial imagery easily and safely. Professional tools now accessible to everyone.",
+          "keyFeatures": [
+            "GPS-assisted flight stabilization",
+            "Intelligent flight modes (follow me, waypoint navigation)",
+            "Integrated 3-axis gimbal for stable footage",
+            "Obstacle avoidance sensors",
+            "Return-to-home on low battery or signal loss",
+            "Mobile app control with live HD video feed"
+          ],
+          "mvpFeatures": [
+            "Flamewheel flight controller for DIY builders",
+            "Phantom 1 - ready-to-fly quadcopter with GoPro mount",
+            "Basic GPS stabilization",
+            "Remote controller with smartphone mount",
+            "Flight time of 10-15 minutes"
+          ],
+          "uniqueSellingPoints": [
+            "Out-of-the-box experience - no assembly required",
+            "Professional quality footage at consumer prices",
+            "Intelligent flight modes make flying easy",
+            "Camera integration is seamless - not an add-on",
+            "Modular design with accessory ecosystem"
+          ],
+          "keyInsight": "The Phantom series was the breakthrough - ready-to-fly with integrated camera. Prior drones required assembly and separate camera purchases, limiting market to hobbyists."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "$500K initial seed from founder's savings, bootstrapped to profitability",
+          "useOfFunds": [
+            {"category": "R&D", "amount": "35%", "description": "Flight control algorithms, gimbal design, camera development"},
+            {"category": "Manufacturing", "amount": "30%", "description": "Tooling, supply chain, quality control"},
+            {"category": "Software & Cloud", "amount": "20%", "description": "Mobile apps, flight control software, cloud services"},
+            {"category": "Marketing & Sales", "amount": "15%", "description": "Brand building, retail partnerships, enterprise sales"}
+          ],
+          "revenueModel": "Hardware sales (drones $500-$15K+, cameras $1K-$5K, gimbals $200-$3K) + software services (enterprise cloud, data analysis)",
+          "projections": {
+            "year1": {"revenue": "$5M", "units": "5K", "markets": "China hobbyist"},
+            "year2": {"revenue": "$50M", "units": "50K", "markets": "China + US consumer"},
+            "year3": {"revenue": "$300M", "units": "300K", "markets": "Global consumer + enterprise"}
+          },
+          "initialInvestment": "$500K from founder Frank Wang's university savings and early revenue from flight controller sales",
+          "fundingRounds": [
+            {"round": "Bootstrapped", "amount": "Self-funded", "investors": ["Founder's savings"], "date": "2006"},
+            {"round": "Venture", "amount": "$10M+", "investors": ["Sequoia Capital China", "Green Pine Capital"], "date": "2015"}
+          ],
+          "breakEvenTimeframe": "Profitable within 3 years of founding, achieved through rapid growth and market dominance",
+          "roi": "Estimated 1000x+ return from early investment to $15B+ valuation",
+          "keyInsight": "Bootstrapping to profitability maintained control and allowed long-term R&D investment. Venture capital came later for scaling, not survival."
+        },
+        "pitch": {
+          "title": "The Future of Possible",
+          "tagline": "Professional aerial photography, accessible to everyone",
+          "traction": "2008: Started with flight controllers. 2013: Phantom launched, sold 1M units by 2015. Now holds 70%+ global drone market share across consumer and enterprise.",
+          "team": "Frank Wang (CEO, engineer), founded in dorm room at Hong Kong University of Science and Technology. Engineering-focused culture.",
+          "ask": "Initial funding from personal savings, later $10M+ VC to scale manufacturing and expand globally",
+          "keySlides": [
+            "Problem: Drones are hard to fly, unreliable, and limited to hobbyists",
+            "Solution: Integrated drone systems that anyone can fly, with professional results",
+            "Market: $30B drone market, consumer photography just the beginning",
+            "Technology: Proprietary flight control, gimbal stabilization, intelligent flight",
+            "Advantage: Vertical integration - hardware, software, manufacturing all in-house",
+            "Vision: Drones as tool for photography, agriculture, inspection, rescue operations"
+          ],
+          "keyInsight": "DJI focused on making professional-quality aerial photography accessible to anyone, not just professional filmmakers. This democratization created mass market."
+        }
+      },
+      "metrics": {
+        "roi": "Estimated 1000x+ return from early investment to $15B+ valuation",
+        "timeframe": "18 years to market leadership (2006-2024)",
+        "marketImpact": "70%+ global drone market share, defined consumer drone category, expanded to enterprise/industrial applications"
+      },
+      "keyLearnings": [
+        "Vertical integration is competitive advantage - control hardware, software, and manufacturing",
+        "Make professional quality accessible to mass market - democratization creates larger opportunity",
+        "China manufacturing advantage - proximity to supply chain enables rapid iteration",
+        "Dual-use strategy: consumer for scale, enterprise for margin expansion",
+        "Integration matters: camera built into drone beats add-on camera solution"
+      ]
+    },
+    {
+      "id": "abb-yumi",
+      "title": "ABB YuMi",
+      "tagline": "You and Me Working Together",
+      "company": "ABB Ltd.",
+      "yearFounded": 2015,
+      "industry": "Industrial Robotics & Automation",
+      "businessModel": "industrial-product",
+      "featured": true,
+      "tags": ["collaborative-robots", "manufacturing", "human-robot-collaboration", "automation", "safety"],
+      "phases": {
+        "challenge": {
+          "problem": "Industrial robots were expensive, dangerous, and required safety cages. They couldn't work alongside humans, limiting automation to large-scale production. Small and medium manufacturers couldn't justify traditional robot investments.",
+          "targetAudience": "Electronics assembly, small parts assembly, and light manufacturing where human dexterity was still needed. Expanded to: automotive, food & beverage, pharmaceuticals",
+          "currentSolutions": "Traditional industrial robots (fast but dangerous, require caging), manual assembly (slow, inconsistent quality, expensive labor), hard automation (inflexible)",
+          "keyInsight": "Making robots safe enough to work directly with humans would unlock automation for millions of tasks that previously required manual labor."
+        },
+        "market": {
+          "marketSize": "$14B collaborative robot (cobot) market within $50B+ industrial robotics market, growing at 20%+ CAGR",
+          "targetSegment": "Manufacturers seeking automation for high-mix, low-volume production where traditional robots aren't cost-effective",
+          "initialTargetMarket": "Electronics assembly manufacturers (2015-2017) - high precision requirements, repetitive tasks, labor cost pressures",
+          "trends": [
+            "Labor shortages in manufacturing",
+            "Need for flexible automation (high-mix production)",
+            "Rising labor costs in developed markets",
+            "Quality consistency requirements",
+            "Sensor technology enabling safe human-robot collaboration"
+          ],
+          "competitors": [
+            "Universal Robots - first cobot to market (2008), Denmark-based",
+            "Rethink Robotics (Baxter) - failed, shut down 2018",
+            "Fanuc CRX series - industrial giant entering cobots",
+            "KUKA LBR iisy - German cobot competitor"
+          ],
+          "opportunities": [
+            "Only 3% of potential tasks are automated today - massive expansion opportunity",
+            "Small/medium manufacturers can now afford automation",
+            "Cobots can redeploy workers to higher-value tasks",
+            "Shorter ROI than traditional robots (1-2 years vs 3-5 years)",
+            "Dual-arm robots can do two-handed assembly tasks"
+          ],
+          "keyInsight": "The market wasn't just replacing humans - it was augmenting human capabilities. Cobots handle repetitive tasks while humans handle judgment and decision-making."
+        },
+        "ideation": {
+          "initialIdea": "Build a dual-arm collaborative robot that could safely work alongside humans, performing small parts assembly tasks with human-like dexterity",
+          "pivots": [
+            "From research prototype → commercial product",
+            "From single-arm only → dual-arm for two-handed tasks",
+            "From general purpose → pre-engineered application solutions",
+            "From sales only → Robot Studio simulation software for deployment"
+          ],
+          "finalValueProp": "YuMi is a collaborative dual-arm robot designed to handle small parts assembly with human-level precision while working safely alongside people.",
+          "keyFeatures": [
+            "Dual 7-axis arms with human-like range of motion",
+            "Soft, padded surfaces for safe human contact",
+            "Force-sensing technology for gentle handling",
+            "Vision system for part recognition",
+            "Flexible grippers (suction, parallel jaw)",
+            "Intuitive programming - teach by demonstration"
+          ],
+          "mvpFeatures": [
+            "Dual-arm configuration with 7 DOF each",
+            "Force limiting sensors for safety",
+            "Soft, padded robot body",
+            "Vision-guided part recognition",
+            "Hand-guiding programming mode",
+            "Safety-rated stop on human contact"
+          ],
+          "uniqueSellingPoints": [
+            "First dual-arm cobot for two-handed assembly",
+            "Certified safe for human collaboration (ISO standard)",
+            "Compact design fits into existing workcells",
+            "Can handle parts as small as 1mm",
+            "ABB's global service and support network",
+            "Integration with ABB's broader automation portfolio"
+          ],
+          "keyInsight": "Two-handed dexterity was the breakthrough - single-arm robots couldn't handle assembly tasks that humans did easily (holding component while inserting). YuMi's dual arms solved this."
+        },
+        "investment-appraisal": {
+          "fundingNeeded": "Internal R&D investment of $50M+ over 5 years, plus go-to-market investment",
+          "useOfFunds": [
+            {"category": "R&D", "amount": "40%", "description": "Robot design, safety certification, vision system development"},
+            {"category": "Manufacturing", "amount": "25%", "description": "Production setup, supply chain, quality systems"},
+            {"category": "Sales & Marketing", "amount": "20%", "description": "Application engineering, customer demonstrations, training"},
+            {"category": "Service & Support", "amount": "15%", "description": "Installation, programming support, maintenance network"}
+          ],
+          "revenueModel": "Hardware sales ($40K-$60K per unit) + software (Robot Studio) + annual service contracts (10-15% of hardware price) + application engineering services",
+          "projections": {
+            "year1": {"revenue": "$10M", "units": "250", "markets": "Europe electronics"},
+            "year2": {"revenue": "$50M", "units": "1,250", "markets": "Europe + North America"},
+            "year3": {"revenue": "$150M", "units": "3,750", "markets": "Global"}
+          },
+          "initialInvestment": "$50M+ internal R&D investment from ABB's robotics division, leveraging 40+ years of robotics expertise",
+          "fundingRounds": [
+            {"round": "Internal Investment", "amount": "$50M+", "investors": ["ABB Ltd."], "date": "2010-2015"}
+          ],
+          "breakEvenTimeframe": "3-5 years to ROI for customers, ABB's payback on R&D investment through 10+ year product lifecycle and recurring service revenue",
+          "roi": "Enables ABB's position in fast-growing cobot segment, protecting $5B+ robotics business from disruption by cobot specialists",
+          "keyInsight": "For industrial companies, product innovation ROI isn't just direct product margin - it's about protecting core business from disruption and opening new market segments."
+        },
+        "pitch": {
+          "title": "You and Me Working Together",
+          "tagline": "The world's first truly collaborative dual-arm robot",
+          "traction": "Launched at Hannover Messe 2015, global rollout 2016-2017. Now deployed across electronics, automotive, food & beverage, and pharmaceuticals worldwide.",
+          "team": "ABB robotics division with 40+ years industrial automation experience, combining Swiss precision engineering with global manufacturing expertise",
+          "ask": "Internal investment to pioneer collaborative robotics category, positioning ABB as leader in next-generation manufacturing automation",
+          "keySlides": [
+            "Problem: 97% of manufacturing tasks are manual - traditional robots can't handle them",
+            "Solution: Collaborative robots that work safely alongside humans, unlocking new automation opportunities",
+            "Product: Dual-arm robot with human-like dexterity, vision-guided, force-sensing for safety",
+            "Market: $14B cobot market growing 20%+ annually, only 3% of tasks automated",
+            "Advantage: ABB's robotics heritage + global service network + safety certification",
+            "Vision: Future of manufacturing is human-robot collaboration, not replacement"
+          ],
+          "keyInsight": "ABB positioned YuMi not as replacing human workers, but as addressing labor shortages and enabling workers to focus on higher-value tasks while cobots handle repetitive work."
+        }
+      },
+      "metrics": {
+        "roi": "Protects ABB's $5B+ robotics business, positions in $14B cobot market",
+        "timeframe": "5 years development, ongoing since 2015",
+        "marketImpact": "Pioneered dual-arm collaborative robotics, established safety standards for human-robot collaboration, expanded automation to small/medium manufacturers"
+      },
+      "keyLearnings": [
+        "Safety certification is critical for human-robot collaboration - established new standards",
+        "Two-handed dexterity unlocked automation tasks single-arm robots couldn't handle",
+        "Ease of programming (teach by demonstration) is as important as robot capabilities",
+        "Service and support network is competitive advantage vs. startup cobot companies",
+        "Position cobots as augmenting human workers, not replacing them - better adoption"
+      ]
+    }
+  ]
+}

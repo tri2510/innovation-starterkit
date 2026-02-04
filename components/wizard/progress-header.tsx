@@ -17,7 +17,10 @@ import { clearSession, resetPhase, saveStateToFile, loadStateFromFile, getSessio
 import { exportSessionToMarkdown } from "@/lib/export-session";
 import { useRef, useMemo } from "react";
 import { PhaseSummaryTooltip } from "./phase-summary-tooltip";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { ThemeToggle } from "@/components/theme";
+import { CaseStudiesButton } from "@/components/case-studies";
+import { CaseStudyBanner } from "@/components/case-studies/case-study-banner";
+import { useCaseStudy } from "@/contexts/case-study-context";
 
 interface ProgressHeaderProps {
   currentStep: string;
@@ -29,6 +32,7 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
   const pathname = usePathname();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isActive: isCaseStudyActive } = useCaseStudy();
 
   // Get session data for tooltips
   const session = useMemo(() => getSession(), []);
@@ -81,8 +85,14 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
   };
 
   return (
-    <header className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3">
+    <>
+      {/* Case Study Mode Banner */}
+      {isCaseStudyActive && <CaseStudyBanner />}
+
+      {/* Normal Header (hidden in case study mode) */}
+      {!isCaseStudyActive && (
+        <header className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 sticky top-0 z-50">
+          <div className="container mx-auto px-4 py-3">
         {/* Logo + Current Step + Progress */}
         <div className="flex items-center gap-4">
           {/* Logo/Brand - Bigger and more visible */}
@@ -184,9 +194,6 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
             </Button>
           )}
 
-          {/* Theme Toggle */}
-          <ThemeToggle />
-
           {/* Hidden file input for loading state */}
           <input
             ref={fileInputRef}
@@ -195,6 +202,12 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
             className="hidden"
             onChange={handleFileChange}
           />
+
+          {/* Case Studies Button */}
+          <CaseStudiesButton currentStep={currentStep} />
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
           {/* More Menu Dropdown */}
           <DropdownMenu>
@@ -252,5 +265,7 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
         </div>
       </div>
     </header>
+      )}
+    </>
   );
 }

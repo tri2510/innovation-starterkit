@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { TextSelectionProvider } from "@/components/text-selection/text-selection-provider";
+import { CaseStudyProvider } from "@/contexts/case-study-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <TextSelectionProvider>{children}</TextSelectionProvider>
+        <CaseStudyProvider>
+          <TextSelectionProvider>{children}</TextSelectionProvider>
+        </CaseStudyProvider>
       </body>
     </html>
   );

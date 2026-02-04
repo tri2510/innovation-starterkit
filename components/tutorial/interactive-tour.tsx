@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { X, ChevronRight, ChevronLeft, MessageSquare, Layout, Target, Sparkles, Check } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, MessageSquare, Layout, Target, Sparkles, Check, BookOpen } from "lucide-react";
 
 interface TourStep {
   id: string;
@@ -56,6 +56,14 @@ const TOUR_STEPS: TourStep[] = [
     position: "right",
   },
   {
+    id: "case-studies",
+    title: "Learn from Real Innovations",
+    description: "Explore real-world case studies to understand how successful innovations were developed. Learn from actual examples across different industries and business models.",
+    icon: <BookOpen className="h-6 w-6" />,
+    target: "#case-studies-button",
+    position: "left",
+  },
+  {
     id: "complete",
     title: "Ready to Continue!",
     description: "Once all required fields are complete, click 'Analyze Market' to proceed to the next step. Your progress is saved automatically.",
@@ -84,14 +92,27 @@ export function InteractiveTour({ onComplete }: InteractiveTourProps) {
         return;
       }
 
-      const targetElement = document.querySelector(step.target) as HTMLElement;
-      if (targetElement) {
-        const rect = targetElement.getBoundingClientRect();
-        setHighlightedRect(rect);
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        let targetElement = document.querySelector(step.target) as HTMLElement;
 
-        // Scroll target into view
-        targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+        // Fallback for case studies button
+        if (!targetElement && step.target === "#case-studies-button") {
+          targetElement = document.querySelector("button[title='View Case Studies']") as HTMLElement;
+        }
+
+        if (targetElement) {
+          const rect = targetElement.getBoundingClientRect();
+          if (rect.width > 0 && rect.height > 0) {
+            setHighlightedRect(rect);
+            targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else {
+            setHighlightedRect(null);
+          }
+        } else {
+          setHighlightedRect(null);
+        }
+      }, 300);
     };
 
     updateHighlight();
