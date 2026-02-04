@@ -1032,25 +1032,25 @@ function MarketPreviewFromProgress({ challenge, marketProgress, overallProgress,
                     if (size === "TAM" && marketAnalysis.tam) {
                       const { description } = extractMarketValue(marketAnalysis.tam);
                       if (description && description !== marketAnalysis.tam) {
-                        return <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-1.5 leading-tight">{description}</p>;
+                        return <p className="text-xs text-neutral-400 dark:text-neutral-400 mt-1.5 leading-tight">{description}</p>;
                       }
                     }
                     if (size === "SAM" && marketAnalysis.sam) {
                       const { description } = extractMarketValue(marketAnalysis.sam);
                       if (description && description !== marketAnalysis.sam) {
-                        return <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-1.5 leading-tight">{description}</p>;
+                        return <p className="text-xs text-neutral-400 dark:text-neutral-400 mt-1.5 leading-tight">{description}</p>;
                       }
                     }
                     if (size === "SOM" && marketAnalysis.som) {
                       const { description } = extractMarketValue(marketAnalysis.som);
                       if (description && description !== marketAnalysis.som) {
-                        return <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-1.5 leading-tight">{description}</p>;
+                        return <p className="text-xs text-neutral-400 dark:text-neutral-400 mt-1.5 leading-tight">{description}</p>;
                       }
                     }
                   }
                   return null;
                 })()}
-                <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1 font-medium leading-tight">
+                <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-1 font-medium leading-tight">
                   {size === "TAM" ? "Total Addressable Market" : size === "SAM" ? "Serviceable Addressable Market" : "Serviceable Obtainable Market"}
                 </p>
               </div>

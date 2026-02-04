@@ -103,9 +103,9 @@ export function MarketAnalysisDisplay({ challenge, marketAnalysis, onEdit }: Mar
                   <div className="text-center p-4 rounded-md bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
                     <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1 uppercase tracking-wide">TAM</p>
                     <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{tam.value}</p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1 font-medium leading-tight">Total Addressable Market</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-1 font-medium leading-tight">Total Addressable Market</p>
                     {tam.description && tam.description !== marketAnalysis.tam && (
-                      <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-1">{tam.description}</p>
+                      <p className="text-xs text-neutral-400 dark:text-neutral-400 mt-1">{tam.description}</p>
                     )}
                   </div>
                 );
@@ -116,9 +116,9 @@ export function MarketAnalysisDisplay({ challenge, marketAnalysis, onEdit }: Mar
                   <div className="text-center p-4 rounded-md bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
                     <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1 uppercase tracking-wide">SAM</p>
                     <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{sam.value}</p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1 font-medium leading-tight">Serviceable Addressable Market</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-1 font-medium leading-tight">Serviceable Addressable Market</p>
                     {sam.description && sam.description !== marketAnalysis.sam && (
-                      <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-1">{sam.description}</p>
+                      <p className="text-xs text-neutral-400 dark:text-neutral-400 mt-1">{sam.description}</p>
                     )}
                   </div>
                 );
@@ -129,9 +129,9 @@ export function MarketAnalysisDisplay({ challenge, marketAnalysis, onEdit }: Mar
                   <div className="text-center p-4 rounded-md bg-stone-50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800">
                     <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1 uppercase tracking-wide">SOM</p>
                     <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{som.value}</p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1 font-medium leading-tight">Serviceable Obtainable Market</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-1 font-medium leading-tight">Serviceable Obtainable Market</p>
                     {som.description && som.description !== marketAnalysis.som && (
-                      <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-1">{som.description}</p>
+                      <p className="text-xs text-neutral-400 dark:text-neutral-400 mt-1">{som.description}</p>
                     )}
                   </div>
                 );
