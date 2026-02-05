@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createEvaluationSession } from "@/lib/evaluation"
+import { cookies } from "next/headers"
+
+const EVALUATION_CODE = "EVALUATOR@2026"
+const SESSION_COOKIE_NAME = "evaluation_session"
+const SESSION_DURATION = 24 * 60 * 60 // 24 hours in seconds
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,16 +17,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const success = await createEvaluationSession(code)
-
-    if (success) {
-      return NextResponse.json({ success: true })
-    } else {
+    // Verify the code
+    if (code !== EVALUATION_CODE) {
       return NextResponse.json(
         { success: false, error: "Invalid code" },
         { status: 401 }
       )
     }
+
+    // Set the session cookie
+    const cookieStore = await cookies()
+    cookieStore.set(SESSION_COOKIE_NAME, code, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: SESSION_DURATION,
+      path: "/",
+    })
+
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Verification error:", error)
     return NextResponse.json(
