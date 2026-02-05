@@ -4,18 +4,18 @@ import { prisma } from "@/lib/prisma"
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
-    provider: "sqlite",
+    provider: "postgresql",
   }),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
-    sendResetPassword: async ({ user, url }) => {
+    sendResetPassword: async ({ user }: any) => {
       // For evaluation purposes, log to console instead of sending email
-      console.log("Password reset requested:", { user, url })
+      console.log("Password reset requested:", { user })
     },
-    sendVerificationEmail: async ({ user, url }) => {
+    sendVerificationEmail: async ({ user }: any) => {
       // For evaluation purposes, log to console instead of sending email
-      console.log("Email verification:", { user, url })
+      console.log("Email verification:", { user })
     },
   },
   session: {
