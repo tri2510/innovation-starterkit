@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 
-const EVALUATION_CODE = "evaluator@2026"
+const EVALUATION_CODE = "innovate2026"
 const SESSION_COOKIE_NAME = "evaluation_session"
 const SESSION_DURATION = 24 * 60 * 60 // 24 hours in seconds
 

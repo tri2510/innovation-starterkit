@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 
-export const EVALUATION_CODE = "evaluator@2026"
+export const EVALUATION_CODE = "innovate2026"
 const SESSION_COOKIE_NAME = "evaluation_session"
 
 export async function verifyEvaluationSession(): Promise<boolean> {
