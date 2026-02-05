@@ -62,8 +62,6 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
       }
     }
   };
-    }
-  };
 
   const handleResetPhase = () => {
     if (confirm(`Are you sure you want to reset ${stepTitle}?\n\nThis will clear:\n- All your answers in this phase\n- The conversation history\n- Progress made in this phase\n\nOther phases will not be affected.`)) {
