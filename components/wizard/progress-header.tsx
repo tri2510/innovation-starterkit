@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Check, RefreshCw, HelpCircle, Download, RotateCcw, MoreVertical, Save, Upload } from "lucide-react";
+import { Check, RefreshCw, HelpCircle, Download, RotateCcw, MoreVertical, Save, Upload, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WIZARD_STEPS } from "@/types/innovation";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,20 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
     if (confirm("Are you sure you want to start over? This will clear all your progress.")) {
       clearSession();
       window.location.href = "/challenge";
+    }
+  };
+
+  const handleLogout = async () => {
+    if (confirm("Are you sure you want to logout?")) {
+      try {
+        await fetch("/api/evaluation/logout", { method: "POST" });
+        window.location.href = "/evaluation";
+      } catch (error) {
+        console.error("Logout error:", error);
+        window.location.href = "/evaluation";
+      }
+    }
+  };
     }
   };
 
@@ -260,6 +274,14 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
                   </DropdownMenuItem>
                 </>
               )}
+
+              <DropdownMenuSeparator />
+
+              {/* Logout */}
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400">
+                <LogOut className="h-4 w-4 mr-2" />
+                <span>Logout</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
