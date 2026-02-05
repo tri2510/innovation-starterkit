@@ -51,7 +51,7 @@ export default function EvaluationPage() {
 
           {/* Title */}
           <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">
-            Innovation Kit
+            Innovation StarterKit
           </h1>
           <p className="text-center text-gray-600 mb-8">
             Evaluation Access
@@ -94,7 +94,7 @@ export default function EvaluationPage() {
               disabled={loading}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              {loading ? "Verifying..." : "Access Innovation Kit"}
+              {loading ? "Verifying..." : "Access Innovation StarterKit"}
             </button>
           </form>
 
