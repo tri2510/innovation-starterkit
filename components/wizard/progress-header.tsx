@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Check, RefreshCw, HelpCircle, Download, RotateCcw, MoreVertical, Save, Upload } from "lucide-react";
+import { Check, RefreshCw, HelpCircle, Download, RotateCcw, MoreVertical, Save, Upload, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WIZARD_STEPS } from "@/types/innovation";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { clearSession, resetPhase, saveStateToFile, loadStateFromFile, getSessio
 import { exportSessionToMarkdown } from "@/lib/export-session";
 import { useRef, useMemo } from "react";
 import { PhaseSummaryTooltip } from "./phase-summary-tooltip";
+import { authClient } from "@/lib/auth-client";
 
 interface ProgressHeaderProps {
   currentStep: string;
@@ -77,6 +78,11 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
     }
     // Reset the input so the same file can be selected again
     e.target.value = "";
+  };
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+    router.push("/login");
   };
 
   return (
@@ -243,6 +249,14 @@ export function ProgressHeader({ currentStep, showRestart = false, onShowTour }:
                   </DropdownMenuItem>
                 </>
               )}
+
+              <DropdownMenuSeparator />
+
+              {/* Logout */}
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400">
+                <LogOut className="h-4 w-4 mr-2" />
+                <span>Logout</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

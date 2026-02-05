@@ -37,3 +37,10 @@ next-env.d.ts
 # logs
 server.log
 *.log
+
+/lib/generated/prisma
+
+# database
+*.db
+*.db-journal
+prisma/migrations/
