@@ -6,6 +6,7 @@ import { Check, Sparkles, Zap, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BusinessIdea } from '@/types/innovation';
 import { CrackyBadge } from '@/components/ui/cracky-badge';
+import { TextReactions } from '@/components/social/text-reactions';
 
 interface IdeaListCardProps {
   idea: BusinessIdea;
@@ -111,6 +112,11 @@ export function IdeaListCard({ idea, isSelected, isConfirmed, onClick, onConfirm
         <p className="text-xs leading-relaxed text-neutral-700 dark:text-neutral-300 line-clamp-2 mb-3">
           {idea.description}
         </p>
+
+        {/* Social Reactions - Mockup */}
+        <div className="flex items-center gap-2 mb-3">
+          <TextReactions />
+        </div>
 
         {/* Metrics Preview */}
         {idea.metrics && (

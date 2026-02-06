@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { WizardNav } from "@/components/wizard/wizard-nav";
 import type { ChatMessage, Challenge, MarketAnalysis, BusinessIdea } from "@/types/innovation";
 import { saveIdeas, saveConversationHistory, setStep } from "@/lib/session";
+import { AnalyticsDashboard } from "@/components/analytics/analytics-dashboard";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -748,6 +749,11 @@ Browse through the ideas in the left panel, click to view details, and click "Ge
 
             {/* Scrollable List */}
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {/* Analytics Dashboard Mockup */}
+              {ideas.length > 0 && (
+                <AnalyticsDashboard />
+              )}
+
               {ideas.length === 0 ? (
                 <Card className="border-dashed">
                   <CardContent className="flex flex-col items-center justify-center py-8 px-3">
