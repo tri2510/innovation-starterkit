@@ -18,6 +18,7 @@ import { PhaseChat } from "@/components/chat";
 import { usePhaseState } from "@/hooks";
 import type { UsePhaseStateOptions } from "@/hooks";
 import { useCaseStudy } from "@/contexts/case-study-context";
+import { RealTimeEvaluation } from "@/components/evaluation/real-time-evaluation";
 
 interface Message extends ChatMessage {
   isQuestion?: boolean;
@@ -96,7 +97,7 @@ export default function ChallengePage() {
     getGreetingMessage: () => ({
       id: "greeting",
       role: "assistant",
-      content: "Welcome! I'm here to help you define your innovation challenge. Let's start by understanding what problem you're trying to solve. What challenge or opportunity are you exploring?",
+      content: "Hi! I'm Cracky, your AI co-innovator. I'm here to help you transform your ideas into reality. Let's start by understanding what challenge or opportunity you're exploring. What problem are you trying to solve?",
       timestamp: Date.now(),
       isQuestion: true,
     }),
@@ -957,7 +958,25 @@ export default function ChallengePage() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pb-20">
+            <div className="flex-1 overflow-y-auto pb-20 space-y-3 px-3">
+              {/* Real-time Evaluation - Mockup */}
+              {!isCaseStudyActive && (
+                <RealTimeEvaluation
+                  overallProgress={overallProgress}
+                  completedItems={progressItems.filter(i => i.status === "complete").length}
+                  totalItems={progressItems.filter(i => !i.isOptional).length}
+                  suggestions={
+                    overallProgress < 50 ? [
+                      "Add more details to your problem statement",
+                      "Describe your target audience clearly"
+                    ] : overallProgress < 80 ? [
+                      "Include existing solutions you're aware of",
+                      "Mention the industry if relevant"
+                    ] : []
+                  }
+                />
+              )}
+
               <ProgressTracker
                 items={progressItems}
                 overallProgress={overallProgress}

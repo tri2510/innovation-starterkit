@@ -42,21 +42,21 @@ export default function IdeationPage() {
         return {
           id: "greeting",
           role: "assistant",
-          content: `You've selected "${selected?.name}". Ready for investment appraisal?`,
+          content: `You've selected "${selected?.name}". Cracky here! Ready for investment appraisal?`,
           timestamp: Date.now(),
         };
       } else if (hasIdeas) {
         return {
           id: "greeting",
           role: "assistant",
-          content: `I've generated ${session.ideas?.length || 0} innovative ideas. Browse and select your favorite.`,
+          content: `Cracky here! I've generated ${session.ideas?.length || 0} innovative ideas. Browse and select your favorite.`,
           timestamp: Date.now(),
         };
       }
       return {
         id: "greeting",
         role: "assistant",
-        content: `Ready to generate innovative ideas based on your market analysis?`,
+        content: `Hi! I'm Cracky. Ready to generate innovative ideas based on your market analysis?`,
         timestamp: Date.now(),
       };
     },

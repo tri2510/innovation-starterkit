@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Sparkles, Zap, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BusinessIdea } from '@/types/innovation';
+import { CrackyBadge } from '@/components/ui/cracky-badge';
 
 interface IdeaListCardProps {
   idea: BusinessIdea;
@@ -72,9 +73,10 @@ export function IdeaListCard({ idea, isSelected, isConfirmed, onClick, onConfirm
             )}>
               {idea.name}
             </h3>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 line-clamp-1">
+            <p className="text-xs text-neutral-600 dark:text-neutral-400 line-clamp-1 mb-2">
               {idea.tagline}
             </p>
+            <CrackyBadge size="sm" />
           </div>
 
           {/* Confirm Button */}

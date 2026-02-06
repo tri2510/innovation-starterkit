@@ -85,7 +85,7 @@ export function InteractiveMarketAnalysis({
         const greetingMessage: ChatMessage = {
           id: Date.now().toString(),
           role: "assistant",
-          content: `Hi! I'm your market analyst. I'll help you analyze the market for "${challenge.problem}" targeting ${challenge.targetAudience}.
+          content: `Hi! I'm Cracky, your innovation co-pilot. I'll help you analyze the market for "${challenge.problem}" targeting ${challenge.targetAudience}.
 
 Let's start with your market size. Do you know the Total Addressable Market (TAM), Serviceable Addressable Market (SAM), and Serviceable Obtainable Market (SOM)?`,
           timestamp: Date.now()
@@ -139,7 +139,7 @@ Let's start with your market size. Do you know the Total Addressable Market (TAM
         greetingMessage = {
           id: "greeting",
           role: "assistant",
-          content: `I'm your market analyst consultant. Let's build a comprehensive market analysis for your challenge about "${challenge.problem.substring(0, 50)}...".
+          content: `Cracky here! Let's build a comprehensive market analysis for your challenge about "${challenge.problem.substring(0, 50)}...".
 
 Let's start with your **market size**. What's your estimated Total Addressable Market (TAM)? Think about the total global or national market for your solution.`,
           timestamp: Date.now(),
